@@ -4,44 +4,56 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.agrosupport.common.Constants
+import com.example.agrosupport.common.Routes
+import com.example.agrosupport.data.remote.AdvisorService
+import com.example.agrosupport.data.remote.ProfileService
+import com.example.agrosupport.data.repository.AdvisorRepository
+import com.example.agrosupport.data.repository.ProfileRepository
+import com.example.agrosupport.presentation.AdvisorListScreen
+import com.example.agrosupport.presentation.AdvisorListViewModel
+import com.example.agrosupport.presentation.FarmerHomeScreen
+import com.example.agrosupport.presentation.FarmerHomeViewModel
 import com.example.agrosupport.ui.theme.AgroSupportTheme
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val profileService = Retrofit
+            .Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ProfileService::class.java)
+
+        val advisorService = Retrofit
+            .Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(AdvisorService::class.java)
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             AgroSupportTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+                val farmerHomeViewModel = FarmerHomeViewModel(navController, ProfileRepository(profileService))
+                val advisorListViewModel = AdvisorListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
+                NavHost(navController = navController, startDestination = Routes.FarmerHome.route) {
+                    composable(route = Routes.FarmerHome.route) {
+                        FarmerHomeScreen(viewModel = farmerHomeViewModel)
+                    }
+                    composable(route = Routes.AdvisorList.route) {
+                        AdvisorListScreen(viewModel = advisorListViewModel)
+                    }
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AgroSupportTheme {
-        Greeting("Android")
-    }
-}
