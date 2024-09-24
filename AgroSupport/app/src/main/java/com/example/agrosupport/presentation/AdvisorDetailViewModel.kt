@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.agrosupport.common.Constants
 import com.example.agrosupport.common.Resource
+import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
 import com.example.agrosupport.data.repository.AdvisorRepository
 import com.example.agrosupport.data.repository.ProfileRepository
@@ -53,5 +54,9 @@ class AdvisorDetailViewModel(private val navController: NavController, private v
                 _state.value = UIState(message = "Error while getting advisor")
             }
         }
+    }
+
+    fun goToReviewList(advisorId: Long) {
+        navController.navigate(Routes.ReviewList.route + "/$advisorId")
     }
 }

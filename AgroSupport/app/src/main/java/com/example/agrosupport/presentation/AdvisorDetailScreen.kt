@@ -107,7 +107,10 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, userId: Long) {
                             disabledContentColor = Color.White,
                             disabledContainerColor = Color(0xFFBAC2CB)
                         ),
-                        onClick = { /*TODO*/ }) {
+                        onClick = {
+                            val advisorId = state.data?.id ?: 0
+                            viewModel.goToReviewList(advisorId)
+                        }) {
                         Text(
                             modifier = Modifier.padding(16.dp),
                             text = "⭐ ${state.data?.rating}",
