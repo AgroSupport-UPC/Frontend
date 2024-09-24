@@ -13,6 +13,8 @@ import com.example.agrosupport.data.remote.AdvisorService
 import com.example.agrosupport.data.remote.ProfileService
 import com.example.agrosupport.data.repository.AdvisorRepository
 import com.example.agrosupport.data.repository.ProfileRepository
+import com.example.agrosupport.presentation.AdvisorDetailScreen
+import com.example.agrosupport.presentation.AdvisorDetailViewModel
 import com.example.agrosupport.presentation.AdvisorListScreen
 import com.example.agrosupport.presentation.AdvisorListViewModel
 import com.example.agrosupport.presentation.FarmerHomeScreen
@@ -44,12 +46,17 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val farmerHomeViewModel = FarmerHomeViewModel(navController, ProfileRepository(profileService))
                 val advisorListViewModel = AdvisorListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
+                val advisorDetailViewModel = AdvisorDetailViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
                 NavHost(navController = navController, startDestination = Routes.FarmerHome.route) {
                     composable(route = Routes.FarmerHome.route) {
                         FarmerHomeScreen(viewModel = farmerHomeViewModel)
                     }
                     composable(route = Routes.AdvisorList.route) {
                         AdvisorListScreen(viewModel = advisorListViewModel)
+                    }
+                    composable(route = Routes.AdvisorDetail.route + "/{userId}") {
+                        val userId = it.arguments?.getString("advisorId")?.toLong() ?: 0
+                        AdvisorDetailScreen(viewModel = advisorDetailViewModel, userId = userId)
                     }
                 }
             }

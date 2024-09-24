@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.squareup.picasso.Picasso
 import com.example.agrosupport.R
 
@@ -96,7 +97,9 @@ fun AdvisorListScreen(viewModel: AdvisorListViewModel) {
             ) {
                 state.data?.let {
                     items(count = it.size, itemContent = { index ->
-                        AdvisorCard(advisor = it[index])
+                        AdvisorCard(advisor = it[index], onClick = {
+                            viewModel.goToAdvisorProfile(it[index].id)
+                        })
                     })
                 }
             }
@@ -105,7 +108,7 @@ fun AdvisorListScreen(viewModel: AdvisorListViewModel) {
 }
 
 @Composable
-fun AdvisorCard(advisor: AdvisorCard) {
+fun AdvisorCard(advisor: AdvisorCard, onClick: () -> Unit = {}) {
     Card(
         modifier = Modifier.padding(8.dp).fillMaxWidth(),
         colors = CardColors(
@@ -114,7 +117,7 @@ fun AdvisorCard(advisor: AdvisorCard) {
             disabledContentColor = Color.White,
             disabledContainerColor = Color(0xFFF4B696),
         ),
-        onClick = { /*TODO*/ }
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier.padding(8.dp).fillMaxWidth(),

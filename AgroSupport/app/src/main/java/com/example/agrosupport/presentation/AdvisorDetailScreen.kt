@@ -1,0 +1,205 @@
+package com.example.agrosupport.presentation
+
+import android.widget.ImageView
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import com.example.agrosupport.R
+import com.squareup.picasso.Picasso
+
+@Composable
+fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, userId: Long) {
+
+    val state = viewModel.state.value
+
+    LaunchedEffect(Unit) {
+        viewModel.getAdvisorDetail(userId)
+    }
+
+    Scaffold { paddingValues ->
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(paddingValues).padding(16.dp)
+        ) {
+            // Implementar la UI de la pantalla AdvisorDetail
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                IconButton(
+                    onClick = { viewModel.goBack() }
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                        contentDescription = "Go back"
+                    )
+                }
+            }
+            Card(modifier = Modifier.padding(8.dp). fillMaxWidth(),
+                colors = CardColors(
+                    contentColor = Color.White,
+                    containerColor = Color(0xFFBAC2CB),
+                    disabledContentColor = Color.White,
+                    disabledContainerColor = Color(0xFFF4B696)
+                )) {
+                Column (
+                    modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    AndroidView(
+                        modifier = Modifier.size(128.dp).clip(CircleShape),
+                        factory = { context ->
+                            ImageView(context).apply {
+                                scaleType = ImageView.ScaleType.CENTER_CROP
+                            }
+                        },
+                        update = { view ->
+                            Picasso.get()
+                                .load(state.data?.link)
+                                .error(R.drawable.placeholder)
+                                .into(view)
+                        }
+                    )
+                    state.data?.let {
+                        Text(
+                            text = it.name,
+                            color = Color(0xFF222B45),
+                            fontFamily = FontFamily.SansSerif,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic
+                        )
+                    }
+                    Text(
+                        text = "⭐ ${state.data?.rating}",
+                        color = Color(0xFF222B45),
+                        fontFamily = FontFamily.SansSerif,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Italic
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Sobre el Asesor",
+                    color = Color(0xFF222B45),
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Italic
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "${state.data?.description}",
+                    color = Color(0xFF222B45),
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Medium,
+                    fontStyle = FontStyle.Normal
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Ocupación",
+                    color = Color(0xFF222B45),
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Italic
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "${state.data?.occupation}",
+                    color = Color(0xFF222B45),
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Medium,
+                    fontStyle = FontStyle.Normal
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Experiencia",
+                    color = Color(0xFF222B45),
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Italic
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "${state.data?.experience}",
+                    color = Color(0xFF222B45),
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Medium,
+                    fontStyle = FontStyle.Normal
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    onClick = { /*TODO*/ },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF3E64FF), // Color de fondo del botón
+                        contentColor = Color.White)) {
+                    Text(
+                        text = "Agendar Cita",
+                        color = Color(0xFFFFFFFF),
+                        fontFamily = FontFamily.SansSerif,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Normal
+                    )
+                }
+            }
+        }
+    }
+}

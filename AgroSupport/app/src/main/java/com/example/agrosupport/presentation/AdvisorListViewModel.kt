@@ -8,6 +8,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import com.example.agrosupport.common.Constants
 import com.example.agrosupport.common.Resource
+import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
 import com.example.agrosupport.data.repository.AdvisorRepository
 import com.example.agrosupport.data.repository.ProfileRepository
@@ -37,7 +38,7 @@ class AdvisorListViewModel(private val navController: NavController, private val
                             val rating = ratingResult.data?.rating ?: 0.0 // Asigna 0.0 si el rating es null
                             advisorCards.add(
                                 AdvisorCard(
-                                    id = advisor.id,
+                                    id = advisor.userId,
                                     name = advisor.firstName + " " + advisor.lastName,
                                     rating = rating,
                                     link = advisor.photo
@@ -47,7 +48,7 @@ class AdvisorListViewModel(private val navController: NavController, private val
                             // Manejo de error para el rating, puedes decidir cómo proceder aquí
                             advisorCards.add(
                                 AdvisorCard(
-                                    id = advisor.id,
+                                    id = advisor.userId,
                                     name = advisor.firstName + " " + advisor.lastName,
                                     rating = 0.0, // Asigna 0.0 en caso de error
                                     link = advisor.photo
@@ -64,6 +65,10 @@ class AdvisorListViewModel(private val navController: NavController, private val
                 _state.value = UIState(message = "Error retrieving advisor list")
             }
         }
+    }
+
+    fun goToAdvisorProfile(userId: Long) {
+        navController.navigate(Routes.AdvisorDetail.route + "/$userId")
     }
 
 }
