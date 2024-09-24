@@ -42,7 +42,9 @@ class AdvisorDetailViewModel(private val navController: NavController, private v
                             rating = rating,
                             link = advisor.photo
                         )
-                        _state.value = UIState(data = advisorDetail) // Actualiza el estado con el AdvisorDetail
+                        _state.value = UIState(data = advisorDetail)
+                    } else {
+                        _state.value = UIState(message = "Error while getting advisor rating")
                     }
                 } else {
                     _state.value = UIState(message = "Advisor not found")

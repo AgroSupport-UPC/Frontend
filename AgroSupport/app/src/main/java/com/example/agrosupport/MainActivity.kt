@@ -54,8 +54,8 @@ class MainActivity : ComponentActivity() {
                     composable(route = Routes.AdvisorList.route) {
                         AdvisorListScreen(viewModel = advisorListViewModel)
                     }
-                    composable(route = Routes.AdvisorDetail.route + "/{userId}") {
-                        val userId = it.arguments?.getString("advisorId")?.toLong() ?: 0
+                    composable(route = Routes.AdvisorDetail.route + "/{userId}") { backStackEntry ->
+                        val userId = backStackEntry.arguments?.getString("userId")?.toLong() ?: 0
                         AdvisorDetailScreen(viewModel = advisorDetailViewModel, userId = userId)
                     }
                 }

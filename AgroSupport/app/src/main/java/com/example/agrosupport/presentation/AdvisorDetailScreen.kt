@@ -1,9 +1,11 @@
 package com.example.agrosupport.presentation
 
 import android.widget.ImageView
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.agrosupport.R
@@ -60,19 +63,22 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, userId: Long) {
                     )
                 }
             }
-            Card(modifier = Modifier.padding(8.dp). fillMaxWidth(),
+            Card(modifier = Modifier.fillMaxWidth(),
                 colors = CardColors(
                     contentColor = Color.White,
                     containerColor = Color(0xFFBAC2CB),
                     disabledContentColor = Color.White,
-                    disabledContainerColor = Color(0xFFF4B696)
+                    disabledContainerColor = Color(0xFFBAC2CB)
                 )) {
                 Column (
-                    modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     AndroidView(
-                        modifier = Modifier.size(128.dp).clip(CircleShape),
+                        modifier = Modifier
+                            .size(128.dp)
+                            .clip(CircleShape)
+                            .border(3.dp, Color(0xFFD8D8D8), CircleShape),
                         factory = { context ->
                             ImageView(context).apply {
                                 scaleType = ImageView.ScaleType.CENTER_CROP
@@ -94,17 +100,27 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, userId: Long) {
                             fontStyle = FontStyle.Italic
                         )
                     }
-                    Text(
-                        text = "⭐ ${state.data?.rating}",
-                        color = Color(0xFF222B45),
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Italic
-                    )
+                    Card(modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally),
+                        colors = CardColors(
+                            contentColor = Color.White,
+                            containerColor = Color(0xFFFFFFFF),
+                            disabledContentColor = Color.White,
+                            disabledContainerColor = Color(0xFFBAC2CB)
+                        ),
+                        onClick = { /*TODO*/ }) {
+                        Text(
+                            modifier = Modifier.padding(16.dp),
+                            text = "⭐ ${state.data?.rating}",
+                            color = Color(0xFFF7C480),
+                            fontFamily = FontFamily.SansSerif,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic
+                        )
+                    }
                 }
             }
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -117,7 +133,7 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, userId: Long) {
                 )
             }
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -125,12 +141,12 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, userId: Long) {
                     text = "${state.data?.description}",
                     color = Color(0xFF222B45),
                     fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Normal,
                     fontStyle = FontStyle.Normal
                 )
             }
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -143,7 +159,7 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, userId: Long) {
                 )
             }
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -151,12 +167,12 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, userId: Long) {
                     text = "${state.data?.occupation}",
                     color = Color(0xFF222B45),
                     fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Normal,
                     fontStyle = FontStyle.Normal
                 )
             }
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -169,7 +185,7 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, userId: Long) {
                 )
             }
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -177,16 +193,19 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, userId: Long) {
                     text = "${state.data?.experience}",
                     color = Color(0xFF222B45),
                     fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Normal,
                     fontStyle = FontStyle.Normal
                 )
             }
+            Spacer(modifier = Modifier.weight(1f))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Button(modifier = Modifier.fillMaxWidth().padding(8.dp),
+                Button(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
                     onClick = { /*TODO*/ },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF3E64FF), // Color de fondo del botón
