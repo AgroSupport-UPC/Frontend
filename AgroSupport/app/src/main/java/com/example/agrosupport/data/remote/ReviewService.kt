@@ -8,7 +8,7 @@ import retrofit2.http.Path
 interface ReviewService {
     @GET("reviews")
     suspend fun getReviews(@Header("Authorization") token: String): Response<List<ReviewDto>>
-    @GET("reviews/advisor/{advisorId}")
+    @GET("reviews/{advisorId}/advisor")
     suspend fun getReviewsByAdvisor(@Path("advisorId") advisorId: Long, @Header("Authorization") token: String): Response<List<ReviewDto>>
 
 }
