@@ -13,7 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
@@ -21,7 +21,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -31,18 +30,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.squareup.picasso.Picasso
 import com.example.agrosupport.R
+import com.squareup.picasso.Picasso
 
 @Composable
-fun AdvisorListScreen(viewModel: AdvisorListViewModel) {
+fun ReviewListScreen(viewModel: ReviewListViewModel, advisorId: Long) {
     val state = viewModel.state.value
 
     LaunchedEffect(Unit) {
-        viewModel.getAdvisorList()
+        viewModel.getAdvisorReviewList(advisorId)
     }
 
     Scaffold { paddingValues ->
@@ -63,7 +62,7 @@ fun AdvisorListScreen(viewModel: AdvisorListViewModel) {
                     )
                 }
                 Text(
-                    text = "Asesores",
+                    text = "Reseñas",
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic,
@@ -74,33 +73,24 @@ fun AdvisorListScreen(viewModel: AdvisorListViewModel) {
                     contentDescription = "Filter"
                 )
             }
-            TextField(
-                value = "",
-                onValueChange = {},
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp).size(48.dp),
-                placeholder = {
-                    Text(
-                        text = "Busca asesores",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search"
-                    )
-                }
-            )
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-            ) {
-                state.data?.let {
-                    items(count = it.size, itemContent = { index ->
-                        AdvisorCard(advisor = it[index], onClick = {
-                            viewModel.goToAdvisorProfile(it[index].id)
+            if (state.data.isNullOrEmpty()) {
+                Text(
+                    text = "No se encontraron reseñas para este asesor",
+                    modifier = Modifier.padding(top = 16.dp),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color(0xFF222B45),
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(1),
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+                ) {
+                    state.data.let {
+                        items(count = it.size, itemContent = { index ->
+                            ReviewCard(it[index])
                         })
-                    })
+                    }
                 }
             }
         }
@@ -108,23 +98,23 @@ fun AdvisorListScreen(viewModel: AdvisorListViewModel) {
 }
 
 @Composable
-fun AdvisorCard(advisor: AdvisorCard, onClick: () -> Unit = {}) {
+fun ReviewCard(review: ReviewCard) {
+    val rating = review.rating.toInt()
     Card(
         modifier = Modifier.padding(8.dp).fillMaxWidth(),
         colors = CardColors(
-            contentColor = Color.White,
-            containerColor = Color(0xFFF4B696),
+            contentColor = Color.Black,
+            containerColor = Color(0xFFF9EAE1),
             disabledContentColor = Color.White,
             disabledContainerColor = Color(0xFFF4B696),
-        ),
-        onClick = onClick
+        )
     ) {
         Column(
             modifier = Modifier.padding(8.dp).fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.Start
         ) {
             AndroidView(
-                modifier = Modifier.size(128.dp).clip(CircleShape),
+                modifier = Modifier.size(50.dp).clip(CircleShape),
                 factory = { context ->
                     ImageView(context).apply {
                         scaleType = ImageView.ScaleType.CENTER_CROP
@@ -132,23 +122,32 @@ fun AdvisorCard(advisor: AdvisorCard, onClick: () -> Unit = {}) {
                 },
                 update = { view ->
                     Picasso.get()
-                        .load(advisor.link)
+                        .load(review.farmerLink)
                         .error(R.drawable.placeholder)
                         .into(view)
                 }
             )
             Text(
-                text = advisor.name,
+                text = review.farmerName,
                 color = Color(0xFF222B45),
                 fontFamily = FontFamily.SansSerif,
                 fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Italic
             )
+            Row {
+                for (i in 1..rating) {
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = "Star",
+                        tint = Color(0xFFD9A722)
+                    )
+                }
+            }
             Text(
-                text = "⭐ ${advisor.rating}",
+                text = review.comment,
                 fontFamily = FontFamily.SansSerif,
-                fontWeight = FontWeight.Bold,
-                fontStyle = FontStyle.Italic
+                fontWeight = FontWeight.Normal,
+                fontStyle = FontStyle.Normal
             )
         }
     }

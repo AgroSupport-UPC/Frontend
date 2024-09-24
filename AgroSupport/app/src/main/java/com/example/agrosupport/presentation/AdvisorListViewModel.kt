@@ -8,10 +8,10 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import com.example.agrosupport.common.Constants
 import com.example.agrosupport.common.Resource
+import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
 import com.example.agrosupport.data.repository.AdvisorRepository
 import com.example.agrosupport.data.repository.ProfileRepository
-import com.example.agrosupport.presentation.AdvisorCard
 
 class AdvisorListViewModel(private val navController: NavController, private val profileRepository: ProfileRepository,
                            private val advisorRepository: AdvisorRepository): ViewModel() {
@@ -28,29 +28,31 @@ class AdvisorListViewModel(private val navController: NavController, private val
         viewModelScope.launch {
             val result = profileRepository.getAdvisorList(Constants.EXAMPLE_TOKEN)
             if (result is Resource.Success) {
-                val advisors = result.data
-                if (advisors != null) {
+                val profiles = result.data
+                if (profiles != null) {
                     val advisorCards = mutableListOf<AdvisorCard>()
-                    for (advisor in advisors) {
-                        val ratingResult = advisorRepository.searchAdvisor(advisor.userId, Constants.EXAMPLE_TOKEN)
-                        if (ratingResult is Resource.Success) {
-                            val rating = ratingResult.data?.rating ?: 0.0 // Asigna 0.0 si el rating es null
+                    for (profile in profiles) {
+                        val advisorResult = advisorRepository.searchAdvisorByUserId(profile.userId, Constants.EXAMPLE_TOKEN)
+                        if (advisorResult is Resource.Success) {
+                            val advisorId = advisorResult.data?.id ?: 0 // Asigna 0 si el id es null
+                            val rating = advisorResult.data?.rating ?: 0.0 // Asigna 0.0 si el rating es null
                             advisorCards.add(
                                 AdvisorCard(
-                                    id = advisor.id,
-                                    name = advisor.firstName + " " + advisor.lastName,
+                                    id = advisorId,
+                                    name = profile.firstName + " " + profile.lastName,
                                     rating = rating,
-                                    link = advisor.photo
+                                    link = profile.photo
                                 )
                             )
                         } else {
                             // Manejo de error para el rating, puedes decidir cómo proceder aquí
+                            val advisorId = advisorResult.data?.id ?: 0
                             advisorCards.add(
                                 AdvisorCard(
-                                    id = advisor.id,
-                                    name = advisor.firstName + " " + advisor.lastName,
+                                    id = advisorId,
+                                    name = profile.firstName + " " + profile.lastName,
                                     rating = 0.0, // Asigna 0.0 en caso de error
-                                    link = advisor.photo
+                                    link = profile.photo
                                 )
                             )
                         }
@@ -64,6 +66,10 @@ class AdvisorListViewModel(private val navController: NavController, private val
                 _state.value = UIState(message = "Error retrieving advisor list")
             }
         }
+    }
+
+    fun goToAdvisorProfile(advisorId: Long) {
+        navController.navigate(Routes.AdvisorDetail.route + "/$advisorId")
     }
 
 }
