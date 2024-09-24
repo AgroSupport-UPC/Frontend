@@ -75,9 +75,9 @@ class MainActivity : ComponentActivity() {
                     composable(route = Routes.AdvisorList.route) {
                         AdvisorListScreen(viewModel = advisorListViewModel)
                     }
-                    composable(route = Routes.AdvisorDetail.route + "/{userId}") { backStackEntry ->
-                        val userId = backStackEntry.arguments?.getString("userId")?.toLong() ?: 0
-                        AdvisorDetailScreen(viewModel = advisorDetailViewModel, userId = userId)
+                    composable(route = Routes.AdvisorDetail.route + "/{advisorId}") { backStackEntry ->
+                        val advisorId = backStackEntry.arguments?.getString("advisorId")?.toLong() ?: 0
+                        AdvisorDetailScreen(viewModel = advisorDetailViewModel, advisorId = advisorId)
                     }
                     composable(route = Routes.ReviewList.route + "/{advisorId}") {
                         val advisorId = it.arguments?.getString("advisorId")?.toLong() ?: 0

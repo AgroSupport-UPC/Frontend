@@ -8,4 +8,6 @@ import retrofit2.http.Path
 interface AdvisorService {
     @GET("advisors/{userId}/user")
     suspend fun getAdvisor(@Path("userId") userId: Long, @Header("Authorization") token: String): Response<AdvisorDto>
+    @GET("advisors/{id}")
+    suspend fun getAdvisorByAdvisorId(@Path("id") id: Long, @Header("Authorization") token: String): Response<AdvisorDto>
 }

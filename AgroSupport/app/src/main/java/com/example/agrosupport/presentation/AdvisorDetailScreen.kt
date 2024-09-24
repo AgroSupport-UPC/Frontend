@@ -36,19 +36,18 @@ import com.example.agrosupport.R
 import com.squareup.picasso.Picasso
 
 @Composable
-fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, userId: Long) {
+fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, advisorId: Long) {
 
     val state = viewModel.state.value
 
     LaunchedEffect(Unit) {
-        viewModel.getAdvisorDetail(userId)
+        viewModel.getAdvisorDetail(advisorId)
     }
 
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier.fillMaxWidth().padding(paddingValues).padding(16.dp)
         ) {
-            // Implementar la UI de la pantalla AdvisorDetail
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -108,7 +107,6 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, userId: Long) {
                             disabledContainerColor = Color(0xFFBAC2CB)
                         ),
                         onClick = {
-                            val advisorId = state.data?.id ?: 0
                             viewModel.goToReviewList(advisorId)
                         }) {
                         Text(

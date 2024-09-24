@@ -86,7 +86,7 @@ fun ReviewListScreen(viewModel: ReviewListViewModel, advisorId: Long) {
                     columns = GridCells.Fixed(1),
                     modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
                 ) {
-                    state.data?.let {
+                    state.data.let {
                         items(count = it.size, itemContent = { index ->
                             ReviewCard(it[index])
                         })

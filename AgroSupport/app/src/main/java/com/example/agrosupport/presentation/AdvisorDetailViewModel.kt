@@ -23,29 +23,31 @@ class AdvisorDetailViewModel(private val navController: NavController, private v
         navController.popBackStack()
     }
 
-    fun getAdvisorDetail(userId: Long) {
+    fun getAdvisorDetail(advisorId: Long) {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
             // obtener advisor user_id a partir de la ruta "AdvisorDetail/{userId}"
-            val result = profileRepository.searchProfile(userId, Constants.EXAMPLE_TOKEN)
+            val result = advisorRepository.searchAdvisorByAdvisorId(advisorId, Constants.EXAMPLE_TOKEN)
             if (result is Resource.Success) {
                 val advisor = result.data
                 if (advisor != null) {
-                    val ratingResult = advisorRepository.searchAdvisor(userId, Constants.EXAMPLE_TOKEN)
-                    if (ratingResult is Resource.Success) {
-                        val rating = ratingResult.data?.rating ?: 0.0 // Asigna 0.0 si el rating es null
-                        val advisorDetail = AdvisorDetail(
-                            id = advisor.id,
-                            name = advisor.firstName + " " + advisor.lastName,
-                            description = advisor.description,
-                            occupation = advisor.occupation,
-                            experience = advisor.experience,
-                            rating = rating,
-                            link = advisor.photo
-                        )
-                        _state.value = UIState(data = advisorDetail)
+                    val profileResult = profileRepository.searchProfile(advisor.userId, Constants.EXAMPLE_TOKEN)
+                    if (profileResult is Resource.Success) {
+                        val profile = profileResult.data
+                        if (profile != null) {
+                            val advisorDetail = AdvisorDetail(
+                                id = advisor.id,
+                                name = profile.firstName + " " + profile.lastName,
+                                description = profile.description,
+                                occupation = profile.occupation,
+                                experience = profile.experience,
+                                rating = advisor.rating,
+                                link = profile.photo
+                            )
+                            _state.value = UIState(data = advisorDetail)
+                        }
                     } else {
-                        _state.value = UIState(message = "Error while getting advisor rating")
+                        _state.value = UIState(message = "Error while getting advisor profile")
                     }
                 } else {
                     _state.value = UIState(message = "Advisor not found")
