@@ -32,4 +32,9 @@ class FarmerHomeViewModel(private val navController: NavController, private val 
     fun goToAdvisorList() {
         navController.navigate(Routes.AdvisorList.route)
     }
+
+    fun goToAppointmentList() {
+        navController.navigate(Routes.FarmerAppointmentList.route)
+    }
+
 }

@@ -53,7 +53,8 @@ fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
         ),
         CardItem(
             image = painterResource(id = R.drawable.icon_appointments),
-            text = "Citas"
+            text = "Citas",
+            onClick = { viewModel.goToAppointmentList() }
         ),
         CardItem(
             image = painterResource(id = R.drawable.icon_publications),
