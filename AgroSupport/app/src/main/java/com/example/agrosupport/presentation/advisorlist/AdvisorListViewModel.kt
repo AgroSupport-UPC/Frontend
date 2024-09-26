@@ -19,6 +19,15 @@ class AdvisorListViewModel(private val navController: NavController, private val
     private val _state = mutableStateOf(UIState<List<AdvisorCard>>())
     val state: State<UIState<List<AdvisorCard>>> get() = _state
 
+    private val _list = mutableStateOf<List<AdvisorCard>>(emptyList())
+    val list: State<List<AdvisorCard>> get() = _list
+
+    private val _search = mutableStateOf("")
+    val search: State<String> get() = _search
+
+    private val _filter = mutableStateOf("Nombre")
+    val filter: State<String> get() = _filter
+
     fun goBack() {
         navController.popBackStack()
     }
@@ -26,50 +35,72 @@ class AdvisorListViewModel(private val navController: NavController, private val
     fun getAdvisorList() {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val result = profileRepository.getAdvisorList(Constants.EXAMPLE_TOKEN)
-            if (result is Resource.Success) {
-                val profiles = result.data
-                if (profiles != null) {
-                    val advisorCards = mutableListOf<AdvisorCard>()
-                    for (profile in profiles) {
-                        val advisorResult = advisorRepository.searchAdvisorByUserId(profile.userId, Constants.EXAMPLE_TOKEN)
-                        if (advisorResult is Resource.Success) {
-                            val advisorId = advisorResult.data?.id ?: 0 // Asigna 0 si el id es null
-                            val rating = advisorResult.data?.rating ?: 0.0 // Asigna 0.0 si el rating es null
-                            advisorCards.add(
-                                AdvisorCard(
-                                    id = advisorId,
-                                    name = profile.firstName + " " + profile.lastName,
-                                    rating = rating,
-                                    link = profile.photo
-                                )
-                            )
-                        } else {
-                            // Manejo de error para el rating, puedes decidir cómo proceder aquí
-                            val advisorId = advisorResult.data?.id ?: 0
-                            advisorCards.add(
-                                AdvisorCard(
-                                    id = advisorId,
-                                    name = profile.firstName + " " + profile.lastName,
-                                    rating = 0.0, // Asigna 0.0 en caso de error
-                                    link = profile.photo
-                                )
-                            )
-                        }
+            when (val result = profileRepository.getAdvisorList(Constants.EXAMPLE_TOKEN)) {
+                is Resource.Success -> {
+                    val profiles = result.data ?: run {
+                        _state.value = UIState(message = "No se encontraron asesores")
+                        return@launch
                     }
+                    val advisorCards = profiles.map { profile ->
+                        val advisorResult = advisorRepository.searchAdvisorByUserId(profile.userId, Constants.EXAMPLE_TOKEN)
+                        val advisorId = (advisorResult as? Resource.Success)?.data?.id ?: 0
+                        val rating = (advisorResult as? Resource.Success)?.data?.rating ?: 0.0
 
-                    _state.value = UIState(data = advisorCards) // Actualiza el estado con la lista de AdvisorCard
-                } else {
-                    _state.value = UIState(message = "No advisors found")
+                        AdvisorCard(
+                            id = advisorId,
+                            name = "${profile.firstName} ${profile.lastName}",
+                            occupation = profile.occupation,
+                            rating = rating,
+                            link = profile.photo
+                        )
+                    }
+                    _state.value = UIState(data = advisorCards)
+                    _list.value = advisorCards
                 }
-            } else if (result is Resource.Error) {
-                _state.value = UIState(message = "Error retrieving advisor list")
+                is Resource.Error -> {
+                    _state.value = UIState(message = "Hubo un error recuperando la lista de asesores")
+                }
             }
         }
+    }
+
+    fun filterAdvisorList() {
+        val filteredList = list.value.filter(filter.value)
+        _state.value = UIState(data = filteredList)
     }
 
     fun goToAdvisorProfile(advisorId: Long) {
         navController.navigate(Routes.AdvisorDetail.route + "/$advisorId")
     }
+
+    fun onSearchChange(search: String) {
+        _search.value = search
+    }
+
+    fun onFilterChange(filter: String) {
+        _filter.value = filter
+    }
+
+    private fun List<AdvisorCard>.filter(filter: String): List<AdvisorCard> {
+        return when (filter) {
+            "Nombre" -> filterByName()
+            "Ocupación" -> filterByOccupation()
+            "Calificación" -> filterByRating()
+            else -> this
+        }
+    }
+
+    private fun List<AdvisorCard>.filterByName(): List<AdvisorCard> {
+        return filter { it.name.contains(search.value, ignoreCase = true) }
+    }
+
+    private fun List<AdvisorCard>.filterByOccupation(): List<AdvisorCard> {
+        return filter { it.occupation.contains(search.value, ignoreCase = true) }
+    }
+
+    private fun List<AdvisorCard>.filterByRating(): List<AdvisorCard> {
+        return filter { it.rating >= (search.value.toDoubleOrNull() ?: 0.0) }
+    }
+
 
 }
