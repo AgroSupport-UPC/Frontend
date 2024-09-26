@@ -36,7 +36,7 @@ class FarmerAppointmentListViewModel(private val navController: NavController,
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
             // Cambiar
-            val farmerResult = farmerRepository.searchFarmerByUserId(3, Constants.EXAMPLE_TOKEN)
+            val farmerResult = farmerRepository.searchFarmerByUserId(Constants.EXAMPLE_USER_ID, Constants.EXAMPLE_TOKEN)
 
             if (farmerResult is Resource.Success && farmerResult.data != null) {
 
