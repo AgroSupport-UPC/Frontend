@@ -10,7 +10,7 @@ import com.example.agrosupport.domain.Advisor
 class AdvisorRepository(private val advisorService: AdvisorService) {
     suspend fun searchAdvisorByUserId(userId: Long, token: String): Resource<Advisor> = withContext(Dispatchers.IO) {
         if (token.isBlank()) {
-            return@withContext Resource.Error(message = "Token is required")
+            return@withContext Resource.Error(message = "Un token es requerido")
         }
         val bearerToken = "Bearer $token"
         val response = advisorService.getAdvisor(userId, bearerToken)
@@ -19,14 +19,14 @@ class AdvisorRepository(private val advisorService: AdvisorService) {
                 val advisor = advisorDto.toAdvisor()
                 return@withContext Resource.Success(advisor)
             }
-            return@withContext Resource.Error(message = "Advisor not found")
+            return@withContext Resource.Error(message = "No se encontró asesor")
         }
         return@withContext Resource.Error(response.message())
     }
 
     suspend fun searchAdvisorByAdvisorId(advisorId: Long, token: String): Resource<Advisor> = withContext(Dispatchers.IO) {
         if (token.isBlank()) {
-            return@withContext Resource.Error(message = "Token is required")
+            return@withContext Resource.Error(message = "Un token es requeridod")
         }
         val bearerToken = "Bearer $token"
         val response = advisorService.getAdvisorByAdvisorId(advisorId, bearerToken)
@@ -35,7 +35,7 @@ class AdvisorRepository(private val advisorService: AdvisorService) {
                 val advisor = advisorDto.toAdvisor()
                 return@withContext Resource.Success(advisor)
             }
-            return@withContext Resource.Error(message = "Advisor not found")
+            return@withContext Resource.Error(message = "No se encontró asesor")
         }
         return@withContext Resource.Error(response.message())
     }

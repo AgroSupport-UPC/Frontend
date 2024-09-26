@@ -10,7 +10,7 @@ import com.example.agrosupport.domain.Profile
 class ProfileRepository(private val profileService: ProfileService) {
     suspend fun searchProfile(userId: Long, token: String): Resource<Profile> = withContext(Dispatchers.IO) {
         if (token.isBlank()) {
-            return@withContext Resource.Error(message = "Token is required")
+            return@withContext Resource.Error(message = "Un token es requerido")
         }
         val bearerToken = "Bearer $token"
         val response = profileService.getProfile(userId, bearerToken)
@@ -19,14 +19,14 @@ class ProfileRepository(private val profileService: ProfileService) {
                 val profile = profileDto.toProfile()
                 return@withContext Resource.Success(data = profile)
             }
-            return@withContext Resource.Error(message = "Profile not found")
+            return@withContext Resource.Error(message = "No se encontró perfil")
         }
         return@withContext Resource.Error(response.message())
     }
 
     suspend fun getAdvisorList(token: String): Resource<List<Profile>> = withContext(Dispatchers.IO) {
         if (token.isBlank()) {
-            return@withContext Resource.Error(message = "Token is required")
+            return@withContext Resource.Error(message = "Un token es requerido")
         }
         val bearerToken = "Bearer $token"
         val response = profileService.getAdvisors(bearerToken)
@@ -35,7 +35,7 @@ class ProfileRepository(private val profileService: ProfileService) {
                 val advisors = profileDtos.map { it.toProfile() }
                 return@withContext Resource.Success(data = advisors)
             }
-            return@withContext Resource.Error(message = "Error while getting advisors")
+            return@withContext Resource.Error(message = "Error al obtener lista de asesores")
         }
         return@withContext Resource.Error(response.message())
     }

@@ -56,7 +56,6 @@ class ReviewListViewModel(private val navController: NavController, private val 
                         farmerLink = farmerLink
                     )
                 }
-
                 _state.value = UIState(data = reviewCards)
             } else {
                 _state.value = UIState(message = "Error al intentar obtener las reseñas del asesor")

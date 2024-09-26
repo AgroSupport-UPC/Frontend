@@ -61,4 +61,8 @@ class AdvisorDetailViewModel(private val navController: NavController, private v
     fun goToReviewList(advisorId: Long) {
         navController.navigate(Routes.ReviewList.route + "/$advisorId")
     }
+
+    fun goToNewAppointment(advisorId: Long) {
+        navController.navigate(Routes.NewAppointment.route + "/$advisorId")
+    }
 }

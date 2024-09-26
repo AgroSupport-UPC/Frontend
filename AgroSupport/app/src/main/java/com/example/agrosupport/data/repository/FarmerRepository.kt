@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 class FarmerRepository(private val farmerService: FarmerService) {
     suspend fun searchFarmerByUserId(userId: Long, token: String): Resource<Farmer> = withContext(Dispatchers.IO) {
         if (token.isBlank()) {
-            return@withContext Resource.Error(message = "Token is required")
+            return@withContext Resource.Error(message = "Un token es requerido")
         }
         val bearerToken = "Bearer $token"
         val response = farmerService.getFarmerByUserId(userId, bearerToken)
@@ -19,14 +19,14 @@ class FarmerRepository(private val farmerService: FarmerService) {
                 val farmer = farmerDto.toFarmer()
                 return@withContext Resource.Success(farmer)
             }
-            return@withContext Resource.Error(message = "Farmer not found")
+            return@withContext Resource.Error(message = "No se encontró granjero")
         }
         return@withContext Resource.Error(response.message())
     }
 
     suspend fun searchFarmerByFarmerId(farmerId: Long, token: String): Resource<Farmer> = withContext(Dispatchers.IO) {
         if (token.isBlank()) {
-            return@withContext Resource.Error(message = "Token is required")
+            return@withContext Resource.Error(message = "Un token es requerido")
         }
         val bearerToken = "Bearer $token"
         val response = farmerService.getFarmer(farmerId, bearerToken)
@@ -35,7 +35,7 @@ class FarmerRepository(private val farmerService: FarmerService) {
                 val farmer = farmerDto.toFarmer()
                 return@withContext Resource.Success(farmer)
             }
-            return@withContext Resource.Error(message = "Farmer not found")
+            return@withContext Resource.Error(message = "No se encontró granjero")
         }
         return@withContext Resource.Error(response.message())
     }

@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 class ReviewRepository(private val reviewService: ReviewService) {
     suspend fun getAdvisorReviewsList(advisorId: Long, token: String): Resource<List<Review>> = withContext(Dispatchers.IO) {
         if (token.isBlank()) {
-            return@withContext Resource.Error(message = "Token is required")
+            return@withContext Resource.Error(message = "Un token es requerido")
         }
         val bearerToken = "Bearer $token"
         val response = reviewService.getReviewsByAdvisor(advisorId, bearerToken)
@@ -19,7 +19,7 @@ class ReviewRepository(private val reviewService: ReviewService) {
                 val reviews = reviewDtos.map { it.toReview() }
                 return@withContext Resource.Success(data = reviews)
             }
-            return@withContext Resource.Error(message = "Error while getting advisor reviews")
+            return@withContext Resource.Error(message = "Error al obtener lista de reseñas")
         }
         return@withContext Resource.Error(response.message())
     }
