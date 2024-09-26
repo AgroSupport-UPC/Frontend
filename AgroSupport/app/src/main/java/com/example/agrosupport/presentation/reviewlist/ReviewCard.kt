@@ -1,4 +1,4 @@
-package com.example.agrosupport.presentation
+package com.example.agrosupport.presentation.reviewlist
 
 data class ReviewCard (
     val id: Long,

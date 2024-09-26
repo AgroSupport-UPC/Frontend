@@ -1,4 +1,4 @@
-package com.example.agrosupport.presentation
+package com.example.agrosupport.presentation.advisorlist
 
 data class AdvisorCard(
     val id: Long,

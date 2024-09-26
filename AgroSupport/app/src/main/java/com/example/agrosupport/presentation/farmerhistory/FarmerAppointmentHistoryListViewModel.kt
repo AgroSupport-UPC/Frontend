@@ -1,4 +1,4 @@
-package com.example.agrosupport.presentation
+package com.example.agrosupport.presentation.farmerhistory
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.agrosupport.common.Constants
 import com.example.agrosupport.common.Resource
-import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
 import com.example.agrosupport.data.repository.AdvisorRepository
 import com.example.agrosupport.data.repository.AppointmentRepository
@@ -32,7 +31,6 @@ class FarmerAppointmentHistoryListViewModel(private val navController: NavContro
     fun getAdvisorAppointmentHistoryListByFarmer() {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            // Cambiar
             val farmerResult = farmerRepository.searchFarmerByUserId(Constants.EXAMPLE_USER_ID, Constants.EXAMPLE_TOKEN)
 
             if (farmerResult is Resource.Success && farmerResult.data != null) {

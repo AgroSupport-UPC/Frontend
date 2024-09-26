@@ -1,4 +1,4 @@
-package com.example.agrosupport.presentation
+package com.example.agrosupport.presentation.farmerhistory
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-
+import com.example.agrosupport.presentation.farmerappointments.AppointmentCard
 
 
 @Composable

@@ -1,4 +1,4 @@
-package com.example.agrosupport.presentation
+package com.example.agrosupport.presentation.reviewlist
 
 import android.widget.ImageView
 import androidx.compose.foundation.layout.Arrangement
@@ -121,10 +121,14 @@ fun ReviewCard(review: ReviewCard) {
                     }
                 },
                 update = { view ->
-                    Picasso.get()
-                        .load(review.farmerLink)
-                        .error(R.drawable.placeholder)
-                        .into(view)
+                    if (review.farmerLink.isEmpty()) {
+                        view.setImageResource(R.drawable.placeholder)
+                    } else {
+                        Picasso.get()
+                            .load(review.farmerLink)
+                            .error(R.drawable.placeholder)
+                            .into(view)
+                    }
                 }
             )
             Text(

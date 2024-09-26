@@ -1,4 +1,4 @@
-package com.example.agrosupport.presentation
+package com.example.agrosupport.presentation.reviewlist
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf

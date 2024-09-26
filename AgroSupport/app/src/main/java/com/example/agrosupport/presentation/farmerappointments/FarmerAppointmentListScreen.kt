@@ -1,7 +1,6 @@
-package com.example.agrosupport.presentation
+package com.example.agrosupport.presentation.farmerappointments
 
 import android.widget.ImageView
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,23 +34,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.navigation.compose.rememberNavController
 import com.example.agrosupport.R
-import com.example.agrosupport.common.Constants
-import com.example.agrosupport.data.remote.AdvisorService
-import com.example.agrosupport.data.remote.AppointmentService
-import com.example.agrosupport.data.remote.ProfileService
-import com.example.agrosupport.data.repository.AdvisorRepository
-import com.example.agrosupport.data.repository.AppointmentRepository
-import com.example.agrosupport.data.repository.ProfileRepository
+import com.example.agrosupport.presentation.farmerhistory.AdvisorAppointmentCard
 import com.squareup.picasso.Picasso
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {

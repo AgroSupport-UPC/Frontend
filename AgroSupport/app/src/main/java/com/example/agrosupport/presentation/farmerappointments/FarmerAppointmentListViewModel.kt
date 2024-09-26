@@ -1,4 +1,4 @@
-package com.example.agrosupport.presentation
+package com.example.agrosupport.presentation.farmerappointments
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +13,7 @@ import com.example.agrosupport.data.repository.AdvisorRepository
 import com.example.agrosupport.data.repository.AppointmentRepository
 import com.example.agrosupport.data.repository.FarmerRepository
 import com.example.agrosupport.data.repository.ProfileRepository
+import com.example.agrosupport.presentation.farmerhistory.AdvisorAppointmentCard
 import kotlinx.coroutines.launch
 
 class FarmerAppointmentListViewModel(private val navController: NavController,

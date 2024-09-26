@@ -12,9 +12,9 @@ interface AppointmentService {
     @GET("appointments")
     suspend fun getAllAppointments(@Header("Authorization") token: String): Response<List<AppointmentDto>>
 
-    @GET("appointments/farmer/{farmerId}")
+    @GET("appointments/{farmerId}/farmer")
     suspend fun getAppointmentsByFarmer(@Path("farmerId") farmerId: Long, @Header("Authorization") token: String): Response<List<AppointmentDto>>
 
-    @GET("appointments/advisor/{advisorId}/farmer/{farmerId}")
+    @GET("appointments/{advisorId}/advisor/{farmerId}/farmer")
     suspend fun getAppointmentsByAdvisorAndFarmer(@Path("advisorId") advisorId: Long, @Path("farmerId") farmerId: Long, @Header("Authorization") token: String): Response<List<AppointmentDto>>
 }

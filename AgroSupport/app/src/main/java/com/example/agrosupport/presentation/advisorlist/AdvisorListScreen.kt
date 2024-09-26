@@ -1,6 +1,5 @@
-package com.example.agrosupport.presentation
+package com.example.agrosupport.presentation.advisorlist
 
-import android.widget.ImageView
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,14 +27,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.squareup.picasso.Picasso
 import com.example.agrosupport.R
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun AdvisorListScreen(viewModel: AdvisorListViewModel) {
@@ -123,19 +122,15 @@ fun AdvisorCard(advisor: AdvisorCard, onClick: () -> Unit = {}) {
             modifier = Modifier.padding(8.dp).fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AndroidView(
+            GlideImage(
                 modifier = Modifier.size(128.dp).clip(CircleShape),
-                factory = { context ->
-                    ImageView(context).apply {
-                        scaleType = ImageView.ScaleType.CENTER_CROP
-                    }
+                imageModel = {
+                    advisor.link.ifBlank { R.drawable.placeholder }
                 },
-                update = { view ->
-                    Picasso.get()
-                        .load(advisor.link)
-                        .error(R.drawable.placeholder)
-                        .into(view)
-                }
+                imageOptions = ImageOptions(
+                    contentScale = ContentScale.Crop,
+                    alignment = Alignment.Center
+                )
             )
             Text(
                 text = advisor.name,

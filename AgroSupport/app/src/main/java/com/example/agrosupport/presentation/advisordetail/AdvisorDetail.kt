@@ -1,4 +1,4 @@
-package com.example.agrosupport.presentation
+package com.example.agrosupport.presentation.advisordetail
 
 data class AdvisorDetail (
     val id: Long,
