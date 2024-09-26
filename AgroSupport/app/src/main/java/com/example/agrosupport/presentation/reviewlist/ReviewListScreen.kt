@@ -2,8 +2,10 @@ package com.example.agrosupport.presentation.reviewlist
 
 import android.widget.ImageView
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,6 +18,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -61,35 +64,45 @@ fun ReviewListScreen(viewModel: ReviewListViewModel, advisorId: Long) {
                         contentDescription = "Go back"
                     )
                 }
-                Text(
-                    text = "Reseñas",
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Italic,
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Filter"
-                )
-            }
-            if (state.data.isNullOrEmpty()) {
-                Text(
-                    text = "No se encontraron reseñas para este asesor",
-                    modifier = Modifier.padding(top = 16.dp),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color(0xFF222B45),
-                    textAlign = TextAlign.Center
-                )
-            } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(1),
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.Center
                 ) {
-                    state.data.let {
-                        items(count = it.size, itemContent = { index ->
-                            ReviewCard(it[index])
-                        })
+                    Text(
+                        text = "Reseñas",
+                        fontFamily = FontFamily.SansSerif,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Italic,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+            }
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                if (state.data.isNullOrEmpty()) {
+                    Text(
+                        text = state.message.ifEmpty { "No hay reseñas sobre este asesor" },
+                        modifier = Modifier.padding(top = 16.dp).align(Alignment.CenterHorizontally),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color(0xFF222B45),
+                        textAlign = TextAlign.Center
+                    )
+                } else {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(1),
+                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+                    ) {
+                        state.data.let {
+                            items(count = it.size, itemContent = { index ->
+                                ReviewCard(it[index])
+                            })
+                        }
                     }
                 }
             }

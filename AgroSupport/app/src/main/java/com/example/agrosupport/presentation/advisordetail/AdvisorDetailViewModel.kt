@@ -47,13 +47,13 @@ class AdvisorDetailViewModel(private val navController: NavController, private v
                             _state.value = UIState(data = advisorDetail)
                         }
                     } else {
-                        _state.value = UIState(message = "Error while getting advisor profile")
+                        _state.value = UIState(message = "Error cargando la información del asesor")
                     }
                 } else {
-                    _state.value = UIState(message = "Advisor not found")
+                    _state.value = UIState(message = "Asesor no encontrado")
                 }
             } else {
-                _state.value = UIState(message = "Error while getting advisor")
+                _state.value = UIState(message = "Error obteniendo información del asesor")
             }
         }
     }

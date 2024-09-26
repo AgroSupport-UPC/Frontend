@@ -1,25 +1,18 @@
 package com.example.agrosupport.presentation.farmerappointments
 
-import android.widget.ImageView
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.History
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,16 +22,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import com.example.agrosupport.R
-import com.example.agrosupport.presentation.farmerhistory.AdvisorAppointmentCard
-import com.squareup.picasso.Picasso
+import com.example.agrosupport.presentation.farmerhistory.AppointmentCard
 
 @Composable
 fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
@@ -55,21 +45,17 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            // Encabezado con el botón de regreso y título
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Botón de regreso
                 IconButton(onClick = { viewModel.goBack() }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowBack,
                         contentDescription = "Go back"
                     )
                 }
-
-                // Título "Citas"
                 Text(
                     text = "Citas",
                     fontFamily = FontFamily.SansSerif,
@@ -77,16 +63,13 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
                     fontStyle = FontStyle.Italic,
                     style = MaterialTheme.typography.titleLarge
                 )
-
                 Row {
-
                     IconButton(onClick = { viewModel.goHistory() }) {
                         Icon(
                             imageVector = Icons.Outlined.History,
                             contentDescription = "Historial"
                         )
                     }
-
                     IconButton(onClick = {  }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
@@ -95,9 +78,6 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
                     }
                 }
             }
-
-
-            // Lista de citas
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -107,95 +87,29 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
                     items(count = appointments.size) { index ->
                         AppointmentCard(
                             appointment = appointments[index],
-
                         )
                     }
                 }
             }
-        }
-    }
-}
-
-
-@Composable
-fun AppointmentCard(appointment: AdvisorAppointmentCard) {
-    Card(
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White) // Establece el color de fondo blanco
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Imagen del asesor
-            AndroidView(
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape)
-                    .border(4.dp, Color.Gray, CircleShape), // Agrega un borde de 2.dp de color gris
-                factory = { context ->
-                    ImageView(context).apply {
-                        scaleType = ImageView.ScaleType.CENTER_CROP
-                    }
-                },
-                update = { imageView ->
-                    Picasso.get()
-                        .load(appointment.advisorPhoto)
-                        .error(R.drawable.placeholder)
-                        .into(imageView)
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
-            )
-
-
-            Spacer(modifier = Modifier.width(16.dp)) // Espacio entre la imagen y el texto
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.Start // Mantiene el contenido alineado a la izquierda
-            ) {
-                // Nombre del asesor
-                Text(
-                    text = appointment.advisorName,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Italic,
-                        color = Color(0xFF2B2B2B)
-                    ),
-                    modifier = Modifier
-                        .padding(bottom = 4.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
-
-                // Línea divisoria
-                Divider(
-                    color = Color.Black, // Línea negra
-                    thickness = 1.dp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 4.dp)
-
-                )
-
-                // Fecha y hora de la cita
-                Text(
-                    text = "${appointment.scheduledDate} (${appointment.startTime} - ${appointment.endTime})",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold, // Hora en negrita
-                        color = Color(0xFF06204A) // Color hexadecimal con 0xFF para opacidad completa
-                    ),
-                    modifier = Modifier
-                        .padding(top = 10.dp)
-                        .align(Alignment.CenterHorizontally)
-
-                )
+            } else {
+                if (state.data.isNullOrEmpty()) {
+                    Text(
+                        text = state.message.ifEmpty { "No hay citas programadas" },
+                        modifier = Modifier.padding(top = 16.dp)
+                            .align(Alignment.CenterHorizontally),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color(0xFF222B45),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
-
         }
     }
 }

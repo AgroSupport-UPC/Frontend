@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 class ReviewListViewModel(private val navController: NavController, private val reviewRepository: ReviewRepository,
                           private val profileRepository: ProfileRepository, val advisorRepository: AdvisorRepository,
-                          val farmerRepository: FarmerRepository): ViewModel() {
+                          private val farmerRepository: FarmerRepository): ViewModel() {
     private val _state = mutableStateOf(UIState<List<ReviewCard>>())
     val state: State<UIState<List<ReviewCard>>> get() = _state
 
@@ -28,52 +28,41 @@ class ReviewListViewModel(private val navController: NavController, private val 
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
             val result = reviewRepository.getAdvisorReviewsList(advisorId, Constants.EXAMPLE_TOKEN)
+
             if (result is Resource.Success) {
-                val reviews = result.data
-                if (reviews != null) {
-                    val reviewCards = mutableListOf<ReviewCard>()
-                    for (review in reviews) {
-                        val farmerResult = farmerRepository.searchFarmerByFarmerId(review.farmerId, Constants.EXAMPLE_TOKEN)
-                        if (farmerResult is Resource.Success) {
-                            val farmer = farmerResult.data
-                            if (farmer != null) {
-                                val farmerProfileResult = profileRepository.searchProfile(farmer.userId, Constants.EXAMPLE_TOKEN)
-                                if (farmerProfileResult is Resource.Success) {
-                                    val profile = farmerProfileResult.data
-                                    if (profile != null) {
-                                        reviewCards.add(
-                                            ReviewCard(
-                                                id = review.id,
-                                                farmerName = profile.firstName + " " + profile.lastName,
-                                                comment = review.comment,
-                                                rating = review.rating,
-                                                farmerLink = profile.photo
-                                            )
-                                        )
-                                    }
-                                    else {
-                                        reviewCards.add(
-                                            ReviewCard(
-                                                id = review.id,
-                                                farmerName = "Anónimo",
-                                                comment = review.comment,
-                                                rating = review.rating,
-                                                farmerLink = ""
-                                            )
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    _state.value = UIState(data = reviewCards)
-                } else {
-                    _state.value = UIState(message = "No reviews for this advisor found")
+                val reviews = result.data ?: run {
+                    _state.value = UIState(message = "No se encontraron reseñas para este asesor")
+                    return@launch
                 }
+
+                val reviewCards = reviews.map { review ->
+                    val farmerResult = farmerRepository.searchFarmerByFarmerId(review.farmerId, Constants.EXAMPLE_TOKEN)
+                    val farmerProfile = if (farmerResult is Resource.Success) {
+                        val farmer = farmerResult.data
+                        if (farmer != null) {
+                            val profileResult = profileRepository.searchProfile(farmer.userId, Constants.EXAMPLE_TOKEN)
+                            if (profileResult is Resource.Success) profileResult.data else null
+                        } else null
+                    } else null
+
+                    val farmerName = farmerProfile?.let { "${it.firstName} ${it.lastName}" } ?: "Anónimo"
+                    val farmerLink = farmerProfile?.photo ?: ""
+
+                    ReviewCard(
+                        id = review.id,
+                        farmerName = farmerName,
+                        comment = review.comment,
+                        rating = review.rating,
+                        farmerLink = farmerLink
+                    )
+                }
+
+                _state.value = UIState(data = reviewCards)
             } else {
-                _state.value = UIState(message = "Error while getting advisor reviews")
+                _state.value = UIState(message = "Error al intentar obtener las reseñas del asesor")
             }
         }
     }
+
 
 }

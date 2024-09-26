@@ -36,24 +36,17 @@ class FarmerAppointmentListViewModel(private val navController: NavController,
     fun getAdvisorAppointmentListByFarmer() {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            // Cambiar
             val farmerResult = farmerRepository.searchFarmerByUserId(Constants.EXAMPLE_USER_ID, Constants.EXAMPLE_TOKEN)
 
             if (farmerResult is Resource.Success && farmerResult.data != null) {
-
                 val farmerId = farmerResult.data.id // Si la búsqueda del granjero fue exitosa
-
-                val result = appointmentRepository.getAppointmentsByFarmer(farmerId, Constants.EXAMPLE_TOKEN) // Obtiene las citas del granjero
-
+                val result = appointmentRepository.getAppointmentsByFarmer(farmerId, Constants.EXAMPLE_TOKEN)
                 if (result is Resource.Success) {
                     val appointments = result.data?.filter { it.status == "PENDING" || it.status == "ONGOING" }
-
                     if (appointments != null) {
                         val advisorAppointmentCards = mutableListOf<AdvisorAppointmentCard>()
-
                         for (appointment in appointments) {
                             val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, Constants.EXAMPLE_TOKEN)
-
                             val advisorName = if (advisorResult is Resource.Success) {
                                 val advisor = advisorResult.data
                                 val profileResult = advisor?.userId?.let { userId ->
@@ -62,7 +55,6 @@ class FarmerAppointmentListViewModel(private val navController: NavController,
                                 if (profileResult is Resource.Success) {
                                     val profile = profileResult.data
                                     "${profile?.firstName ?: "Asesor"} ${profile?.lastName ?: "Desconocido"}"
-
                                 } else {
                                     "Asesor Desconocido"
                                 }
@@ -84,7 +76,6 @@ class FarmerAppointmentListViewModel(private val navController: NavController,
                             } else {
                                 "Asesor Desconocido"
                             }
-
                             advisorAppointmentCards.add(
                                 AdvisorAppointmentCard(
                                     id = appointment.id,
@@ -99,20 +90,16 @@ class FarmerAppointmentListViewModel(private val navController: NavController,
                                 )
                             )
                         }
-
-
                         _state.value = UIState(data = advisorAppointmentCards)
                     } else {
 
-                        _state.value = UIState(message = "No appointments found")
+                        _state.value = UIState(message = "No se encontraron citas")
                     }
                 } else if (result is Resource.Error) {
-
-                    _state.value = UIState(message = "Error retrieving appointments")
+                    _state.value = UIState(message = "Error al intentar obtener las citas")
                 }
             } else {
-
-                _state.value = UIState(message = "Error retrieving farmer")
+                _state.value = UIState(message = "Error al intentar obtener informacion del usuario")
             }
         }
     }
