@@ -3,7 +3,6 @@ package com.example.agrosupport.data.repository
 import com.example.agrosupport.data.remote.LoginService
 import com.example.agrosupport.data.remote.LoginRequestDto
 import com.example.agrosupport.data.remote.LoginResponseDto
-import com.example.agrosupport.data.remote.toLoginResponse
 import com.example.agrosupport.domain.LoginResponse
 import retrofit2.Call
 import retrofit2.Callback

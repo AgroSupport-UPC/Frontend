@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.agrosupport.common.Constants
+import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.data.repository.LoginRepository
 import kotlinx.coroutines.launch
@@ -23,7 +23,8 @@ class LoginViewModel(
             loginRepository.signIn(username, password) { result ->
                 result.onSuccess { loginResponse ->
                     // Almacenar el userId en Constants (o en SharedPreferences)
-                    Constants.EXAMPLE_USER_ID = loginResponse.id
+                    GlobalVariables.EXAMPLE_USER_ID = loginResponse.id
+                    GlobalVariables.EXAMPLE_TOKEN = loginResponse.token
                     // Navegación después de un inicio de sesión exitoso
                     goToFarmerScreen()
                 }.onFailure { exception ->

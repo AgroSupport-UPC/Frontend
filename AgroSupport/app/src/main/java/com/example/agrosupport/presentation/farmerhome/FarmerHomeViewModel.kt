@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
-import com.example.agrosupport.common.Constants
+import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
@@ -20,7 +20,7 @@ class FarmerHomeViewModel(private val navController: NavController, private val 
     fun getFarmerName(){
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val result = profileRepository.searchProfile(Constants.EXAMPLE_USER_ID, Constants.EXAMPLE_TOKEN)
+            val result = profileRepository.searchProfile(GlobalVariables.EXAMPLE_USER_ID, GlobalVariables.EXAMPLE_TOKEN)
             if(result is Resource.Success) {
                 _state.value = UIState(data = result.data)
             } else {
