@@ -22,6 +22,8 @@ import com.example.agrosupport.presentation.farmerhistory.FarmerAppointmentHisto
 import com.example.agrosupport.presentation.farmerhistory.FarmerAppointmentHistoryListViewModel
 import com.example.agrosupport.presentation.farmerhome.FarmerHomeScreen
 import com.example.agrosupport.presentation.farmerhome.FarmerHomeViewModel
+import com.example.agrosupport.presentation.forgotpassword.ForgotPasswordScreen
+import com.example.agrosupport.presentation.forgotpassword.ForgotPasswordViewModel
 import com.example.agrosupport.presentation.login.LoginScreen
 import com.example.agrosupport.presentation.login.LoginViewModel
 import com.example.agrosupport.presentation.newappointment.NewAppointmentScreen
@@ -92,6 +94,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val welcomeViewModel = WelcomeViewModel(navController)
                 val loginViewModel = LoginViewModel(navController, LoginRepository(loginService))
+                val forgotPasswordViewModel = ForgotPasswordViewModel(navController)
                 val farmerHomeViewModel = FarmerHomeViewModel(navController, ProfileRepository(profileService))
                 val advisorListViewModel = AdvisorListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
                 val advisorDetailViewModel = AdvisorDetailViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
@@ -106,6 +109,10 @@ class MainActivity : ComponentActivity() {
 
                     composable(route = Routes.SignIn.route) {
                         LoginScreen(viewModel = loginViewModel)
+                    }
+
+                    composable(route = Routes.ForgotPassword.route) {
+                        ForgotPasswordScreen(viewModel = forgotPasswordViewModel)
                     }
 
                     composable(route = Routes.FarmerHome.route) {

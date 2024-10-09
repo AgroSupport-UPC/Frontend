@@ -17,8 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.sharp.Email
@@ -111,7 +109,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
                     text = "¿Olvidaste tu contraseña?",
                     modifier = Modifier
                         .padding(end = 16.dp)
-                        .clickable { /* IR A FORGOT PASSWORD SCREEN */ },
+                        .clickable { viewModel.goToForgotPasswordScreen() },
                     color = Color.Black,
                     fontSize = 14.sp
                 )

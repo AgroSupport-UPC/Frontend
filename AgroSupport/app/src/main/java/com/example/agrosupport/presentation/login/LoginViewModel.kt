@@ -40,6 +40,10 @@ class LoginViewModel(
         _state.value = _state.value?.copy(message = "")
     }
 
+    fun goToForgotPasswordScreen() {
+        navController.navigate(Routes.ForgotPassword.route)
+    }
+
     private fun goToFarmerScreen() {
         navController.navigate(Routes.FarmerHome.route)
     }
