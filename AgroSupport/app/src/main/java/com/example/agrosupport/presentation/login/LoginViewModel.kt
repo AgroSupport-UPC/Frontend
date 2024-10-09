@@ -23,8 +23,8 @@ class LoginViewModel(
             loginRepository.signIn(username, password) { result ->
                 result.onSuccess { loginResponse ->
                     // Almacenar el userId en Constants (o en SharedPreferences)
-                    GlobalVariables.EXAMPLE_USER_ID = loginResponse.id
-                    GlobalVariables.EXAMPLE_TOKEN = loginResponse.token
+                    GlobalVariables.USER_ID = loginResponse.id
+                    GlobalVariables.TOKEN = loginResponse.token
                     // Navegación después de un inicio de sesión exitoso
                     goToFarmerScreen()
                 }.onFailure { exception ->

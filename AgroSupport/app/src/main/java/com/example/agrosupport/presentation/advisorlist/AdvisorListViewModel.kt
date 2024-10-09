@@ -35,14 +35,14 @@ class AdvisorListViewModel(private val navController: NavController, private val
     fun getAdvisorList() {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            when (val result = profileRepository.getAdvisorList(GlobalVariables.EXAMPLE_TOKEN)) {
+            when (val result = profileRepository.getAdvisorList(GlobalVariables.TOKEN)) {
                 is Resource.Success -> {
                     val profiles = result.data ?: run {
                         _state.value = UIState(message = "No se encontraron asesores")
                         return@launch
                     }
                     val advisorCards = profiles.map { profile ->
-                        val advisorResult = advisorRepository.searchAdvisorByUserId(profile.userId, GlobalVariables.EXAMPLE_TOKEN)
+                        val advisorResult = advisorRepository.searchAdvisorByUserId(profile.userId, GlobalVariables.TOKEN)
                         val advisorId = (advisorResult as? Resource.Success)?.data?.id ?: 0
                         val rating = (advisorResult as? Resource.Success)?.data?.rating ?: 0.0
 

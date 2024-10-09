@@ -27,7 +27,7 @@ class ReviewListViewModel(private val navController: NavController, private val 
     fun getAdvisorReviewList(advisorId: Long) {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val result = reviewRepository.getAdvisorReviewsList(advisorId, GlobalVariables.EXAMPLE_TOKEN)
+            val result = reviewRepository.getAdvisorReviewsList(advisorId, GlobalVariables.TOKEN)
 
             if (result is Resource.Success) {
                 val reviews = result.data ?: run {
@@ -36,11 +36,11 @@ class ReviewListViewModel(private val navController: NavController, private val 
                 }
 
                 val reviewCards = reviews.map { review ->
-                    val farmerResult = farmerRepository.searchFarmerByFarmerId(review.farmerId, GlobalVariables.EXAMPLE_TOKEN)
+                    val farmerResult = farmerRepository.searchFarmerByFarmerId(review.farmerId, GlobalVariables.TOKEN)
                     val farmerProfile = if (farmerResult is Resource.Success) {
                         val farmer = farmerResult.data
                         if (farmer != null) {
-                            val profileResult = profileRepository.searchProfile(farmer.userId, GlobalVariables.EXAMPLE_TOKEN)
+                            val profileResult = profileRepository.searchProfile(farmer.userId, GlobalVariables.TOKEN)
                             if (profileResult is Resource.Success) profileResult.data else null
                         } else null
                     } else null

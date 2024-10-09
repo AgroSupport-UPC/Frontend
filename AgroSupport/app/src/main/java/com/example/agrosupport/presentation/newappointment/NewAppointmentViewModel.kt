@@ -39,7 +39,7 @@ class NewAppointmentViewModel(private val navController: NavController,
     fun getAvailableDates(advisorId: Long) {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val result = availableDateRepository.getAvailableDatesByAdvisor(advisorId, GlobalVariables.EXAMPLE_TOKEN)
+            val result = availableDateRepository.getAvailableDatesByAdvisor(advisorId, GlobalVariables.TOKEN)
             if (result is Resource.Success) {
                 val availableDates = result.data ?: run {
                     _state.value = UIState(message = "No se encontraron fechas disponibles para este asesor")
@@ -67,7 +67,7 @@ class NewAppointmentViewModel(private val navController: NavController,
             )
             _state.value = UIState(isLoading = true)
             viewModelScope.launch {
-                val result = appointmentRepository.createAppointment(GlobalVariables.EXAMPLE_TOKEN, appointment)
+                val result = appointmentRepository.createAppointment(GlobalVariables.TOKEN, appointment)
                 if (result is Resource.Success) {
                     _state.value = UIState(data = emptyList())
                 } else {

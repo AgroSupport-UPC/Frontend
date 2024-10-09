@@ -27,11 +27,11 @@ class AdvisorDetailViewModel(private val navController: NavController, private v
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
             // obtener advisor user_id a partir de la ruta "AdvisorDetail/{userId}"
-            val result = advisorRepository.searchAdvisorByAdvisorId(advisorId, GlobalVariables.EXAMPLE_TOKEN)
+            val result = advisorRepository.searchAdvisorByAdvisorId(advisorId, GlobalVariables.TOKEN)
             if (result is Resource.Success) {
                 val advisor = result.data
                 if (advisor != null) {
-                    val profileResult = profileRepository.searchProfile(advisor.userId, GlobalVariables.EXAMPLE_TOKEN)
+                    val profileResult = profileRepository.searchProfile(advisor.userId, GlobalVariables.TOKEN)
                     if (profileResult is Resource.Success) {
                         val profile = profileResult.data
                         if (profile != null) {

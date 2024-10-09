@@ -36,21 +36,21 @@ class FarmerAppointmentListViewModel(private val navController: NavController,
     fun getAdvisorAppointmentListByFarmer() {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val farmerResult = farmerRepository.searchFarmerByUserId(GlobalVariables.EXAMPLE_USER_ID, GlobalVariables.EXAMPLE_TOKEN)
+            val farmerResult = farmerRepository.searchFarmerByUserId(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
 
             if (farmerResult is Resource.Success && farmerResult.data != null) {
                 val farmerId = farmerResult.data.id // Si la búsqueda del granjero fue exitosa
-                val result = appointmentRepository.getAppointmentsByFarmer(farmerId, GlobalVariables.EXAMPLE_TOKEN)
+                val result = appointmentRepository.getAppointmentsByFarmer(farmerId, GlobalVariables.TOKEN)
                 if (result is Resource.Success) {
                     val appointments = result.data?.filter { it.status == "PENDING" || it.status == "ONGOING" }
                     if (appointments != null) {
                         val advisorAppointmentCards = mutableListOf<AdvisorAppointmentCard>()
                         for (appointment in appointments) {
-                            val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, GlobalVariables.EXAMPLE_TOKEN)
+                            val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, GlobalVariables.TOKEN)
                             val advisorName = if (advisorResult is Resource.Success) {
                                 val advisor = advisorResult.data
                                 val profileResult = advisor?.userId?.let { userId ->
-                                    profileRepository.searchProfile(userId, GlobalVariables.EXAMPLE_TOKEN)
+                                    profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
                                 }
                                 if (profileResult is Resource.Success) {
                                     val profile = profileResult.data
@@ -65,7 +65,7 @@ class FarmerAppointmentListViewModel(private val navController: NavController,
                             val advisorPhoto = if (advisorResult is Resource.Success) {
                                 val advisor = advisorResult.data
                                 val profileResult = advisor?.userId?.let { userId ->
-                                    profileRepository.searchProfile(userId, GlobalVariables.EXAMPLE_TOKEN)
+                                    profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
                                 }
                                 if (profileResult is Resource.Success) {
                                     val profile = profileResult.data

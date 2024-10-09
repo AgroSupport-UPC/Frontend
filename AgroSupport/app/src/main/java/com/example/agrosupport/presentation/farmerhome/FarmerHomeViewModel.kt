@@ -20,7 +20,7 @@ class FarmerHomeViewModel(private val navController: NavController, private val 
     fun getFarmerName(){
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val result = profileRepository.searchProfile(GlobalVariables.EXAMPLE_USER_ID, GlobalVariables.EXAMPLE_TOKEN)
+            val result = profileRepository.searchProfile(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
             if(result is Resource.Success) {
                 _state.value = UIState(data = result.data)
             } else {
