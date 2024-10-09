@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
-import com.example.agrosupport.common.Constants
+import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
@@ -35,14 +35,14 @@ class AdvisorListViewModel(private val navController: NavController, private val
     fun getAdvisorList() {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            when (val result = profileRepository.getAdvisorList(Constants.EXAMPLE_TOKEN)) {
+            when (val result = profileRepository.getAdvisorList(GlobalVariables.EXAMPLE_TOKEN)) {
                 is Resource.Success -> {
                     val profiles = result.data ?: run {
                         _state.value = UIState(message = "No se encontraron asesores")
                         return@launch
                     }
                     val advisorCards = profiles.map { profile ->
-                        val advisorResult = advisorRepository.searchAdvisorByUserId(profile.userId, Constants.EXAMPLE_TOKEN)
+                        val advisorResult = advisorRepository.searchAdvisorByUserId(profile.userId, GlobalVariables.EXAMPLE_TOKEN)
                         val advisorId = (advisorResult as? Resource.Success)?.data?.id ?: 0
                         val rating = (advisorResult as? Resource.Success)?.data?.rating ?: 0.0
 

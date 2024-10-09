@@ -22,16 +22,27 @@ import com.example.agrosupport.presentation.farmerhistory.FarmerAppointmentHisto
 import com.example.agrosupport.presentation.farmerhistory.FarmerAppointmentHistoryListViewModel
 import com.example.agrosupport.presentation.farmerhome.FarmerHomeScreen
 import com.example.agrosupport.presentation.farmerhome.FarmerHomeViewModel
+import com.example.agrosupport.presentation.login.LoginScreen
+import com.example.agrosupport.presentation.login.LoginViewModel
 import com.example.agrosupport.presentation.newappointment.NewAppointmentScreen
 import com.example.agrosupport.presentation.newappointment.NewAppointmentViewModel
 import com.example.agrosupport.presentation.reviewlist.ReviewListScreen
 import com.example.agrosupport.presentation.reviewlist.ReviewListViewModel
+import com.example.agrosupport.presentation.welcomesection.WelcomeScreen
+import com.example.agrosupport.presentation.welcomesection.WelcomeViewModel
 import com.example.agrosupport.ui.theme.AgroSupportTheme
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val loginService = Retrofit
+            .Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(LoginService::class.java)
+
         val profileService = Retrofit
             .Builder()
             .baseUrl(Constants.BASE_URL)
@@ -79,6 +90,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             AgroSupportTheme {
                 val navController = rememberNavController()
+                val welcomeViewModel = WelcomeViewModel(navController)
+                val loginViewModel = LoginViewModel(navController, LoginRepository(loginService))
                 val farmerHomeViewModel = FarmerHomeViewModel(navController, ProfileRepository(profileService))
                 val advisorListViewModel = AdvisorListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
                 val advisorDetailViewModel = AdvisorDetailViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
@@ -86,7 +99,15 @@ class MainActivity : ComponentActivity() {
                 val reviewListViewModel = ReviewListViewModel(navController, ReviewRepository(reviewService), ProfileRepository(profileService), AdvisorRepository(advisorService), FarmerRepository(farmerService))
                 val farmerAppointmentListViewModel = FarmerAppointmentListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val farmerAppointmentHistoryListViewModel = FarmerAppointmentHistoryListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
-                NavHost(navController = navController, startDestination = Routes.FarmerHome.route) {
+                NavHost(navController = navController, startDestination = Routes.Welcome.route) {
+                    composable(route = Routes.Welcome.route) {
+                        WelcomeScreen(viewModel = welcomeViewModel)
+                    }
+
+                    composable(route = Routes.SignIn.route) {
+                        LoginScreen(viewModel = loginViewModel)
+                    }
+
                     composable(route = Routes.FarmerHome.route) {
                         FarmerHomeScreen(viewModel = farmerHomeViewModel)
                     }

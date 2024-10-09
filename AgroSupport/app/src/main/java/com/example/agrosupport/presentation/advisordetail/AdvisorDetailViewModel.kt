@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.agrosupport.common.Constants
+import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
@@ -27,11 +27,11 @@ class AdvisorDetailViewModel(private val navController: NavController, private v
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
             // obtener advisor user_id a partir de la ruta "AdvisorDetail/{userId}"
-            val result = advisorRepository.searchAdvisorByAdvisorId(advisorId, Constants.EXAMPLE_TOKEN)
+            val result = advisorRepository.searchAdvisorByAdvisorId(advisorId, GlobalVariables.EXAMPLE_TOKEN)
             if (result is Resource.Success) {
                 val advisor = result.data
                 if (advisor != null) {
-                    val profileResult = profileRepository.searchProfile(advisor.userId, Constants.EXAMPLE_TOKEN)
+                    val profileResult = profileRepository.searchProfile(advisor.userId, GlobalVariables.EXAMPLE_TOKEN)
                     if (profileResult is Resource.Success) {
                         val profile = profileResult.data
                         if (profile != null) {
