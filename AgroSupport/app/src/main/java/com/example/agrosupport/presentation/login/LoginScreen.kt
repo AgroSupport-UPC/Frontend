@@ -19,6 +19,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.sharp.Email
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -191,9 +193,9 @@ fun PasswordTextField(password: String, onPasswordChange: (String) -> Unit) {
         trailingIcon = {
             Icon(
                 imageVector = if (showPassword) {
-                    Icons.Filled.Favorite
+                    Icons.Filled.VisibilityOff
                 } else {
-                    Icons.Filled.FavoriteBorder
+                    Icons.Filled.Visibility
                 },
                 contentDescription = "Toggle password visibility",
                 modifier = Modifier
