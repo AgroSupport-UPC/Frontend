@@ -23,6 +23,7 @@ import androidx.compose.material.icons.sharp.Email
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -31,21 +32,23 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.example.agrosupport.R
+import com.example.agrosupport.common.UIState
+
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
-    val errorMessage by viewModel.errorMessage.observeAsState()
+    val state by viewModel.state.observeAsState(UIState())
     val snackbarHostState = remember { SnackbarHostState() }
     var emailState by rememberSaveable { mutableStateOf("") }
     var passwordState by rememberSaveable { mutableStateOf("") }
 
-    // Efecto para mostrar el Snackbar
-    LaunchedEffect(errorMessage) {
-        errorMessage?.let {
-            snackbarHostState.showSnackbar(it)
-            viewModel.clearError() // Limpiar el mensaje después de mostrar
+    LaunchedEffect(state.message) {
+        if (state.message.isNotEmpty()) {
+            snackbarHostState.showSnackbar(state.message)
+            viewModel.clearError()
         }
     }
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
@@ -114,7 +117,9 @@ fun LoginScreen(viewModel: LoginViewModel) {
 
             Button(
                 onClick = { viewModel.signIn(emailState, passwordState) },
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 colors = ButtonDefaults.buttonColors(Color(0xFF092C4C))
             ) {
                 Text(text = "Iniciar Sesión", color = Color.White)
@@ -147,6 +152,17 @@ fun LoginScreen(viewModel: LoginViewModel) {
                     textAlign = TextAlign.Center
                 )
             )
+
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
         }
     }
 }

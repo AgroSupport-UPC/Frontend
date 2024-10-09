@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Routes
+import com.example.agrosupport.common.UIState
 import com.example.agrosupport.data.repository.LoginRepository
 import kotlinx.coroutines.launch
 
@@ -15,36 +16,31 @@ class LoginViewModel(
     private val loginRepository: LoginRepository
 ) : ViewModel() {
 
-    private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+    private val _state = MutableLiveData<UIState<Unit>>(UIState())
+    val state: LiveData<UIState<Unit>> get() = _state
 
     fun signIn(username: String, password: String) {
+        _state.value = UIState(isLoading = true)
         viewModelScope.launch {
             loginRepository.signIn(username, password) { result ->
                 result.onSuccess { loginResponse ->
-                    // Almacenar el userId en Constants (o en SharedPreferences)
                     GlobalVariables.USER_ID = loginResponse.id
                     GlobalVariables.TOKEN = loginResponse.token
-                    // Navegación después de un inicio de sesión exitoso
+                    _state.value = UIState(data = Unit)
                     goToFarmerScreen()
                 }.onFailure { exception ->
-                    // Manejo de error
                     val message = exception.message ?: "Error desconocido"
-                    showError("Correo y/o contraseña incorrectos / $message")
+                    _state.value = UIState(message = "Correo y/o contraseña incorrectos / $message")
                 }
             }
         }
     }
 
+    fun clearError() {
+        _state.value = _state.value?.copy(message = "")
+    }
+
     private fun goToFarmerScreen() {
         navController.navigate(Routes.FarmerHome.route)
-    }
-
-    private fun showError(message: String) {
-        _errorMessage.value = message
-    }
-
-    fun clearError() {
-        _errorMessage.value = null
     }
 }
