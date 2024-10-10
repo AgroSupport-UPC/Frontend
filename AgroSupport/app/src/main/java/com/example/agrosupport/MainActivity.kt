@@ -28,6 +28,8 @@ import com.example.agrosupport.presentation.login.LoginScreen
 import com.example.agrosupport.presentation.login.LoginViewModel
 import com.example.agrosupport.presentation.newappointment.NewAppointmentScreen
 import com.example.agrosupport.presentation.newappointment.NewAppointmentViewModel
+import com.example.agrosupport.presentation.restorepassword.RestorePasswordScreen
+import com.example.agrosupport.presentation.restorepassword.RestorePasswordViewModel
 import com.example.agrosupport.presentation.reviewlist.ReviewListScreen
 import com.example.agrosupport.presentation.reviewlist.ReviewListViewModel
 import com.example.agrosupport.presentation.welcomesection.WelcomeScreen
@@ -96,6 +98,7 @@ class MainActivity : ComponentActivity() {
                 val loginViewModel = LoginViewModel(navController, LoginRepository(loginService))
                 val forgotPasswordViewModel = ForgotPasswordViewModel(navController)
                 val farmerHomeViewModel = FarmerHomeViewModel(navController, ProfileRepository(profileService))
+                val restorePasswordViewModel = RestorePasswordViewModel(navController)
                 val advisorListViewModel = AdvisorListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
                 val advisorDetailViewModel = AdvisorDetailViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
                 val newAppointmentViewModel = NewAppointmentViewModel(navController, AvailableDateRepository(availableDateService), AppointmentRepository(appointmentService))
@@ -113,6 +116,10 @@ class MainActivity : ComponentActivity() {
 
                     composable(route = Routes.ForgotPassword.route) {
                         ForgotPasswordScreen(viewModel = forgotPasswordViewModel)
+                    }
+
+                    composable(route = Routes.RestorePassword.route) {
+                        RestorePasswordScreen(viewModel = restorePasswordViewModel)
                     }
 
                     composable(route = Routes.FarmerHome.route) {
