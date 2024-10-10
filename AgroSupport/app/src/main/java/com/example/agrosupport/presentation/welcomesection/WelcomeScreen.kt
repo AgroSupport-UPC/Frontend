@@ -24,8 +24,6 @@ import androidx.compose.ui.unit.sp
 
 import com.example.agrosupport.R
 
-
-
 @Composable
 fun WelcomeScreen(viewModel: WelcomeViewModel) {
     Scaffold(

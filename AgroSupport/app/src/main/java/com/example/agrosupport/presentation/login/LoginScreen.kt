@@ -52,120 +52,133 @@ fun LoginScreen(viewModel: LoginViewModel) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Image(
-                bitmap = ImageBitmap.imageResource(id = R.drawable.starheader),
-                contentDescription = "Header star Image",
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.15f),
-                contentScale = ContentScale.FillBounds
-            )
+                    .fillMaxSize()
+                    .padding(bottom = 64.dp) // Espacio para el botón de inicio de sesión
+            ) {
+                Image(
+                    bitmap = ImageBitmap.imageResource(id = R.drawable.starheader),
+                    contentDescription = "Header star Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.15f),
+                    contentScale = ContentScale.FillBounds
+                )
 
-            Text(
-                text = "Iniciar Sesión",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 30.sp
-                ),
-                textAlign = TextAlign.Left
-            )
+                Text(
+                    text = "Iniciar Sesión",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp
+                    ),
+                    textAlign = TextAlign.Left
+                )
 
-            // TextField para correo electrónico
-            TextField(
-                value = emailState,
-                onValueChange = { emailState = it },
-                label = { Text("Correo electrónico") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .background(Color.White, shape = RoundedCornerShape(10.dp)),
-                singleLine = true,
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Sharp.Email,
-                        contentDescription = "Email"
+                // TextField para correo electrónico
+                TextField(
+                    value = emailState,
+                    onValueChange = { emailState = it },
+                    label = { Text("Correo electrónico") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .background(Color.White, shape = RoundedCornerShape(10.dp)),
+                    singleLine = true,
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Sharp.Email,
+                            contentDescription = "Email"
+                        )
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // TextField para contraseña
+                PasswordTextField(passwordState) { passwordState = it }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Text(
+                        text = "¿Olvidaste tu contraseña?",
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .clickable { viewModel.goToForgotPasswordScreen() },
+                        color = Color.Black,
+                        fontSize = 14.sp
                     )
                 }
-            )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // TextField para contraseña
-            PasswordTextField(passwordState) { passwordState = it }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Text(
-                    text = "¿Olvidaste tu contraseña?",
+                Button(
+                    onClick = { viewModel.signIn(emailState, passwordState) },
                     modifier = Modifier
-                        .padding(end = 16.dp)
-                        .clickable { viewModel.goToForgotPasswordScreen() },
-                    color = Color.Black,
-                    fontSize = 14.sp
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF092C4C))
+                ) {
+                    Text(text = "Iniciar Sesión", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                // Texto clickable
+                val text = buildAnnotatedString {
+                    append("¿No tienes cuenta ")
+                    pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                    append("Crea tu cuenta")
+                    pop()
+                }
+
+                ClickableText(
+                    text = text,
+                    onClick = {
+                        val startIndex = text.indexOf("Crea tu cuenta")
+                        val endIndex = startIndex + "Crea tu cuenta".length
+
+                        // IR A REGISTER SCREEN
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.Black,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center
+                    )
                 )
             }
 
-            Button(
-                onClick = { viewModel.signIn(emailState, passwordState) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                colors = ButtonDefaults.buttonColors(Color(0xFF092C4C))
-            ) {
-                Text(text = "Iniciar Sesión", color = Color.White)
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Texto clickable
-            val text = buildAnnotatedString {
-                append("¿No tienes cuenta ")
-                pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
-                append("Crea tu cuenta")
-                pop()
-            }
-
-            ClickableText(
-                text = text,
-                onClick = {
-                    val startIndex = text.indexOf("Crea tu cuenta")
-                    val endIndex = startIndex + "Crea tu cuenta".length
-
-                    // IR A REGISTER SCREEN
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Color.Black,
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.Center
-                )
-            )
-
+            // CircularProgressIndicator centrado
             if (state.isLoading) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.5f)),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
+                    // Fondo medio transparente
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.5f))
+                    )
                     CircularProgressIndicator()
                 }
             }
+
         }
     }
 }
+
 
 
 
