@@ -1,6 +1,7 @@
 package com.example.agrosupport.presentation.farmerhistory
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,11 +42,15 @@ data class AdvisorAppointmentCard(
 )
 
 @Composable
-fun AppointmentCard(appointment: AdvisorAppointmentCard) {
+fun AppointmentCard(appointment: AdvisorAppointmentCard, onClick: ((Long) -> Unit)? = null) {
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .then(
+                if (onClick != null) Modifier.clickable { onClick(appointment.id) } else Modifier // Hacer clickeable solo si onClick no es nulo
+            )
+            ,
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
