@@ -18,6 +18,8 @@ import com.example.agrosupport.presentation.advisordetail.AdvisorDetailScreen
 import com.example.agrosupport.presentation.advisordetail.AdvisorDetailViewModel
 import com.example.agrosupport.presentation.advisorlist.AdvisorListScreen
 import com.example.agrosupport.presentation.advisorlist.AdvisorListViewModel
+import com.example.agrosupport.presentation.appointmentdetails.FarmerAppointmentDetailScreen
+import com.example.agrosupport.presentation.appointmentdetails.FarmerAppointmentDetailViewModel
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListScreen
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListViewModel
 import com.example.agrosupport.presentation.farmerhistory.FarmerAppointmentHistoryListScreen
@@ -95,6 +97,13 @@ class MainActivity : ComponentActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(AvailableDateService::class.java)
+        val loginService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(LoginService::class.java)
+        val profileService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(ProfileService::class.java)
+        val advisorService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AdvisorService::class.java)
+        val farmerService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(FarmerService::class.java)
+        val reviewService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(ReviewService::class.java)
+        val appointmentService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AppointmentService::class.java)
+        val availableDateService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AvailableDateService::class.java)
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -112,11 +121,12 @@ class MainActivity : ComponentActivity() {
                 val reviewListViewModel = ReviewListViewModel(navController, ReviewRepository(reviewService), ProfileRepository(profileService), AdvisorRepository(advisorService), FarmerRepository(farmerService))
                 val farmerAppointmentListViewModel = FarmerAppointmentListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val farmerAppointmentHistoryListViewModel = FarmerAppointmentHistoryListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
-                NavHost(navController = navController, startDestination = Routes.Welcome.route) {
+                val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService))
+
+                NavHost(navController = navController, startDestination = Routes.FarmerHome.route) {
                     composable(route = Routes.Welcome.route) {
                         WelcomeScreen(viewModel = welcomeViewModel)
                     }
-
                     composable(route = Routes.SignIn.route) {
                         LoginScreen(viewModel = loginViewModel)
                     }
@@ -143,20 +153,20 @@ class MainActivity : ComponentActivity() {
                         val advisorId = it.arguments?.getString("advisorId")?.toLong() ?: 0
                         ReviewListScreen(viewModel = reviewListViewModel, advisorId = advisorId)
                     }
-
                     composable(route = Routes.NewAppointment.route + "/{advisorId}") {
                         val advisorId = it.arguments?.getString("advisorId")?.toLong() ?: 0
                         NewAppointmentScreen(viewModel = newAppointmentViewModel, advisorId = advisorId)
                     }
-
                     composable(route = Routes.FarmerAppointmentList.route) {
                         FarmerAppointmentListScreen(viewModel = farmerAppointmentListViewModel)
                     }
-
                     composable(route = Routes.FarmerAppointmentHistory.route) {
                         FarmerAppointmentHistoryListScreen(viewModel = farmerAppointmentHistoryListViewModel)
                     }
-
+                    composable(route = Routes.FarmerAppointmentDetail.route + "/{appointmentId}") {
+                        val appointmentId = it.arguments?.getString("appointmentId")?.toLong() ?: 0
+                        FarmerAppointmentDetailScreen(viewModel = farmerAppointmentDetailViewModel, appointmentId = appointmentId)
+                    }
                 }
             }
         }
