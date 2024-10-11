@@ -1,43 +1,67 @@
 package com.example.agrosupport.presentation.login
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.agrosupport.common.GlobalVariables
+import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.repository.LoginRepository
+import com.example.agrosupport.data.repository.AuthenticationRepository
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val navController: NavController,
-    private val loginRepository: LoginRepository
+    private val authenticationRepository: AuthenticationRepository
 ) : ViewModel() {
 
-    private val _state = MutableLiveData<UIState<Unit>>(UIState())
-    val state: LiveData<UIState<Unit>> get() = _state
+    private val _state = mutableStateOf(UIState<Unit>())
+    val state: State<UIState<Unit>> get() = _state
 
-    fun signIn(username: String, password: String) {
+    private val _email = mutableStateOf("")
+    val email: State<String> get() = _email
+
+    private val _password = mutableStateOf("")
+    val password: State<String> get() = _password
+
+    private val _isPasswordVisible = mutableStateOf(false)
+    val isPasswordVisible: State<Boolean> get() = _isPasswordVisible
+
+    fun signIn() {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            loginRepository.signIn(username, password) { result ->
-                result.onSuccess { loginResponse ->
-                    GlobalVariables.USER_ID = loginResponse.id
-                    GlobalVariables.TOKEN = loginResponse.token
-                    _state.value = UIState(data = Unit)
-                    goToFarmerScreen()
-                }.onFailure { exception ->
-                    val message = exception.message ?: "Error desconocido"
-                    _state.value = UIState(message = "Correo y/o contraseña incorrectos / $message")
+            when (val result = authenticationRepository.signIn(_email.value, _password.value)) {
+                is Resource.Success -> {
+                    GlobalVariables.TOKEN = result.data?.token ?: ""
+                    GlobalVariables.USER_ID = result.data?.id ?: 0
+
+                    _state.value = UIState(isLoading = false)
+
+                    if (GlobalVariables.TOKEN.isNotBlank() && GlobalVariables.USER_ID != 0L) {
+                        goToFarmerScreen()
+                    } else {
+                        _state.value = UIState(message = "Error al iniciar sesión")
+                    }
+                }
+                is Resource.Error -> {
+                    _state.value = UIState(message = result.message.toString())
                 }
             }
         }
     }
 
     fun clearError() {
-        _state.value = _state.value?.copy(message = "")
+        _state.value = UIState(message = "")
+    }
+
+    fun setEmail(email: String) {
+        _email.value = email
+    }
+
+    fun setPassword(password: String) {
+        _password.value = password
     }
 
     fun goToForgotPasswordScreen() {
@@ -46,5 +70,9 @@ class LoginViewModel(
 
     private fun goToFarmerScreen() {
         navController.navigate(Routes.FarmerHome.route)
+    }
+
+    fun togglePasswordVisibility() {
+        _isPasswordVisible.value = !_isPasswordVisible.value
     }
 }

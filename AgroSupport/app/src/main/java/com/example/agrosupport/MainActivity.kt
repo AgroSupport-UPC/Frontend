@@ -40,12 +40,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        val loginService = Retrofit
+        val authenticationService = Retrofit
             .Builder()
             .baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(LoginService::class.java)
+            .create(AuthenticationService::class.java)
 
         val profileService = Retrofit
             .Builder()
@@ -95,7 +95,7 @@ class MainActivity : ComponentActivity() {
             AgroSupportTheme {
                 val navController = rememberNavController()
                 val welcomeViewModel = WelcomeViewModel(navController)
-                val loginViewModel = LoginViewModel(navController, LoginRepository(loginService))
+                val loginViewModel = LoginViewModel(navController, AuthenticationRepository(authenticationService))
                 val forgotPasswordViewModel = ForgotPasswordViewModel(navController)
                 val farmerHomeViewModel = FarmerHomeViewModel(navController, ProfileRepository(profileService))
                 val restorePasswordViewModel = RestorePasswordViewModel(navController)

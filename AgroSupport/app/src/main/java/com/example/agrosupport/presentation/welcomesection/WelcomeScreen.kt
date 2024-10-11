@@ -41,7 +41,7 @@ fun WelcomeScreen(viewModel: WelcomeViewModel) {
                 contentDescription = "Welcome image",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.5f), // 50% de la pantalla
+                    .fillMaxHeight(0.5f),
                 contentScale = ContentScale.FillBounds
             )
 
@@ -50,28 +50,26 @@ fun WelcomeScreen(viewModel: WelcomeViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontWeight = FontWeight.Bold, // Negrita
-                    fontSize = 32.sp // Tamaño 32px
-                ),
-                textAlign = TextAlign.Center // Centrado
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                lineHeight = 40.sp
             )
 
-            // Segundo texto centrado y tamaño 17px
             Text(
-                text = "Tu Aliado en la Agricultura: Asesoría y Tecnología para crecer con confianza",
+                text = "Tu aliado en la Agricultura: Asesoría y Tecnología para crecer con confianza",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontSize = 17.sp // Tamaño 17px
-                ),
-                textAlign = TextAlign.Center // Centrado
+                    .padding(horizontal = 24.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF544C4C),
+                fontSize = 17.sp,
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Botones en columna
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -83,7 +81,7 @@ fun WelcomeScreen(viewModel: WelcomeViewModel) {
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(Color(0xFF092C4C))
                 ) {
-                    Text(text = "Iniciar Sesión", color = Color.White)
+                    Text(text = "Iniciar sesión", color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))

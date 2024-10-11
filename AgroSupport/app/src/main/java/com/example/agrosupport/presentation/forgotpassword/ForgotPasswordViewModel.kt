@@ -1,7 +1,7 @@
 package com.example.agrosupport.presentation.forgotpassword
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.agrosupport.common.Routes
@@ -11,11 +11,14 @@ class ForgotPasswordViewModel(
     private val navController: NavController
 ) : ViewModel() {
 
-    private val _state = MutableLiveData<UIState<Unit>>(UIState())
-    val state: LiveData<UIState<Unit>> get() = _state
+    private val _state = mutableStateOf(UIState<Unit>())
+    val state: State<UIState<Unit>> get() = _state
 
-    fun validateEmail(email: String) {
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+    private val _email = mutableStateOf("")
+    val email: State<String> get() = _email
+
+    fun validateEmail() {
+        if (_email.value.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(_email.value).matches()) {
             _state.value = UIState(message = "Correo electrónico no válido")
         } else {
             _state.value = UIState(isLoading = true)
@@ -24,7 +27,11 @@ class ForgotPasswordViewModel(
     }
 
     fun clearError() {
-        _state.value = _state.value?.copy(message = "")
+        _state.value = UIState(message = "")
+    }
+
+    fun setEmail(email: String) {
+        _email.value = email
     }
 
     private fun goToRestorePasswordScreen() {

@@ -4,7 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.data.remote.AppointmentService
-import com.example.agrosupport.data.remote.CreateAppointment
+import com.example.agrosupport.domain.CreateAppointment
 import com.example.agrosupport.data.remote.toAppointment
 import com.example.agrosupport.domain.Appointment
 

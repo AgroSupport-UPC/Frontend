@@ -14,15 +14,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.sharp.Email
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
@@ -30,17 +26,17 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import com.example.agrosupport.R
-import com.example.agrosupport.common.UIState
 
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
-    val state by viewModel.state.observeAsState(UIState())
+    val state = viewModel.state.value
     val snackbarHostState = remember { SnackbarHostState() }
-    var emailState by rememberSaveable { mutableStateOf("") }
-    var passwordState by rememberSaveable { mutableStateOf("") }
+    val email = viewModel.email.value
+    val password = viewModel.password.value
 
     LaunchedEffect(state.message) {
         if (state.message.isNotEmpty()) {
@@ -60,7 +56,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 64.dp) // Espacio para el botón de inicio de sesión
+                    .padding(bottom = 64.dp)
             ) {
                 Image(
                     bitmap = ImageBitmap.imageResource(id = R.drawable.starheader),
@@ -72,7 +68,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
                 )
 
                 Text(
-                    text = "Iniciar Sesión",
+                    text = "Iniciar sesión",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
@@ -83,10 +79,9 @@ fun LoginScreen(viewModel: LoginViewModel) {
                     textAlign = TextAlign.Left
                 )
 
-                // TextField para correo electrónico
                 TextField(
-                    value = emailState,
-                    onValueChange = { emailState = it },
+                    value = email,
+                    onValueChange = { viewModel.setEmail(it) },
                     label = { Text("Correo electrónico") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -103,8 +98,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // TextField para contraseña
-                PasswordTextField(passwordState) { passwordState = it }
+                PasswordTextField(password, viewModel)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -121,56 +115,42 @@ fun LoginScreen(viewModel: LoginViewModel) {
                 }
 
                 Button(
-                    onClick = { viewModel.signIn(emailState, passwordState) },
+                    onClick = { viewModel.signIn() },
+                    enabled = email.isNotEmpty() && password.isNotEmpty(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
                     colors = ButtonDefaults.buttonColors(Color(0xFF092C4C))
                 ) {
-                    Text(text = "Iniciar Sesión", color = Color.White)
+                    Text(text = "Iniciar sesión", color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Texto clickable
-                val text = buildAnnotatedString {
-                    append("¿No tienes cuenta ")
-                    pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
-                    append("Crea tu cuenta")
-                    pop()
-                }
-
-                ClickableText(
-                    text = text,
-                    onClick = {
-                        val startIndex = text.indexOf("Crea tu cuenta")
-                        val endIndex = startIndex + "Crea tu cuenta".length
-
-                        // IR A REGISTER SCREEN
+                Text(
+                    text = buildAnnotatedString {
+                        append("¿No tienes cuenta? ")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append("Crea tu cuenta")
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        color = Color.Black,
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center
-                    )
+                        .padding(16.dp)
+                        .clickable {
+                            viewModel.goToForgotPasswordScreen()
+                        },
+                    color = Color.Black,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center
                 )
-            }
 
-            // CircularProgressIndicator centrado
+            }
             if (state.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Fondo medio transparente
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.5f))
-                    )
                     CircularProgressIndicator()
                 }
             }
@@ -179,17 +159,14 @@ fun LoginScreen(viewModel: LoginViewModel) {
     }
 }
 
-
-
-
 @Composable
-fun PasswordTextField(password: String, onPasswordChange: (String) -> Unit) {
-    var showPassword by remember { mutableStateOf(false) }
+fun PasswordTextField(password: String, viewModel: LoginViewModel) {
+    val showPassword = viewModel.isPasswordVisible.value
     val passwordVisualTransformation = remember { PasswordVisualTransformation() }
 
     TextField(
         value = password,
-        onValueChange = { onPasswordChange(it) },
+        onValueChange = { viewModel.setPassword(it) },
         label = { Text("Contraseña") },
         visualTransformation = if (showPassword) {
             VisualTransformation.None
@@ -210,7 +187,7 @@ fun PasswordTextField(password: String, onPasswordChange: (String) -> Unit) {
                 },
                 contentDescription = "Toggle password visibility",
                 modifier = Modifier
-                    .clickable { showPassword = !showPassword }
+                    .clickable { viewModel.togglePasswordVisibility() }
             )
         }
     )

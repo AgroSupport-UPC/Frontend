@@ -31,25 +31,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.agrosupport.R
 
 @Composable
 fun RestorePasswordScreen(viewModel: RestorePasswordViewModel) {
+    val newPassword = viewModel.newPassword.value
+    val confirmPassword = viewModel.confirmPassword.value
+    val showNewPassword = viewModel.isNewPasswordVisible.value
+    val showConfirmPassword = viewModel.isConfirmPasswordVisible.value
+    val passwordVisualTransformation = remember { PasswordVisualTransformation() }
+
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Sección que ocupa el 15% de la pantalla para la imagen y el botón
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.15f)
             ) {
-                // Imagen de fondo (starheader)
                 Image(
                     bitmap = ImageBitmap.imageResource(id = R.drawable.starheader),
                     contentDescription = "Header star Image",
@@ -58,8 +63,6 @@ fun RestorePasswordScreen(viewModel: RestorePasswordViewModel) {
                         .fillMaxHeight(),
                     contentScale = ContentScale.FillBounds
                 )
-
-                // Botón de retroceso
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -112,29 +115,27 @@ fun RestorePasswordScreen(viewModel: RestorePasswordViewModel) {
 
             Spacer(modifier = Modifier.height(35.dp))
 
-
-            // Campos para ingresar nueva contraseña y confirmación
-            val newPasswordState = remember { mutableStateOf("") }
-            val confirmPasswordState = remember { mutableStateOf("") }
-
             PasswordTextField(
-                value = newPasswordState.value,
-                onValueChange = { newPasswordState.value = it },
-                label = "Nueva Contraseña"
+                label = "Nueva Contraseña",
+                password = newPassword,
+                onPasswordChange = { viewModel.setNewPassword(it) },
+                passwordVisible = showNewPassword,
+                onVisibilityChange = { viewModel.toggleNewPasswordVisibility() }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             PasswordTextField(
-                value = confirmPasswordState.value,
-                onValueChange = { confirmPasswordState.value = it },
-                label = "Confirmar Contraseña"
+                label = "Confirmar Contraseña",
+                password = confirmPassword,
+                onPasswordChange = { viewModel.setConfirmPassword(it) },
+                passwordVisible = showConfirmPassword,
+                onVisibilityChange = { viewModel.toggleConfirmPasswordVisibility() }
             )
 
             Button(
-                onClick = {
-                    // Lógica para restablecer la contraseña
-                },
+                onClick = { /* TODO: Implementar lógica de restablecimiento de contraseña */ },
+                enabled = viewModel.validatePasswords(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
@@ -143,69 +144,60 @@ fun RestorePasswordScreen(viewModel: RestorePasswordViewModel) {
                 Text(text = "Restablecer Contraseña", color = Color.White)
             }
 
-            // Spacer para empujar el texto hacia abajo
             Spacer(modifier = Modifier.weight(1f))
 
-            // Texto clickable
-            val text = buildAnnotatedString {
-                append("¿Ya tienes una cuenta? ")
-                pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
-                append("Inicia sesión")
-                pop()
-            }
-
-            ClickableText(
-                text = text,
-                onClick = { offset ->
-                    // Obtener el índice de "Inicia sesión" en el texto
-                    val startIndex = text.indexOf("Inicia sesión")
-                    val endIndex = startIndex + "Inicia sesión".length
-
-                    if (offset in startIndex until endIndex) {
-                        viewModel.goToLoginScreen()
+            Text(
+                text = buildAnnotatedString {
+                    append("¿Ya tienes una cuenta? ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Inicia sesión")
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Color.Black,
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.Center
-                )
+                    .padding(16.dp)
+                    .clickable { viewModel.goToLoginScreen() },
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = Color.Black,
+                fontSize = 14.sp
             )
         }
     }
 }
 
 @Composable
-fun PasswordTextField(value: String, onValueChange: (String) -> Unit, label: String) {
-    var showPassword by remember { mutableStateOf(false) }
-    val passwordVisualTransformation = remember { PasswordVisualTransformation() }
+fun PasswordTextField(
+    label: String,
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    passwordVisible: Boolean,
+    onVisibilityChange: () -> Unit
+) {
+    val passwordVisualTransformation = if (passwordVisible) {
+        VisualTransformation.None
+    } else {
+        PasswordVisualTransformation()
+    }
 
     TextField(
-        value = value,
-        onValueChange = onValueChange,
+        value = password,
+        onValueChange = onPasswordChange,
         label = { Text(label) },
-        visualTransformation = if (showPassword) {
-            VisualTransformation.None
-        } else {
-            passwordVisualTransformation
-        },
+        visualTransformation = passwordVisualTransformation,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .background(Color.White, shape = RoundedCornerShape(10.dp)),
         trailingIcon = {
             Icon(
-                imageVector = if (showPassword) {
+                imageVector = if (passwordVisible) {
                     Icons.Filled.VisibilityOff
                 } else {
                     Icons.Filled.Visibility
                 },
                 contentDescription = "Toggle password visibility",
-                modifier = Modifier
-                    .clickable { showPassword = !showPassword }
+                modifier = Modifier.clickable { onVisibilityChange() }
             )
         }
     )
