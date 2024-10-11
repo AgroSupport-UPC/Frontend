@@ -1,4 +1,4 @@
-package com.example.agrosupport.data.remote
+package com.example.agrosupport.domain
 
 data class CreateAppointment(
     val advisorId: Long,

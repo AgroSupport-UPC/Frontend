@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.agrosupport.common.Constants
+import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.UIState
 import com.example.agrosupport.data.repository.AdvisorRepository
@@ -17,12 +17,13 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class FarmerAppointmentHistoryListViewModel(private val navController: NavController,
-                                     private val profileRepository: ProfileRepository,
-                                     private val advisorRepository: AdvisorRepository,
-                                     private val appointmentRepository: AppointmentRepository,
-                                     private val farmerRepository: FarmerRepository
-): ViewModel() {
+class FarmerAppointmentHistoryListViewModel(
+    private val navController: NavController,
+    private val profileRepository: ProfileRepository,
+    private val advisorRepository: AdvisorRepository,
+    private val appointmentRepository: AppointmentRepository,
+    private val farmerRepository: FarmerRepository
+) : ViewModel() {
 
     private val _state = mutableStateOf(UIState<List<AdvisorAppointmentCard>>())
     val state: State<UIState<List<AdvisorAppointmentCard>>> get() = _state
@@ -32,17 +33,19 @@ class FarmerAppointmentHistoryListViewModel(private val navController: NavContro
     }
 
     fun onNavigateDetail(appointmentId: Long) {
-
+        // Implementación para la navegación al detalle de la cita
+        navController.navigate("FarmerAppointmentDetail/$appointmentId")
     }
 
     fun getAdvisorAppointmentHistoryListByFarmer(selectedDate: Date? = null) {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val farmerResult = farmerRepository.searchFarmerByUserId(Constants.EXAMPLE_USER_ID, Constants.EXAMPLE_TOKEN)
+            val farmerResult = farmerRepository.searchFarmerByUserId(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
 
             if (farmerResult is Resource.Success && farmerResult.data != null) {
                 val farmerId = farmerResult.data.id // Si la búsqueda del granjero fue exitosa
-                val result = appointmentRepository.getAppointmentsByFarmer(farmerId, Constants.EXAMPLE_TOKEN)
+                val result = appointmentRepository.getAppointmentsByFarmer(farmerId, GlobalVariables.TOKEN) // Obtiene las citas del granjero
+
                 if (result is Resource.Success) {
                     var appointments = result.data?.filter { it.status == "COMPLETED" || it.status == "REVIEWED" }
 
@@ -62,16 +65,15 @@ class FarmerAppointmentHistoryListViewModel(private val navController: NavContro
                         )
                     )
 
-
-
                     if (appointments != null && appointments.isNotEmpty()) {
                         val advisorAppointmentCards = mutableListOf<AdvisorAppointmentCard>()
                         for (appointment in appointments) {
-                            val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, Constants.EXAMPLE_TOKEN)
+                            val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, GlobalVariables.TOKEN)
+                            
                             val advisorName = if (advisorResult is Resource.Success) {
                                 val advisor = advisorResult.data
                                 val profileResult = advisor?.userId?.let { userId ->
-                                    profileRepository.searchProfile(userId, Constants.EXAMPLE_TOKEN)
+                                    profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
                                 }
                                 if (profileResult is Resource.Success) {
                                     val profile = profileResult.data
@@ -86,7 +88,7 @@ class FarmerAppointmentHistoryListViewModel(private val navController: NavContro
                             val advisorPhoto = if (advisorResult is Resource.Success) {
                                 val advisor = advisorResult.data
                                 val profileResult = advisor?.userId?.let { userId ->
-                                    profileRepository.searchProfile(userId, Constants.EXAMPLE_TOKEN)
+                                    profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
                                 }
                                 if (profileResult is Resource.Success) {
                                     val profile = profileResult.data
@@ -97,6 +99,7 @@ class FarmerAppointmentHistoryListViewModel(private val navController: NavContro
                             } else {
                                 "Asesor Desconocido"
                             }
+
                             advisorAppointmentCards.add(
                                 AdvisorAppointmentCard(
                                     id = appointment.id,
@@ -123,5 +126,4 @@ class FarmerAppointmentHistoryListViewModel(private val navController: NavContro
             }
         }
     }
-
 }

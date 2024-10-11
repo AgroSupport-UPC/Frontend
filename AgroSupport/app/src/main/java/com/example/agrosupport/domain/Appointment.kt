@@ -1,7 +1,5 @@
 package com.example.agrosupport.domain
 
-import com.example.agrosupport.data.remote.AppointmentDto
-
 data class Appointment(
     val id: Long,
     val advisorId: Long,

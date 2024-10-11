@@ -1,5 +1,6 @@
 package com.example.agrosupport.data.remote
 
+import com.example.agrosupport.domain.CreateAppointment
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
