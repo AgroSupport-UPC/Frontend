@@ -8,8 +8,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.room.Room
 import com.example.agrosupport.common.Constants
 import com.example.agrosupport.common.Routes
+import com.example.agrosupport.data.local.AppDatabase
 import com.example.agrosupport.data.remote.*
 import com.example.agrosupport.data.repository.*
 import com.example.agrosupport.presentation.advisordetail.AdvisorDetailScreen
@@ -40,6 +42,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val userDao = Room
+            .databaseBuilder(applicationContext, AppDatabase::class.java,"agrosupport-db")
+            .build()
+            .getUserDao()
+
         val authenticationService = Retrofit
             .Builder()
             .baseUrl(Constants.BASE_URL)
@@ -94,8 +101,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             AgroSupportTheme {
                 val navController = rememberNavController()
-                val welcomeViewModel = WelcomeViewModel(navController)
-                val loginViewModel = LoginViewModel(navController, AuthenticationRepository(authenticationService))
+                val welcomeViewModel = WelcomeViewModel(navController, AuthenticationRepository(authenticationService, userDao))
+                val loginViewModel = LoginViewModel(navController, AuthenticationRepository(authenticationService, userDao))
                 val forgotPasswordViewModel = ForgotPasswordViewModel(navController)
                 val farmerHomeViewModel = FarmerHomeViewModel(navController, ProfileRepository(profileService))
                 val restorePasswordViewModel = RestorePasswordViewModel(navController)

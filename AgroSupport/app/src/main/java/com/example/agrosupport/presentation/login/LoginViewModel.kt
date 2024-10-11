@@ -10,6 +10,7 @@ import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
 import com.example.agrosupport.data.repository.AuthenticationRepository
+import com.example.agrosupport.domain.AuthenticationResponse
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
@@ -40,6 +41,14 @@ class LoginViewModel(
                     _state.value = UIState(isLoading = false)
 
                     if (GlobalVariables.TOKEN.isNotBlank() && GlobalVariables.USER_ID != 0L) {
+                        //Se guarda el usuario en la base de datos local para loguearlo automaticamente
+                        authenticationRepository.insertUser(
+                            AuthenticationResponse(
+                                id = GlobalVariables.USER_ID,
+                                username = _email.value,
+                                token = GlobalVariables.TOKEN
+                            )
+                        )
                         goToFarmerScreen()
                     } else {
                         _state.value = UIState(message = "Error al iniciar sesión")
