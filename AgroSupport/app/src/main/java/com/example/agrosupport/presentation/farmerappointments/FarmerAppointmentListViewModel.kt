@@ -15,12 +15,17 @@ import com.example.agrosupport.data.repository.FarmerRepository
 import com.example.agrosupport.data.repository.ProfileRepository
 import com.example.agrosupport.presentation.farmerhistory.AdvisorAppointmentCard
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-class FarmerAppointmentListViewModel(private val navController: NavController,
-                                     private val profileRepository: ProfileRepository,
-                                     private val advisorRepository: AdvisorRepository,
-                                     private val appointmentRepository: AppointmentRepository,
-                                     private val farmerRepository: FarmerRepository): ViewModel() {
+class FarmerAppointmentListViewModel(
+    private val navController: NavController,
+    private val profileRepository: ProfileRepository,
+    private val advisorRepository: AdvisorRepository,
+    private val appointmentRepository: AppointmentRepository,
+    private val farmerRepository: FarmerRepository
+) : ViewModel() {
 
     private val _state = mutableStateOf(UIState<List<AdvisorAppointmentCard>>())
     val state: State<UIState<List<AdvisorAppointmentCard>>> get() = _state
@@ -33,7 +38,7 @@ class FarmerAppointmentListViewModel(private val navController: NavController,
         navController.navigate(Routes.FarmerAppointmentHistory.route)
     }
 
-    fun getAdvisorAppointmentListByFarmer() {
+    fun getAdvisorAppointmentListByFarmer(selectedDate: Date? = null) {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
             val farmerResult = farmerRepository.searchFarmerByUserId(Constants.EXAMPLE_USER_ID, Constants.EXAMPLE_TOKEN)
@@ -42,8 +47,27 @@ class FarmerAppointmentListViewModel(private val navController: NavController,
                 val farmerId = farmerResult.data.id // Si la búsqueda del granjero fue exitosa
                 val result = appointmentRepository.getAppointmentsByFarmer(farmerId, Constants.EXAMPLE_TOKEN)
                 if (result is Resource.Success) {
-                    val appointments = result.data?.filter { it.status == "PENDING" || it.status == "ONGOING" }
-                    if (appointments != null) {
+                    var appointments = result.data?.filter { it.status == "PENDING" || it.status == "ONGOING" }
+
+                    // Aplicar filtro de fecha si se ha proporcionado una fecha seleccionada
+                    if (selectedDate != null) {
+                        val formattedSelectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate)
+                        appointments = appointments?.filter {
+                            it.scheduledDate.startsWith(formattedSelectedDate)
+                        }
+                    }
+
+                    // Ordenar las citas por fecha (scheduledDate) y luego por hora de inicio (startTime)
+                    appointments = appointments?.sortedWith(
+                        compareBy(
+                            { SimpleDateFormat("yyyy-MM-dd").parse(it.scheduledDate) },
+                            { SimpleDateFormat("HH:mm").parse(it.startTime) }
+                        )
+                    )
+
+
+
+                    if (appointments != null && appointments.isNotEmpty()) {
                         val advisorAppointmentCards = mutableListOf<AdvisorAppointmentCard>()
                         for (appointment in appointments) {
                             val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, Constants.EXAMPLE_TOKEN)
@@ -92,17 +116,14 @@ class FarmerAppointmentListViewModel(private val navController: NavController,
                         }
                         _state.value = UIState(data = advisorAppointmentCards)
                     } else {
-
-                        _state.value = UIState(message = "No se encontraron citas")
+                        _state.value = UIState(message = "No se encontraron citas para la fecha seleccionada")
                     }
                 } else if (result is Resource.Error) {
                     _state.value = UIState(message = "Error al intentar obtener las citas")
                 }
             } else {
-                _state.value = UIState(message = "Error al intentar obtener informacion del usuario")
+                _state.value = UIState(message = "Error al intentar obtener información del usuario")
             }
         }
     }
-
 }
-
