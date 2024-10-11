@@ -14,153 +14,159 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.sharp.Email
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import com.example.agrosupport.R
 
+
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
-    val errorMessage by viewModel.errorMessage.observeAsState()
+    val state = viewModel.state.value
     val snackbarHostState = remember { SnackbarHostState() }
-    var emailState by rememberSaveable { mutableStateOf("") }
-    var passwordState by rememberSaveable { mutableStateOf("") }
+    val email = viewModel.email.value
+    val password = viewModel.password.value
 
-    // Efecto para mostrar el Snackbar
-    LaunchedEffect(errorMessage) {
-        errorMessage?.let {
-            snackbarHostState.showSnackbar(it)
-            viewModel.clearError() // Limpiar el mensaje después de mostrar
+    LaunchedEffect(state.message) {
+        if (state.message.isNotEmpty()) {
+            snackbarHostState.showSnackbar(state.message)
+            viewModel.clearError()
         }
     }
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Image(
-                bitmap = ImageBitmap.imageResource(id = R.drawable.starheader),
-                contentDescription = "Header star Image",
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.15f),
-                contentScale = ContentScale.FillBounds
-            )
+                    .fillMaxSize()
+                    .padding(bottom = 64.dp)
+            ) {
+                Image(
+                    bitmap = ImageBitmap.imageResource(id = R.drawable.starheader),
+                    contentDescription = "Header star Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.15f),
+                    contentScale = ContentScale.FillBounds
+                )
 
-            Text(
-                text = "Iniciar Sesión",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 30.sp
-                ),
-                textAlign = TextAlign.Left
-            )
+                Text(
+                    text = "Iniciar sesión",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp
+                    ),
+                    textAlign = TextAlign.Left
+                )
 
-            // TextField para correo electrónico
-            TextField(
-                value = emailState,
-                onValueChange = { emailState = it },
-                label = { Text("Correo electrónico") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .background(Color.White, shape = RoundedCornerShape(10.dp)),
-                singleLine = true,
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Sharp.Email,
-                        contentDescription = "Email"
+                TextField(
+                    value = email,
+                    onValueChange = { viewModel.setEmail(it) },
+                    label = { Text("Correo electrónico") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .background(Color.White, shape = RoundedCornerShape(10.dp)),
+                    singleLine = true,
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Sharp.Email,
+                            contentDescription = "Email"
+                        )
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                PasswordTextField(password, viewModel)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Text(
+                        text = "¿Olvidaste tu contraseña?",
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .clickable { viewModel.goToForgotPasswordScreen() },
+                        color = Color.Black,
+                        fontSize = 14.sp
                     )
                 }
-            )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // TextField para contraseña
-            PasswordTextField(passwordState) { passwordState = it }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Text(
-                    text = "¿Olvidaste tu contraseña?",
+                Button(
+                    onClick = { viewModel.signIn() },
+                    enabled = email.isNotEmpty() && password.isNotEmpty(),
                     modifier = Modifier
-                        .padding(end = 16.dp)
-                        .clickable { /* IR A FORGOT PASSWORD SCREEN */ },
-                    color = Color.Black,
-                    fontSize = 14.sp
-                )
-            }
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF092C4C))
+                ) {
+                    Text(text = "Iniciar sesión", color = Color.White)
+                }
 
-            Button(
-                onClick = { viewModel.signIn(emailState, passwordState) },
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                colors = ButtonDefaults.buttonColors(Color(0xFF092C4C))
-            ) {
-                Text(text = "Iniciar Sesión", color = Color.White)
-            }
+                Spacer(modifier = Modifier.weight(1f))
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Texto clickable
-            val text = buildAnnotatedString {
-                append("¿No tienes cuenta ")
-                pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
-                append("Crea tu cuenta")
-                pop()
-            }
-
-            ClickableText(
-                text = text,
-                onClick = {
-                    val startIndex = text.indexOf("Crea tu cuenta")
-                    val endIndex = startIndex + "Crea tu cuenta".length
-
-                    // IR A REGISTER SCREEN
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                style = MaterialTheme.typography.bodyMedium.copy(
+                Text(
+                    text = buildAnnotatedString {
+                        append("¿No tienes cuenta? ")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append("Crea tu cuenta")
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .clickable {
+                            viewModel.goToForgotPasswordScreen()
+                        },
                     color = Color.Black,
                     fontSize = 14.sp,
                     textAlign = TextAlign.Center
                 )
-            )
+
+            }
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
         }
     }
 }
 
-
-
 @Composable
-fun PasswordTextField(password: String, onPasswordChange: (String) -> Unit) {
-    var showPassword by remember { mutableStateOf(false) }
+fun PasswordTextField(password: String, viewModel: LoginViewModel) {
+    val showPassword = viewModel.isPasswordVisible.value
     val passwordVisualTransformation = remember { PasswordVisualTransformation() }
 
     TextField(
         value = password,
-        onValueChange = { onPasswordChange(it) },
+        onValueChange = { viewModel.setPassword(it) },
         label = { Text("Contraseña") },
         visualTransformation = if (showPassword) {
             VisualTransformation.None
@@ -175,13 +181,13 @@ fun PasswordTextField(password: String, onPasswordChange: (String) -> Unit) {
         trailingIcon = {
             Icon(
                 imageVector = if (showPassword) {
-                    Icons.Filled.Favorite
+                    Icons.Filled.VisibilityOff
                 } else {
-                    Icons.Filled.FavoriteBorder
+                    Icons.Filled.Visibility
                 },
                 contentDescription = "Toggle password visibility",
                 modifier = Modifier
-                    .clickable { showPassword = !showPassword }
+                    .clickable { viewModel.togglePasswordVisibility() }
             )
         }
     )

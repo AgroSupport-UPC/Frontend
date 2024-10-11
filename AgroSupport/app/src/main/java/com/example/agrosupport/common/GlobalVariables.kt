@@ -2,6 +2,6 @@ package com.example.agrosupport.common
 
 object GlobalVariables {
     // Variable inicializadas
-    var EXAMPLE_TOKEN: String = ""
-    var EXAMPLE_USER_ID: Long = 0L
+    var TOKEN: String = ""
+    var USER_ID: Long = 0L
 }

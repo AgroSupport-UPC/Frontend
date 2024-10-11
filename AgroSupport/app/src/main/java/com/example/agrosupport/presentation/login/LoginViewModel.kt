@@ -1,50 +1,87 @@
 package com.example.agrosupport.presentation.login
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.agrosupport.common.GlobalVariables
+import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
-import com.example.agrosupport.data.repository.LoginRepository
+import com.example.agrosupport.common.UIState
+import com.example.agrosupport.data.repository.AuthenticationRepository
+import com.example.agrosupport.domain.AuthenticationResponse
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val navController: NavController,
-    private val loginRepository: LoginRepository
+    private val authenticationRepository: AuthenticationRepository
 ) : ViewModel() {
 
-    private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+    private val _state = mutableStateOf(UIState<Unit>())
+    val state: State<UIState<Unit>> get() = _state
 
-    fun signIn(username: String, password: String) {
+    private val _email = mutableStateOf("")
+    val email: State<String> get() = _email
+
+    private val _password = mutableStateOf("")
+    val password: State<String> get() = _password
+
+    private val _isPasswordVisible = mutableStateOf(false)
+    val isPasswordVisible: State<Boolean> get() = _isPasswordVisible
+
+    fun signIn() {
+        _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            loginRepository.signIn(username, password) { result ->
-                result.onSuccess { loginResponse ->
-                    // Almacenar el userId en Constants (o en SharedPreferences)
-                    GlobalVariables.EXAMPLE_USER_ID = loginResponse.id
-                    GlobalVariables.EXAMPLE_TOKEN = loginResponse.token
-                    // Navegación después de un inicio de sesión exitoso
-                    goToFarmerScreen()
-                }.onFailure { exception ->
-                    // Manejo de error
-                    val message = exception.message ?: "Error desconocido"
-                    showError("Correo y/o contraseña incorrectos / $message")
+            when (val result = authenticationRepository.signIn(_email.value, _password.value)) {
+                is Resource.Success -> {
+                    GlobalVariables.TOKEN = result.data?.token ?: ""
+                    GlobalVariables.USER_ID = result.data?.id ?: 0
+
+                    _state.value = UIState(isLoading = false)
+
+                    if (GlobalVariables.TOKEN.isNotBlank() && GlobalVariables.USER_ID != 0L) {
+                        //Se guarda el usuario en la base de datos local para loguearlo automaticamente
+                        authenticationRepository.insertUser(
+                            AuthenticationResponse(
+                                id = GlobalVariables.USER_ID,
+                                username = _email.value,
+                                token = GlobalVariables.TOKEN
+                            )
+                        )
+                        goToFarmerScreen()
+                    } else {
+                        _state.value = UIState(message = "Error al iniciar sesión")
+                    }
+                }
+                is Resource.Error -> {
+                    _state.value = UIState(message = result.message.toString())
                 }
             }
         }
+    }
+
+    fun clearError() {
+        _state.value = UIState(message = "")
+    }
+
+    fun setEmail(email: String) {
+        _email.value = email
+    }
+
+    fun setPassword(password: String) {
+        _password.value = password
+    }
+
+    fun goToForgotPasswordScreen() {
+        navController.navigate(Routes.ForgotPassword.route)
     }
 
     private fun goToFarmerScreen() {
         navController.navigate(Routes.FarmerHome.route)
     }
 
-    private fun showError(message: String) {
-        _errorMessage.value = message
-    }
-
-    fun clearError() {
-        _errorMessage.value = null
+    fun togglePasswordVisibility() {
+        _isPasswordVisible.value = !_isPasswordVisible.value
     }
 }
