@@ -16,6 +16,8 @@ import com.example.agrosupport.presentation.advisordetail.AdvisorDetailScreen
 import com.example.agrosupport.presentation.advisordetail.AdvisorDetailViewModel
 import com.example.agrosupport.presentation.advisorlist.AdvisorListScreen
 import com.example.agrosupport.presentation.advisorlist.AdvisorListViewModel
+import com.example.agrosupport.presentation.appointmentdetails.FarmerAppointmentDetailScreen
+import com.example.agrosupport.presentation.appointmentdetails.FarmerAppointmentDetailViewModel
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListScreen
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListViewModel
 import com.example.agrosupport.presentation.farmerhistory.FarmerAppointmentHistoryListScreen
@@ -86,6 +88,7 @@ class MainActivity : ComponentActivity() {
                 val reviewListViewModel = ReviewListViewModel(navController, ReviewRepository(reviewService), ProfileRepository(profileService), AdvisorRepository(advisorService), FarmerRepository(farmerService))
                 val farmerAppointmentListViewModel = FarmerAppointmentListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val farmerAppointmentHistoryListViewModel = FarmerAppointmentHistoryListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
+                val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService))
                 NavHost(navController = navController, startDestination = Routes.FarmerHome.route) {
                     composable(route = Routes.FarmerHome.route) {
                         FarmerHomeScreen(viewModel = farmerHomeViewModel)
@@ -113,6 +116,11 @@ class MainActivity : ComponentActivity() {
 
                     composable(route = Routes.FarmerAppointmentHistory.route) {
                         FarmerAppointmentHistoryListScreen(viewModel = farmerAppointmentHistoryListViewModel)
+                    }
+
+                    composable(route = Routes.FarmerAppointmentDetail.route + "/{appointmentId}") {
+                        val appointmentId = it.arguments?.getString("appointmentId")?.toLong() ?: 0
+                        FarmerAppointmentDetailScreen(viewModel = farmerAppointmentDetailViewModel, appointmentId = appointmentId)
                     }
 
                 }

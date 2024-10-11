@@ -37,9 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.agrosupport.presentation.farmerhistory.AppointmentCard
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
+import java.util.Date
 
 @Composable
 fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
@@ -47,17 +46,15 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
-    // Fecha seleccionada (por defecto la fecha de hoy)
-    val selectedDate = remember { mutableStateOf(calendar.time) }
+    // Fecha seleccionada (por defecto null para mostrar todas las citas)
+    val selectedDate = remember { mutableStateOf<Date?>(null) }
 
-    // Dialogo del selector de fechas
+
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
-            // Actualizar la fecha seleccionada
             calendar.set(year, month, dayOfMonth)
             selectedDate.value = calendar.time
-            // Llamar al ViewModel para obtener las citas de la nueva fecha
             viewModel.getAdvisorAppointmentListByFarmer(selectedDate.value)
         },
         calendar.get(Calendar.YEAR),
@@ -65,9 +62,9 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
         calendar.get(Calendar.DAY_OF_MONTH)
     )
 
-    // Cargar las citas de la fecha actual al inicio
+
     LaunchedEffect(Unit) {
-        viewModel.getAdvisorAppointmentListByFarmer(selectedDate.value)
+        viewModel.getAdvisorAppointmentListByFarmer(null)
     }
 
     Scaffold { paddingValues ->
@@ -123,6 +120,7 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
                         items(appointments) { appointment ->
                             AppointmentCard(
                                 appointment = appointment,
+                                onClick = { viewModel.goAppointmentDetail(appointment.id) } // Hacer clic en la tarjeta para navegar al detalle
                             )
                         }
                     }
@@ -150,12 +148,12 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
                     }
                 }
             }
-            // Columna para los botones flotantes en la parte inferior derecha
+
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp) // Espacio entre los botones
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Botón flotante para seleccionar la fecha
                 FloatingActionButton(
@@ -180,7 +178,6 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
                     )
                 }
             }
-
         }
     }
 }

@@ -67,6 +67,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.ui.test.android)
+    implementation(libs.protolite.well.known.types)
+    implementation(libs.androidx.runtime.livedata)
     annotationProcessor(libs.room.compiler)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)

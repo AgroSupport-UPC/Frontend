@@ -34,6 +34,10 @@ class FarmerAppointmentListViewModel(
         navController.popBackStack()
     }
 
+    fun goAppointmentDetail(appointmentId: Long) {
+        navController.navigate(Routes.FarmerAppointmentDetail.route + "/$appointmentId")
+    }
+
     fun goHistory() {
         navController.navigate(Routes.FarmerAppointmentHistory.route)
     }
