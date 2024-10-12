@@ -58,7 +58,6 @@ class MainActivity : ComponentActivity() {
             .create(AuthenticationService::class.java)
 
 
-        val loginService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AuthenticationService::class.java)
         val profileService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(ProfileService::class.java)
         val advisorService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AdvisorService::class.java)
         val farmerService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(FarmerService::class.java)
@@ -74,7 +73,7 @@ class MainActivity : ComponentActivity() {
                 val welcomeViewModel = WelcomeViewModel(navController, AuthenticationRepository(authenticationService, userDao))
                 val loginViewModel = LoginViewModel(navController, AuthenticationRepository(authenticationService, userDao))
                 val forgotPasswordViewModel = ForgotPasswordViewModel(navController)
-                val farmerHomeViewModel = FarmerHomeViewModel(navController, ProfileRepository(profileService))
+                val farmerHomeViewModel = FarmerHomeViewModel(navController, ProfileRepository(profileService), AuthenticationRepository(authenticationService, userDao))
                 val restorePasswordViewModel = RestorePasswordViewModel(navController)
                 val advisorListViewModel = AdvisorListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
                 val advisorDetailViewModel = AdvisorDetailViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))

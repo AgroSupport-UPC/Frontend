@@ -14,7 +14,10 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -27,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.example.agrosupport.R
 
@@ -73,11 +77,27 @@ fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
                     contentDescription = "Notifications",
                     modifier = Modifier.padding(horizontal = 8.dp).size(32.dp)
                 )
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More",
-                    modifier = Modifier.padding(horizontal = 8.dp).size(32.dp)
-                )
+                IconButton(onClick = { viewModel.setExpanded(true)  }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "More",
+                        modifier = Modifier.padding(horizontal = 8.dp).size(32.dp)
+                    )
+                }
+                // Menú emergente
+                DropdownMenu(
+                    expanded = viewModel.expanded.value,
+                    onDismissRequest = { viewModel.setExpanded(false) },
+                    offset = DpOffset(x = (2000).dp, y = 0.dp)
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Cerrar Sesión") },
+                        onClick = {
+                            viewModel.signOut()
+                            viewModel.setExpanded(false)
+                        }
+                    )
+                }
             }
 
             Card(
