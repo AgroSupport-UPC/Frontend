@@ -56,48 +56,8 @@ class MainActivity : ComponentActivity() {
             .build()
             .create(AuthenticationService::class.java)
 
-        val profileService = Retrofit
-            .Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ProfileService::class.java)
 
-        val advisorService = Retrofit
-            .Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(AdvisorService::class.java)
-
-        val farmerService = Retrofit
-            .Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(FarmerService::class.java)
-
-        val reviewService = Retrofit
-            .Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ReviewService::class.java)
-
-        val appointmentService = Retrofit
-            .Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(AppointmentService::class.java)
-
-        val availableDateService = Retrofit
-            .Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(AvailableDateService::class.java)
-        val loginService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(LoginService::class.java)
+        val loginService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AuthenticationService::class.java)
         val profileService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(ProfileService::class.java)
         val advisorService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AdvisorService::class.java)
         val farmerService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(FarmerService::class.java)
@@ -123,7 +83,7 @@ class MainActivity : ComponentActivity() {
                 val farmerAppointmentHistoryListViewModel = FarmerAppointmentHistoryListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService))
 
-                NavHost(navController = navController, startDestination = Routes.FarmerHome.route) {
+                NavHost(navController = navController, startDestination = Routes.Welcome.route) {
                     composable(route = Routes.Welcome.route) {
                         WelcomeScreen(viewModel = welcomeViewModel)
                     }
