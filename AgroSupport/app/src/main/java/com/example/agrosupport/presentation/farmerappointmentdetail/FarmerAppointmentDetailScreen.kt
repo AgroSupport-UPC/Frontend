@@ -42,6 +42,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.ui.draw.clip
+import com.example.agrosupport.presentation.farmerappointmentdetail.CancelAppointmentDialog
 import com.example.agrosupport.presentation.farmerhistory.AppointmentCard
 
 @Composable
@@ -52,6 +53,7 @@ fun FarmerAppointmentDetailScreen(
     val appointment = viewModel.appointmentDetails.observeAsState().value
     val isLoading = viewModel.isLoading.observeAsState(false).value
     val errorMessage = viewModel.errorMessage.observeAsState().value
+    val showCancelDialog = viewModel.showCancelDialog.observeAsState(false).value
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
 
@@ -134,7 +136,7 @@ fun FarmerAppointmentDetailScreen(
                                     onClick = null
                                 )
 
-                                Spacer(modifier = Modifier.height(24.dp)) // Espacio más grande entre la tarjeta y las cajas de texto
+                                Spacer(modifier = Modifier.height(24.dp))
 
                                 // Link de la videoconferencia
                                 Text(
@@ -214,6 +216,13 @@ fun FarmerAppointmentDetailScreen(
                         }
                     }
                 }
+            }
+            // Mostrar diálogo de cancelación
+            if (showCancelDialog) {
+                CancelAppointmentDialog(
+                    onDismiss = { viewModel.onDismissCancelDialog() },
+                    onConfirm = { reason -> viewModel.cancelAppointment(appointmentId, reason) }
+                )
             }
         }
     }

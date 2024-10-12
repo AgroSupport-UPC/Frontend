@@ -3,6 +3,7 @@ package com.example.agrosupport.data.remote
 import com.example.agrosupport.domain.CreateAppointment
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -23,4 +24,7 @@ interface AppointmentService {
 
     @POST("appointments")
     suspend fun createAppointment(@Header("Authorization") token: String, @Body appointment: CreateAppointment): Response<AppointmentDto>
+
+    @DELETE("appointments/{id}")
+    suspend fun deleteAppointment(@Path("id") id: Long, @Header("Authorization") token: String): Response<Unit>
 }

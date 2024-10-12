@@ -18,6 +18,7 @@ import com.example.agrosupport.presentation.advisordetail.AdvisorDetailScreen
 import com.example.agrosupport.presentation.advisordetail.AdvisorDetailViewModel
 import com.example.agrosupport.presentation.advisorlist.AdvisorListScreen
 import com.example.agrosupport.presentation.advisorlist.AdvisorListViewModel
+import com.example.agrosupport.presentation.appointmentdetails.CancelAppointmentSuccessScreen
 import com.example.agrosupport.presentation.appointmentdetails.FarmerAppointmentDetailScreen
 import com.example.agrosupport.presentation.appointmentdetails.FarmerAppointmentDetailViewModel
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListScreen
@@ -127,6 +128,13 @@ class MainActivity : ComponentActivity() {
                         val appointmentId = it.arguments?.getString("appointmentId")?.toLong() ?: 0
                         FarmerAppointmentDetailScreen(viewModel = farmerAppointmentDetailViewModel, appointmentId = appointmentId)
                     }
+
+                    composable(route = Routes.CancelAppointmentConfirmation.route) {
+                        CancelAppointmentSuccessScreen(onBackClick = {
+                            navController.navigate(Routes.FarmerAppointmentList.route)
+                        })
+                    }
+
                 }
             }
         }

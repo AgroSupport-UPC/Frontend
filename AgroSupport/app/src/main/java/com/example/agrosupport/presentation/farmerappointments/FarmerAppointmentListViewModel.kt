@@ -31,7 +31,7 @@ class FarmerAppointmentListViewModel(
     val state: State<UIState<List<AdvisorAppointmentCard>>> get() = _state
 
     fun goBack() {
-        navController.popBackStack()
+        navController.navigate(Routes.FarmerHome.route)
     }
 
     fun goAppointmentDetail(appointmentId: Long) {
