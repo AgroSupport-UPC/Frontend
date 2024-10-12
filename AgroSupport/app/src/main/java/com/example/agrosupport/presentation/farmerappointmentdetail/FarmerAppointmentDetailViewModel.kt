@@ -12,6 +12,7 @@ import com.example.agrosupport.presentation.farmerhistory.AdvisorAppointmentCard
 import com.example.agrosupport.common.Resource
 import kotlinx.coroutines.launch
 import com.example.agrosupport.common.Constants
+import com.example.agrosupport.common.GlobalVariables
 
 class FarmerAppointmentDetailViewModel(
     private val navController: NavController,
@@ -37,18 +38,18 @@ class FarmerAppointmentDetailViewModel(
         _isLoading.value = true
         viewModelScope.launch {
             // Obtener los detalles de la cita
-            val appointmentResult = appointmentRepository.getAppointmentById(appointmentId, Constants.EXAMPLE_TOKEN)
+            val appointmentResult = appointmentRepository.getAppointmentById(appointmentId, GlobalVariables.TOKEN)
 
             if (appointmentResult is Resource.Success && appointmentResult.data != null) {
                 val appointment = appointmentResult.data
 
                 // Buscar información del asesor
-                val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, Constants.EXAMPLE_TOKEN)
+                val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, GlobalVariables.TOKEN)
                 val advisorName = if (advisorResult is Resource.Success) {
                     val advisor = advisorResult.data
                     // Obtener información del perfil del asesor
                     val profileResult = advisor?.userId?.let { userId ->
-                        profileRepository.searchProfile(userId, Constants.EXAMPLE_TOKEN)
+                        profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
                     }
                     if (profileResult is Resource.Success) {
                         val profile = profileResult.data
@@ -64,7 +65,7 @@ class FarmerAppointmentDetailViewModel(
                 val advisorPhoto = if (advisorResult is Resource.Success) {
                     val advisor = advisorResult.data
                     val profileResult = advisor?.userId?.let { userId ->
-                        profileRepository.searchProfile(userId, Constants.EXAMPLE_TOKEN)
+                        profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
                     }
                     if (profileResult is Resource.Success) {
                         val profile = profileResult.data
