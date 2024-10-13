@@ -21,8 +21,12 @@ import com.example.agrosupport.presentation.advisorlist.AdvisorListViewModel
 import com.example.agrosupport.presentation.appointmentdetails.CancelAppointmentSuccessScreen
 import com.example.agrosupport.presentation.appointmentdetails.FarmerAppointmentDetailScreen
 import com.example.agrosupport.presentation.appointmentdetails.FarmerAppointmentDetailViewModel
+import com.example.agrosupport.presentation.confirmcreationaccountfarmer.ConfirmCreationAccountFarmerScreen
+import com.example.agrosupport.presentation.confirmcreationaccountfarmer.ConfirmCreationAccountFarmerViewModel
 import com.example.agrosupport.presentation.createaccountfarmer.CreateAccountFarmerScreen
 import com.example.agrosupport.presentation.createaccountfarmer.CreateAccountFarmerViewModel
+import com.example.agrosupport.presentation.createprofilefarmer.CreateProfileFarmerScreen
+import com.example.agrosupport.presentation.createprofilefarmer.CreateProfileFarmerViewModel
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListScreen
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListViewModel
 import com.example.agrosupport.presentation.farmerhistory.FarmerAppointmentHistoryListScreen
@@ -88,6 +92,8 @@ class MainActivity : ComponentActivity() {
                 val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService))
                 val createAccountViewModel = CreateAccountViewModel(navController)
                 val createAccountFarmerPart1ViewModel = CreateAccountFarmerViewModel(navController)
+                val createProfileFarmerViewModel = CreateProfileFarmerViewModel(navController)
+                val confirmCreationAccountFarmerViewModel = ConfirmCreationAccountFarmerViewModel(navController)
 
                 NavHost(navController = navController, startDestination = Routes.Welcome.route) {
                     composable(route = Routes.Welcome.route) {
@@ -148,7 +154,13 @@ class MainActivity : ComponentActivity() {
                         CreateAccountFarmerScreen(viewModel = createAccountFarmerPart1ViewModel)
                     }
 
+                    composable(route = Routes.CreateProfileFarmer.route) {
+                        CreateProfileFarmerScreen(viewModel = createProfileFarmerViewModel)
+                    }
 
+                    composable(route = Routes.ConfirmCreationAccountFarmer.route) {
+                        ConfirmCreationAccountFarmerScreen(viewModel = confirmCreationAccountFarmerViewModel)
+                    }
                 }
             }
         }

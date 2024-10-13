@@ -27,8 +27,7 @@ class CreateAccountFarmerViewModel(private val navController: NavController) : V
         navController.navigate(Routes.SignIn.route)
     }
 
-    fun goNextPart() {
-        // Aquí puedes implementar la lógica para navegar a la siguiente parte
-        // navController.navigate(Routes.CreateAccountFarmerPart2.route)
+    fun goToCreateProfileFarmerScreen() {
+        navController.navigate(Routes.CreateProfileFarmer.route)
     }
 }

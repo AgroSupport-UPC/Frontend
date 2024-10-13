@@ -80,6 +80,7 @@ fun CreateAccountFarmerScreen(viewModel: CreateAccountFarmerViewModel) {
                         TextField(
                             value = viewModel.firstName.value,
                             onValueChange = { viewModel.firstName.value = it },
+                            placeholder = { Text("Ingrese su nombre") },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -88,6 +89,7 @@ fun CreateAccountFarmerScreen(viewModel: CreateAccountFarmerViewModel) {
                         TextField(
                             value = viewModel.lastName.value,
                             onValueChange = { viewModel.lastName.value = it },
+                            placeholder = { Text("Ingrese su apellido") },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -100,6 +102,7 @@ fun CreateAccountFarmerScreen(viewModel: CreateAccountFarmerViewModel) {
                     TextField(
                         value = viewModel.email.value,
                         onValueChange = { viewModel.email.value = it },
+                        placeholder = { Text("Ingrese su correo electrónico") },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -111,6 +114,7 @@ fun CreateAccountFarmerScreen(viewModel: CreateAccountFarmerViewModel) {
                     TextField(
                         value = viewModel.birthDate.value,
                         onValueChange = { viewModel.birthDate.value = it },
+                        placeholder = { Text("Ingrese su fecha de nacimiento") },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -122,6 +126,7 @@ fun CreateAccountFarmerScreen(viewModel: CreateAccountFarmerViewModel) {
                     TextField(
                         value = viewModel.password.value,
                         onValueChange = { viewModel.password.value = it },
+                        placeholder = { Text("Ingrese su contraseña") },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -137,6 +142,7 @@ fun CreateAccountFarmerScreen(viewModel: CreateAccountFarmerViewModel) {
                         TextField(
                             value = viewModel.city.value,
                             onValueChange = { viewModel.city.value = it },
+                            placeholder = { Text("Ingrese su ciudad") },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -145,18 +151,19 @@ fun CreateAccountFarmerScreen(viewModel: CreateAccountFarmerViewModel) {
                         TextField(
                             value = viewModel.country.value,
                             onValueChange = { viewModel.country.value = it },
+                            placeholder = { Text("Perú") },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(35.dp))
 
                 // Botón de Continuar
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .clickable { viewModel.goNextPart() }
+                        .clickable { viewModel.goToCreateProfileFarmerScreen() }
                         .background(Color(0xFF092C4C), shape = MaterialTheme.shapes.medium)
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
