@@ -21,6 +21,8 @@ import com.example.agrosupport.presentation.advisorlist.AdvisorListViewModel
 import com.example.agrosupport.presentation.appointmentdetails.CancelAppointmentSuccessScreen
 import com.example.agrosupport.presentation.appointmentdetails.FarmerAppointmentDetailScreen
 import com.example.agrosupport.presentation.appointmentdetails.FarmerAppointmentDetailViewModel
+import com.example.agrosupport.presentation.createaccountfarmer.CreateAccountFarmerScreen
+import com.example.agrosupport.presentation.createaccountfarmer.CreateAccountFarmerViewModel
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListScreen
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListViewModel
 import com.example.agrosupport.presentation.farmerhistory.FarmerAppointmentHistoryListScreen
@@ -37,6 +39,8 @@ import com.example.agrosupport.presentation.restorepassword.RestorePasswordScree
 import com.example.agrosupport.presentation.restorepassword.RestorePasswordViewModel
 import com.example.agrosupport.presentation.reviewlist.ReviewListScreen
 import com.example.agrosupport.presentation.reviewlist.ReviewListViewModel
+import com.example.agrosupport.presentation.signup.CreateAccountScreen
+import com.example.agrosupport.presentation.signup.CreateAccountViewModel
 import com.example.agrosupport.presentation.welcomesection.WelcomeScreen
 import com.example.agrosupport.presentation.welcomesection.WelcomeViewModel
 import com.example.agrosupport.ui.theme.AgroSupportTheme
@@ -82,6 +86,8 @@ class MainActivity : ComponentActivity() {
                 val farmerAppointmentListViewModel = FarmerAppointmentListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val farmerAppointmentHistoryListViewModel = FarmerAppointmentHistoryListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService))
+                val createAccountViewModel = CreateAccountViewModel(navController)
+                val createAccountFarmerPart1ViewModel = CreateAccountFarmerViewModel(navController)
 
                 NavHost(navController = navController, startDestination = Routes.Welcome.route) {
                     composable(route = Routes.Welcome.route) {
@@ -133,6 +139,15 @@ class MainActivity : ComponentActivity() {
                             navController.navigate(Routes.FarmerAppointmentList.route)
                         })
                     }
+
+                    composable(route = Routes.SignUp.route) {
+                        CreateAccountScreen(viewModel = createAccountViewModel)
+                    }
+
+                    composable(route = Routes.CreateAccountFarmer.route) {
+                        CreateAccountFarmerScreen(viewModel = createAccountFarmerPart1ViewModel)
+                    }
+
 
                 }
             }

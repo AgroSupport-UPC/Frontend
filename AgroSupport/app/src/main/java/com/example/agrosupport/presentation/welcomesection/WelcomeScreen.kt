@@ -104,7 +104,7 @@ fun WelcomeScreen(viewModel: WelcomeViewModel) {
                     Spacer(modifier = Modifier.height(10.dp))
 
                     OutlinedButton(
-                        onClick = { viewModel.goToFarmerHomeScreen() },
+                        onClick = { viewModel.goToSignUpScreen() },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(text = "Crear cuenta", color = Color.Black)

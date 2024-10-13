@@ -14,4 +14,6 @@ sealed class Routes(val route: String) {
     data object RestorePassword : Routes("RestorePassword")
     data object FarmerAppointmentDetail : Routes("FarmerAppointmentDetail")
     data object CancelAppointmentConfirmation : Routes("CancelAppointmentConfirmation")
+    data object SignUp : Routes("SignUp")
+    data object CreateAccountFarmer : Routes("CreateAccountFarmer")
 }

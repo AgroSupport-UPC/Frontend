@@ -138,7 +138,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
                         .fillMaxWidth()
                         .padding(16.dp)
                         .clickable {
-                            viewModel.goToForgotPasswordScreen()
+                            viewModel.goToSignUpScreen()
                         },
                     color = Color.Black,
                     fontSize = 14.sp,
