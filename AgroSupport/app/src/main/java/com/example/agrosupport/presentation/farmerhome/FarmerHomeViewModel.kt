@@ -41,6 +41,7 @@ class FarmerHomeViewModel(
     }
 
     fun signOut() {
+        GlobalVariables.ROLES = emptyList()
         viewModelScope.launch {
             val authResponse = AuthenticationResponse(
                 id = GlobalVariables.USER_ID,

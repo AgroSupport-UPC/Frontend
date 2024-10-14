@@ -91,8 +91,8 @@ class MainActivity : ComponentActivity() {
                 val farmerAppointmentHistoryListViewModel = FarmerAppointmentHistoryListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService))
                 val createAccountViewModel = CreateAccountViewModel(navController)
-                val createAccountFarmerPart1ViewModel = CreateAccountFarmerViewModel(navController)
-                val createProfileFarmerViewModel = CreateProfileFarmerViewModel(navController)
+                val createAccountFarmerPart1ViewModel = CreateAccountFarmerViewModel(navController, AuthenticationRepository(authenticationService, userDao))
+                val createProfileFarmerViewModel = CreateProfileFarmerViewModel(navController, ProfileRepository(profileService), createAccountFarmerPart1ViewModel)
                 val confirmCreationAccountFarmerViewModel = ConfirmCreationAccountFarmerViewModel(navController)
 
                 NavHost(navController = navController, startDestination = Routes.Welcome.route) {

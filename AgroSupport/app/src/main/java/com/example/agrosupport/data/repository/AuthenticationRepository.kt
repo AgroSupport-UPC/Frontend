@@ -6,10 +6,23 @@ import com.example.agrosupport.data.local.UserEntity
 import com.example.agrosupport.data.remote.AuthenticationService
 import com.example.agrosupport.domain.AuthenticationRequest
 import com.example.agrosupport.domain.AuthenticationResponse
+import com.example.agrosupport.domain.SignUpRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class AuthenticationRepository(private val authenticationService: AuthenticationService, private val userDao: UserDao) {
+
+    suspend fun signUp(username: String, password: String, roles: List<String>) = withContext(Dispatchers.IO) {
+        val response = authenticationService.signUp(SignUpRequest(username, password, roles))
+        if (response.isSuccessful) {
+            response.body()?.let { signUpResponse ->
+                return@withContext Resource.Success(signUpResponse)
+            }
+            return@withContext Resource.Error(message = "Error al registrar usuario")
+        }
+        return@withContext Resource.Error(message = response.message().ifEmpty { "Error al registrar usuario" })
+    }
+
     suspend fun signIn(username: String, password: String) = withContext(Dispatchers.IO) {
         val response = authenticationService.signIn(AuthenticationRequest(username, password))
         if (response.isSuccessful) {
