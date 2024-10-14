@@ -1,4 +1,4 @@
-package com.example.agrosupport.presentation.appointmentdetails
+package com.example.agrosupport.presentation.farmerappointmentdetail
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

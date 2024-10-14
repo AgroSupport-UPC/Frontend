@@ -10,13 +10,11 @@ import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.local.AppDatabase
 import com.example.agrosupport.data.repository.AdvisorRepository
 import com.example.agrosupport.data.repository.AppointmentRepository
 import com.example.agrosupport.data.repository.AuthenticationRepository
 import com.example.agrosupport.data.repository.FarmerRepository
 import com.example.agrosupport.data.repository.ProfileRepository
-import com.example.agrosupport.domain.Advisor
 import com.example.agrosupport.domain.Appointment
 import com.example.agrosupport.domain.Profile
 import com.example.agrosupport.domain.AuthenticationResponse
@@ -52,64 +50,62 @@ class FarmerHomeViewModel(
     }
 
     fun getAppointment() {
+        _appointmentCard.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val farmerResult = farmerRepository.searchFarmerByUserId(
-                GlobalVariables.USER_ID,
-                GlobalVariables.TOKEN
-            )
-            if (farmerResult is Resource.Success) {
-                val farmerId = farmerResult.data?.id
-                if (farmerId == null) {
-                    _appointmentCard.value = UIState(message = "Error farmer not found")
-                    return@launch
-                }
-                val appointmentResult =
-                    appointmentRepository.getAppointmentsByFarmer(farmerId, GlobalVariables.TOKEN)
-                if (appointmentResult is Resource.Success) {
-                    val appointments = appointmentResult.data
-                    if (appointments != null) {
-                        val appointment = appointments.filter { it.status == "PENDING" }
-                            .minByOrNull { it.scheduledDate }
-                        if (appointment != null) {
-                            val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, GlobalVariables.TOKEN)
-                            if (advisorResult is Resource.Success) {
-                                if (advisorResult.data == null) {
-                                    _appointmentCard.value = UIState(message = "Error advisor not found")
-                                    return@launch
-                                }
-                                val advisorProfileResult = profileRepository.searchProfile(advisorResult.data.userId, GlobalVariables.TOKEN)
-                                if (advisorProfileResult is Resource.Success) {
-                                    if (advisorProfileResult.data == null) {
-                                        _appointmentCard.value =
-                                            UIState(message = "Error advisor profile not found")
-                                        return@launch
-                                    }
-                                    val appointmentCard = AdvisorAppointmentCard(
-                                        id = appointment.id,
-                                        advisorName = advisorProfileResult.data.firstName + " " + advisorProfileResult.data.lastName,
-                                        advisorPhoto = advisorProfileResult.data.photo,
-                                        message = appointment.message,
-                                        status = appointment.status,
-                                        scheduledDate = appointment.scheduledDate,
-                                        startTime = appointment.startTime,
-                                        endTime = appointment.endTime,
-                                        meetingUrl = appointment.meetingUrl
-                                        )
-                                    _appointmentCard.value = UIState(data = appointmentCard)
-                                }
-                            }
-                        } else {
-                            _appointmentCard.value = UIState(message = "No pending appointments")
-                        }
-                    } else {
-                        _appointmentCard.value = UIState(message = "Error getting appointments")
-                    }
-                } else {
-                    _appointmentCard.value = UIState(message = "Error getting farmer")
-                }
+            val farmerId = fetchFarmerId() ?: run {
+                _appointmentCard.value = UIState(message = "Error farmer not found")
+                return@launch
             }
+
+            val appointment = fetchPendingAppointment(farmerId) ?: run {
+                _appointmentCard.value = UIState(message = "No pending appointments")
+                return@launch
+            }
+
+            val advisorProfile = fetchAdvisorProfile(appointment.advisorId) ?: run {
+                _appointmentCard.value = UIState(message = "Error advisor profile not found")
+                return@launch
+            }
+
+            val appointmentCard = AdvisorAppointmentCard(
+                id = appointment.id,
+                advisorName = "${advisorProfile.firstName} ${advisorProfile.lastName}",
+                advisorPhoto = advisorProfile.photo,
+                message = appointment.message,
+                status = appointment.status,
+                scheduledDate = appointment.scheduledDate,
+                startTime = appointment.startTime,
+                endTime = appointment.endTime,
+                meetingUrl = appointment.meetingUrl
+            )
+
+            _appointmentCard.value = UIState(data = appointmentCard)
         }
     }
+
+    private suspend fun fetchFarmerId(): Long? {
+        val farmerResult = farmerRepository.searchFarmerByUserId(
+            GlobalVariables.USER_ID,
+            GlobalVariables.TOKEN
+        )
+        return (farmerResult as? Resource.Success)?.data?.id
+    }
+
+    private suspend fun fetchPendingAppointment(farmerId: Long): Appointment? {
+        val appointmentResult = appointmentRepository.getAppointmentsByFarmer(farmerId, GlobalVariables.TOKEN)
+        val appointments = (appointmentResult as? Resource.Success)?.data
+        return appointments?.filter { it.status == "PENDING" }
+            ?.minByOrNull { it.scheduledDate }
+    }
+
+    private suspend fun fetchAdvisorProfile(advisorId: Long): Profile? {
+        val advisorResult = advisorRepository.searchAdvisorByAdvisorId(advisorId, GlobalVariables.TOKEN)
+        val advisor = (advisorResult as? Resource.Success)?.data ?: return null
+
+        val advisorProfileResult = profileRepository.searchProfile(advisor.userId, GlobalVariables.TOKEN)
+        return (advisorProfileResult as? Resource.Success)?.data
+    }
+
 
     fun signOut() {
         GlobalVariables.ROLES = emptyList()
@@ -136,7 +132,11 @@ class FarmerHomeViewModel(
         navController.navigate(Routes.FarmerAppointmentList.route)
     }
 
-    fun goToWelcomeSection() {
+    fun goToAppointmentDetail(appointmentId: Long) {
+        navController.navigate(Routes.FarmerAppointmentDetail.route + "/$appointmentId")
+    }
+
+    private fun goToWelcomeSection() {
         navController.navigate(Routes.Welcome.route)
     }
 
