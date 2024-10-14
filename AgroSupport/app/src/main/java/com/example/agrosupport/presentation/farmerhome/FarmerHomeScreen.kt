@@ -9,12 +9,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,18 +26,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.example.agrosupport.R
+import com.example.agrosupport.presentation.farmerhistory.AppointmentCard
 
 @Composable
 fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
     LaunchedEffect(Unit) {
         viewModel.getFarmerName()
+        viewModel.getAppointment()
     }
 
     val cardItems = listOf(
@@ -52,17 +58,21 @@ fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
             text = "Publicaciones"
         ),
     )
+    val farmer = viewModel.state.value
+    val isExpanded = viewModel.expanded.value
+    val appointmentCard = viewModel.appointmentCard.value
 
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier.fillMaxWidth().padding(paddingValues).padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Bienvenido, ${viewModel.state.value.data?.firstName ?: "Granjero"}",
+                    text = "Bienvenido, ${farmer.data?.firstName ?: "Granjero"}",
                     modifier = Modifier.weight(1f),
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold,
@@ -73,50 +83,69 @@ fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
                     contentDescription = "Notifications",
                     modifier = Modifier.padding(horizontal = 8.dp).size(32.dp)
                 )
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More",
-                    modifier = Modifier.padding(horizontal = 8.dp).size(32.dp)
-                )
-            }
-
-            Card(
-                modifier = Modifier.fillMaxWidth().padding(8.dp).padding(bottom = 16.dp),
-                colors = CardColors(
-                    contentColor = Color.White,
-                    containerColor = Color(0xFFFF7121),
-                    disabledContentColor = Color.White,
-                    disabledContainerColor = Color(0xFFFF7121),
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(12.dp)
+                IconButton(onClick = { viewModel.setExpanded(true) }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "More",
+                        modifier = Modifier.padding(horizontal = 8.dp).size(32.dp)
+                    )
+                }
+                // Menú emergente
+                DropdownMenu(
+                    expanded = isExpanded,
+                    onDismissRequest = { viewModel.setExpanded(false) },
+                    offset = DpOffset(x = (2000).dp, y = 0.dp)
                 ) {
-                    Text(
-                        text = "Asesoramiento Personalizado",
-                        modifier = Modifier.padding(8.dp),
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Italic,
-                        style = MaterialTheme.typography.displayMedium
-                    )
-                    Text(
-                        text = "Gestiona tu granja con sabiduría: asesoría experta para cada desafío",
-                        modifier = Modifier.padding(8.dp).padding(bottom = 32.dp),
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Italic,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.hero_image),
-                        contentDescription = "Hero Image",
-                        modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f).padding(bottom = 16.dp)
+                    DropdownMenuItem(
+                        text = { Text("Cerrar Sesión") },
+                        onClick = {
+                            viewModel.signOut()
+                            viewModel.setExpanded(false)
+                        }
                     )
                 }
             }
+
+            Image(
+                    painter = painterResource(id = R.drawable.hero_image),
+                    contentDescription = "Hero Image",
+                    modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f).padding(bottom = 16.dp)
+            )
+
             Text(
-                text = "Elige tu Próximo Paso",
+                text = "Tu próxima cita",
+                modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            when {
+                appointmentCard.isLoading -> {
+                    CircularProgressIndicator()
+                }
+                appointmentCard.data == null -> {
+                    // Mostrar texto si no hay citas
+                    Text(
+                        text = "No tienes citas programadas",
+                        modifier = Modifier.padding(8.dp),
+                        fontFamily = FontFamily.SansSerif,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+                else -> {
+                    // Mostrar tarjeta de la cita si hay datos
+                    AppointmentCard(
+                        appointment = appointmentCard.data,
+                        onClick = {
+                            viewModel.goToAppointmentDetail(appointmentCard.data.id)
+                        }
+                    )
+                }
+            }
+
+            Text(
+                text = "Elige tu próximo paso",
                 modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
                 fontFamily = FontFamily.SansSerif,
                 fontWeight = FontWeight.Bold,

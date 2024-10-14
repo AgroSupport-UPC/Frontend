@@ -6,19 +6,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,7 +36,6 @@ fun RestorePasswordScreen(viewModel: RestorePasswordViewModel) {
     val confirmPassword = viewModel.confirmPassword.value
     val showNewPassword = viewModel.isNewPasswordVisible.value
     val showConfirmPassword = viewModel.isConfirmPasswordVisible.value
-    val passwordVisualTransformation = remember { PasswordVisualTransformation() }
 
     Scaffold { paddingValues ->
         Column(

@@ -49,7 +49,6 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
     // Fecha seleccionada (por defecto null para mostrar todas las citas)
     val selectedDate = remember { mutableStateOf<Date?>(null) }
 
-
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->

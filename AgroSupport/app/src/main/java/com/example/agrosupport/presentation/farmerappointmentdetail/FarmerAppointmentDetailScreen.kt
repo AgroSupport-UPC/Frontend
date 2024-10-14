@@ -1,4 +1,4 @@
-package com.example.agrosupport.presentation.appointmentdetails
+package com.example.agrosupport.presentation.farmerappointmentdetail
 
 import android.content.Context
 import android.widget.Toast

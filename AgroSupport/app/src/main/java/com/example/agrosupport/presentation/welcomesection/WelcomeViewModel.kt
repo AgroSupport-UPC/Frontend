@@ -45,8 +45,12 @@ class WelcomeViewModel(
         navController.navigate(Routes.SignIn.route)
     }
 
-    fun goToFarmerHomeScreen() {
+    private fun goToFarmerHomeScreen() {
         navController.navigate(Routes.FarmerHome.route)
+    }
+
+    fun goToSignUpScreen() {
+        navController.navigate(Routes.SignUp.route)
     }
 
 }
