@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.agrosupport.common.Constants
 import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
@@ -47,7 +48,7 @@ class FarmerAppointmentListViewModel(
     fun getAdvisorAppointmentListByFarmer(selectedDate: Date? = null) {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val farmerResult = farmerRepository.searchFarmerByUserId(2, GlobalVariables.TOKEN)
+            val farmerResult = farmerRepository.searchFarmerByUserId(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
 
             if (farmerResult is Resource.Success && farmerResult.data != null) {
                 val farmerId = farmerResult.data.id // Si la búsqueda del granjero fue exitosa

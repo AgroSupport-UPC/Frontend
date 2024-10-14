@@ -40,7 +40,7 @@ class FarmerAppointmentHistoryListViewModel(
     fun getAdvisorAppointmentHistoryListByFarmer(selectedDate: Date? = null) {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val farmerResult = farmerRepository.searchFarmerByUserId(2, GlobalVariables.TOKEN)
+            val farmerResult = farmerRepository.searchFarmerByUserId(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
 
             if (farmerResult is Resource.Success && farmerResult.data != null) {
                 val farmerId = farmerResult.data.id // Si la búsqueda del granjero fue exitosa
