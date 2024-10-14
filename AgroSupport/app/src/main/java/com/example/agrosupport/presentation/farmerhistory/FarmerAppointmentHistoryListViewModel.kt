@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
+import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
 import com.example.agrosupport.data.repository.AdvisorRepository
 import com.example.agrosupport.data.repository.AppointmentRepository
@@ -32,9 +33,8 @@ class FarmerAppointmentHistoryListViewModel(
         navController.popBackStack()
     }
 
-    fun onNavigateDetail(appointmentId: Long) {
-        // Implementación para la navegación al detalle de la cita
-        navController.navigate("FarmerAppointmentDetail/$appointmentId")
+    fun onReviewAppointment(appointmentId: Long) {
+        navController.navigate(Routes.FarmerReviewAppointment.route + "/$appointmentId")
     }
 
     fun getAdvisorAppointmentHistoryListByFarmer(selectedDate: Date? = null) {

@@ -41,8 +41,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.draw.clip
+import com.example.agrosupport.presentation.farmerappointmentdetail.CancelAppointmentDialog
+import com.example.agrosupport.presentation.farmerappointmentdetail.FarmerAppointmentDetailViewModel
 import com.example.agrosupport.presentation.farmerhistory.AppointmentCard
+
 
 @Composable
 fun FarmerAppointmentDetailScreen(
@@ -57,7 +61,16 @@ fun FarmerAppointmentDetailScreen(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+
+        viewModel.startPollingAppointmentStatus(appointmentId)
         viewModel.loadAppointmentDetails(appointmentId)
+
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.stopPollingAppointmentStatus()
+        }
     }
 
     Scaffold { paddingValues ->

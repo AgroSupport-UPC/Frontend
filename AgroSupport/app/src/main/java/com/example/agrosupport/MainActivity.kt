@@ -18,7 +18,7 @@ import com.example.agrosupport.presentation.advisordetail.AdvisorDetailScreen
 import com.example.agrosupport.presentation.advisordetail.AdvisorDetailViewModel
 import com.example.agrosupport.presentation.advisorlist.AdvisorListScreen
 import com.example.agrosupport.presentation.advisorlist.AdvisorListViewModel
-import com.example.agrosupport.presentation.farmerappointmentdetail.CancelAppointmentSuccessScreen
+import com.example.agrosupport.presentation.appointmentdetails.CancelAppointmentSuccessScreen
 import com.example.agrosupport.presentation.farmerappointmentdetail.FarmerAppointmentDetailScreen
 import com.example.agrosupport.presentation.farmerappointmentdetail.FarmerAppointmentDetailViewModel
 import com.example.agrosupport.presentation.confirmcreationaccountfarmer.ConfirmCreationAccountFarmerScreen
@@ -39,6 +39,8 @@ import com.example.agrosupport.presentation.login.LoginScreen
 import com.example.agrosupport.presentation.login.LoginViewModel
 import com.example.agrosupport.presentation.newappointment.NewAppointmentScreen
 import com.example.agrosupport.presentation.newappointment.NewAppointmentViewModel
+import com.example.agrosupport.presentation.rating.FarmerReviewAppointmentScreen
+import com.example.agrosupport.presentation.rating.FarmerReviewAppointmentViewModel
 import com.example.agrosupport.presentation.restorepassword.RestorePasswordScreen
 import com.example.agrosupport.presentation.restorepassword.RestorePasswordViewModel
 import com.example.agrosupport.presentation.reviewlist.ReviewListScreen
@@ -54,7 +56,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val userDao = Room
-            .databaseBuilder(applicationContext, AppDatabase::class.java,"agrosupport-db")
+            .databaseBuilder(applicationContext, AppDatabase::class.java, "agrosupport-db")
             .build()
             .getUserDao()
 
@@ -64,7 +66,6 @@ class MainActivity : ComponentActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(AuthenticationService::class.java)
-
 
         val profileService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(ProfileService::class.java)
         val advisorService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AdvisorService::class.java)
@@ -89,7 +90,8 @@ class MainActivity : ComponentActivity() {
                 val reviewListViewModel = ReviewListViewModel(navController, ReviewRepository(reviewService), ProfileRepository(profileService), FarmerRepository(farmerService))
                 val farmerAppointmentListViewModel = FarmerAppointmentListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val farmerAppointmentHistoryListViewModel = FarmerAppointmentHistoryListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
-                val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService))
+                val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService), ReviewRepository(reviewService))
+                val farmerReviewAdvisorViewModel = FarmerReviewAppointmentViewModel(navController, ReviewRepository(reviewService), AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService))
                 val createAccountViewModel = CreateAccountViewModel(navController)
                 val createAccountFarmerPart1ViewModel = CreateAccountFarmerViewModel(navController, AuthenticationRepository(authenticationService, userDao))
                 val createProfileFarmerViewModel = CreateProfileFarmerViewModel(navController, ProfileRepository(profileService), createAccountFarmerPart1ViewModel)
@@ -102,15 +104,12 @@ class MainActivity : ComponentActivity() {
                     composable(route = Routes.SignIn.route) {
                         LoginScreen(viewModel = loginViewModel)
                     }
-
                     composable(route = Routes.ForgotPassword.route) {
                         ForgotPasswordScreen(viewModel = forgotPasswordViewModel)
                     }
-
                     composable(route = Routes.RestorePassword.route) {
                         RestorePasswordScreen(viewModel = restorePasswordViewModel)
                     }
-
                     composable(route = Routes.FarmerHome.route) {
                         FarmerHomeScreen(viewModel = farmerHomeViewModel)
                     }
@@ -139,25 +138,24 @@ class MainActivity : ComponentActivity() {
                         val appointmentId = it.arguments?.getString("appointmentId")?.toLong() ?: 0
                         FarmerAppointmentDetailScreen(viewModel = farmerAppointmentDetailViewModel, appointmentId = appointmentId)
                     }
-
                     composable(route = Routes.CancelAppointmentConfirmation.route) {
                         CancelAppointmentSuccessScreen(onBackClick = {
                             navController.navigate(Routes.FarmerAppointmentList.route)
                         })
                     }
-
+                    composable(route = Routes.FarmerReviewAppointment.route + "/{appointmentId}") {
+                        val appointmentId = it.arguments?.getString("appointmentId")?.toLong() ?: 0
+                        FarmerReviewAppointmentScreen(viewModel = farmerReviewAdvisorViewModel, appointmentId = appointmentId)
+                    }
                     composable(route = Routes.SignUp.route) {
                         CreateAccountScreen(viewModel = createAccountViewModel)
                     }
-
                     composable(route = Routes.CreateAccountFarmer.route) {
                         CreateAccountFarmerScreen(viewModel = createAccountFarmerPart1ViewModel)
                     }
-
                     composable(route = Routes.CreateProfileFarmer.route) {
                         CreateProfileFarmerScreen(viewModel = createProfileFarmerViewModel)
                     }
-
                     composable(route = Routes.ConfirmCreationAccountFarmer.route) {
                         ConfirmCreationAccountFarmerScreen(viewModel = confirmCreationAccountFarmerViewModel)
                     }

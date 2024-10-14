@@ -1,15 +1,44 @@
 package com.example.agrosupport.data.remote
 
+import com.example.agrosupport.domain.CreateReview
+import com.example.agrosupport.domain.UpdateReview
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ReviewService {
     @GET("reviews")
     suspend fun getReviews(@Header("Authorization") token: String): Response<List<ReviewDto>>
-    @GET("reviews")
-    suspend fun getReviewsByAdvisor(@Query("advisorId") advisorId: Long, @Header("Authorization") token: String): Response<List<ReviewDto>>
 
+    
+    @GET("reviews")
+    suspend fun getReviewsByAdvisor(
+        @Query("advisorId") advisorId: Long,
+        @Header("Authorization") token: String
+    ): Response<List<ReviewDto>>
+
+    @POST("reviews")
+    suspend fun createReview(
+        @Header("Authorization") token: String, 
+        @Body review: CreateReview
+    ): Response<ReviewDto>
+
+    @PUT("reviews/{reviewId}")
+    suspend fun updateReview(
+        @Path("reviewId") reviewId: Long,
+        @Header("Authorization") token: String, 
+        @Body review: UpdateReview
+    ): Response<ReviewDto>
+
+    @GET("reviews/{advisorId}/{farmerId}/review")
+    suspend fun getReviewByAdvisorIdAndFarmerId(
+        @Path("advisorId") advisorId: Long,
+        @Path("farmerId") farmerId: Long,
+        @Header("Authorization") token: String
+    ): Response<ReviewDto>
 }

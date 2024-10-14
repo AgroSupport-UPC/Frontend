@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.agrosupport.common.Constants
 import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
@@ -13,6 +14,7 @@ import com.example.agrosupport.data.repository.AdvisorRepository
 import com.example.agrosupport.data.repository.AppointmentRepository
 import com.example.agrosupport.data.repository.FarmerRepository
 import com.example.agrosupport.data.repository.ProfileRepository
+import com.example.agrosupport.domain.Appointment
 import com.example.agrosupport.presentation.farmerhistory.AdvisorAppointmentCard
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -30,16 +32,17 @@ class FarmerAppointmentListViewModel(
     private val _state = mutableStateOf(UIState<List<AdvisorAppointmentCard>>())
     val state: State<UIState<List<AdvisorAppointmentCard>>> get() = _state
 
+
     fun goBack() {
         navController.navigate(Routes.FarmerHome.route)
     }
 
-    fun goAppointmentDetail(appointmentId: Long) {
-        navController.navigate(Routes.FarmerAppointmentDetail.route + "/$appointmentId")
-    }
-
     fun goHistory() {
         navController.navigate(Routes.FarmerAppointmentHistory.route)
+    }
+
+    fun goAppointmentDetail(appointmentId: Long) {
+        navController.navigate(Routes.FarmerAppointmentDetail.route + "/$appointmentId")
     }
 
     fun getAdvisorAppointmentListByFarmer(selectedDate: Date? = null) {
@@ -130,4 +133,5 @@ class FarmerAppointmentListViewModel(
             }
         }
     }
+
 }
