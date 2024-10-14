@@ -13,6 +13,7 @@ import com.example.agrosupport.data.repository.AdvisorRepository
 import com.example.agrosupport.data.repository.AppointmentRepository
 import com.example.agrosupport.data.repository.FarmerRepository
 import com.example.agrosupport.data.repository.ProfileRepository
+import com.example.agrosupport.domain.Appointment
 import com.example.agrosupport.presentation.farmerhistory.AdvisorAppointmentCard
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -30,22 +31,23 @@ class FarmerAppointmentListViewModel(
     private val _state = mutableStateOf(UIState<List<AdvisorAppointmentCard>>())
     val state: State<UIState<List<AdvisorAppointmentCard>>> get() = _state
 
+
     fun goBack() {
         navController.navigate(Routes.FarmerHome.route)
-    }
-
-    fun goAppointmentDetail(appointmentId: Long) {
-        navController.navigate(Routes.FarmerAppointmentDetail.route + "/$appointmentId")
     }
 
     fun goHistory() {
         navController.navigate(Routes.FarmerAppointmentHistory.route)
     }
 
+    fun goAppointmentDetail(appointmentId: Long) {
+        navController.navigate(Routes.FarmerAppointmentDetail.route + "/$appointmentId")
+    }
+
     fun getAdvisorAppointmentListByFarmer(selectedDate: Date? = null) {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val farmerResult = farmerRepository.searchFarmerByUserId(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
+            val farmerResult = farmerRepository.searchFarmerByUserId(2, GlobalVariables.TOKEN)
 
             if (farmerResult is Resource.Success && farmerResult.data != null) {
                 val farmerId = farmerResult.data.id // Si la búsqueda del granjero fue exitosa
@@ -130,4 +132,5 @@ class FarmerAppointmentListViewModel(
             }
         }
     }
+
 }

@@ -20,7 +20,7 @@ import com.example.agrosupport.presentation.advisorlist.AdvisorListScreen
 import com.example.agrosupport.presentation.advisorlist.AdvisorListViewModel
 import com.example.agrosupport.presentation.appointmentdetails.CancelAppointmentSuccessScreen
 import com.example.agrosupport.presentation.appointmentdetails.FarmerAppointmentDetailScreen
-import com.example.agrosupport.presentation.appointmentdetails.FarmerAppointmentDetailViewModel
+import com.example.agrosupport.presentation.farmerappointmentdetail.FarmerAppointmentDetailViewModel
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListScreen
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListViewModel
 import com.example.agrosupport.presentation.farmerhistory.FarmerAppointmentHistoryListScreen
@@ -33,6 +33,8 @@ import com.example.agrosupport.presentation.login.LoginScreen
 import com.example.agrosupport.presentation.login.LoginViewModel
 import com.example.agrosupport.presentation.newappointment.NewAppointmentScreen
 import com.example.agrosupport.presentation.newappointment.NewAppointmentViewModel
+import com.example.agrosupport.presentation.rating.FarmerReviewAppointmentScreen
+import com.example.agrosupport.presentation.rating.FarmerReviewAppointmentViewModel
 import com.example.agrosupport.presentation.restorepassword.RestorePasswordScreen
 import com.example.agrosupport.presentation.restorepassword.RestorePasswordViewModel
 import com.example.agrosupport.presentation.reviewlist.ReviewListScreen
@@ -82,7 +84,8 @@ class MainActivity : ComponentActivity() {
                 val reviewListViewModel = ReviewListViewModel(navController, ReviewRepository(reviewService), ProfileRepository(profileService), AdvisorRepository(advisorService), FarmerRepository(farmerService))
                 val farmerAppointmentListViewModel = FarmerAppointmentListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val farmerAppointmentHistoryListViewModel = FarmerAppointmentHistoryListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
-                val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService))
+                val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService), ReviewRepository(reviewService))
+                val farmerReviewAdvisorViewModel = FarmerReviewAppointmentViewModel(navController, ReviewRepository(reviewService), AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService))
 
                 NavHost(navController = navController, startDestination = Routes.Welcome.route) {
                     composable(route = Routes.Welcome.route) {
@@ -134,6 +137,13 @@ class MainActivity : ComponentActivity() {
                             navController.navigate(Routes.FarmerAppointmentList.route)
                         })
                     }
+
+                    composable(route = Routes.FarmerReviewAppointment.route + "/{appointmentId}") {
+                        val appointmentId = it.arguments?.getString("appointmentId")?.toLong() ?: 0
+                        FarmerReviewAppointmentScreen(viewModel = farmerReviewAdvisorViewModel, appointmentId = appointmentId)
+                    }
+
+
 
                 }
             }

@@ -45,8 +45,6 @@ fun FarmerAppointmentHistoryListScreen(
     val state = viewModel.state.value
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
-
-    // Fecha seleccionada (por defecto null para mostrar todas las citas)
     val selectedDate = remember { mutableStateOf<Date?>(null) }
 
     // Dialogo del selector de fechas
@@ -112,7 +110,7 @@ fun FarmerAppointmentHistoryListScreen(
                         items(appointments) { appointment ->
                             AppointmentCard(
                                 appointment = appointment,
-                                onClick = { viewModel.onNavigateDetail(appointment.id) }
+                                onClick = { viewModel.onReviewAppointment(appointment.id) }
                             )
                         }
                     }

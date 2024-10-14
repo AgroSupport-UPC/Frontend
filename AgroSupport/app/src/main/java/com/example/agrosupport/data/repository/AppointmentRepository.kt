@@ -7,6 +7,7 @@ import com.example.agrosupport.data.remote.AppointmentService
 import com.example.agrosupport.domain.CreateAppointment
 import com.example.agrosupport.data.remote.toAppointment
 import com.example.agrosupport.domain.Appointment
+import com.example.agrosupport.domain.UpdateAppointment
 
 class AppointmentRepository(private val appointmentService: AppointmentService) {
     suspend fun getAppointmentById(id: Long, token: String): Resource<Appointment> = withContext(Dispatchers.IO) {
@@ -98,6 +99,22 @@ class AppointmentRepository(private val appointmentService: AppointmentService) 
         val response = appointmentService.deleteAppointment(id, bearerToken)
         if (response.isSuccessful) {
             return@withContext Resource.Success(Unit)
+        }
+        return@withContext Resource.Error(response.message())
+    }
+
+    suspend fun updateAppointment(id: Long, token: String, appointment: UpdateAppointment): Resource<Appointment> = withContext(Dispatchers.IO) {
+        if (token.isBlank()) {
+            return@withContext Resource.Error(message = "Un token es requerido")
+        }
+        val bearerToken = "Bearer $token"
+        val response = appointmentService.updateAppointment(id, bearerToken, appointment)
+        if (response.isSuccessful) {
+            response.body()?.let { appointmentDto ->
+                val updatedAppointment = appointmentDto.toAppointment()
+                return@withContext Resource.Success(updatedAppointment)
+            }
+            return@withContext Resource.Error(message = "No se pudo actualizar la cita")
         }
         return@withContext Resource.Error(response.message())
     }

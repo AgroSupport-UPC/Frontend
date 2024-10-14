@@ -1,5 +1,7 @@
-package com.example.agrosupport.presentation.appointmentdetails
+package com.example.agrosupport.presentation.farmerappointmentdetail
 
+import androidx.compose.runtime.Recomposer
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,12 +15,18 @@ import com.example.agrosupport.common.Resource
 import kotlinx.coroutines.launch
 import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Routes
+import com.example.agrosupport.domain.Appointment
+import androidx.compose.runtime.State
+import com.example.agrosupport.data.repository.ReviewRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 
 class FarmerAppointmentDetailViewModel(
     private val navController: NavController,
     private val appointmentRepository: AppointmentRepository,
     private val advisorRepository: AdvisorRepository,
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
     private val _appointmentDetails = MutableLiveData<AdvisorAppointmentCard?>()
@@ -35,6 +43,59 @@ class FarmerAppointmentDetailViewModel(
 
     private val _showCancelDialog = MutableLiveData<Boolean>()
     val showCancelDialog: LiveData<Boolean> get() = _showCancelDialog
+
+    private val _appointmentStatusState = mutableStateOf<Appointment?>(null)
+    val appointmentStatusState: State<Appointment?> get() = _appointmentStatusState
+
+    private val _errorStateMessage = mutableStateOf<String?>(null)
+    val errorStateMessage: State<String?> get() = _errorStateMessage
+
+    private var pollingJob: Job? = null
+
+    fun goBack() {
+        _showCancelDialog.value = false
+        navController.popBackStack()
+    }
+
+    fun getStatusAppointment(appointmentId: Long) {
+        viewModelScope.launch {
+            val appointmentResult = appointmentRepository.getAppointmentById(appointmentId, GlobalVariables.TOKEN)
+
+            if (appointmentResult is Resource.Success && appointmentResult.data != null) {
+                val appointment = appointmentResult.data
+                _appointmentStatusState.value = appointment
+
+                if (appointment.status == "COMPLETED") {
+
+                    val reviewResult = reviewRepository.getReviewByAdvisorIdAndFarmerId(appointment.advisorId, appointment.farmerId, GlobalVariables.TOKEN)
+
+                    if (reviewResult is Resource.Success && reviewResult.data != null) {
+
+                        navController.navigate(Routes.FarmerAppointmentList.route)
+
+                    }
+
+                    navController.navigate(Routes.FarmerReviewAppointment.route + "/$appointmentId")
+
+                }
+            } else {
+                _errorStateMessage.value = "Error al cargar los detalles de la cita."
+            }
+        }
+    }
+
+    fun startPollingAppointmentStatus(appointmentId: Long) {
+        pollingJob = viewModelScope.launch {
+            while (true) {
+                getStatusAppointment(appointmentId)
+                delay(5000) // Revisar cada 5 segundos (ajusta el delay si es necesario)
+            }
+        }
+    }
+
+    fun stopPollingAppointmentStatus() {
+        pollingJob?.cancel()
+    }
 
     fun loadAppointmentDetails(appointmentId: Long) {
         _isLoading.value = true
@@ -94,10 +155,6 @@ class FarmerAppointmentDetailViewModel(
                 _errorMessage.value = "Error al obtener los detalles de la cita"
             }
         }
-    }
-
-    fun goBack() {
-        navController.popBackStack()
     }
 
     fun onCancelAppointmentClick() {
