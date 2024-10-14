@@ -21,6 +21,12 @@ import com.example.agrosupport.presentation.advisorlist.AdvisorListViewModel
 import com.example.agrosupport.presentation.appointmentdetails.CancelAppointmentSuccessScreen
 import com.example.agrosupport.presentation.appointmentdetails.FarmerAppointmentDetailScreen
 import com.example.agrosupport.presentation.appointmentdetails.FarmerAppointmentDetailViewModel
+import com.example.agrosupport.presentation.confirmcreationaccountfarmer.ConfirmCreationAccountFarmerScreen
+import com.example.agrosupport.presentation.confirmcreationaccountfarmer.ConfirmCreationAccountFarmerViewModel
+import com.example.agrosupport.presentation.createaccountfarmer.CreateAccountFarmerScreen
+import com.example.agrosupport.presentation.createaccountfarmer.CreateAccountFarmerViewModel
+import com.example.agrosupport.presentation.createprofilefarmer.CreateProfileFarmerScreen
+import com.example.agrosupport.presentation.createprofilefarmer.CreateProfileFarmerViewModel
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListScreen
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListViewModel
 import com.example.agrosupport.presentation.farmerhistory.FarmerAppointmentHistoryListScreen
@@ -37,6 +43,8 @@ import com.example.agrosupport.presentation.restorepassword.RestorePasswordScree
 import com.example.agrosupport.presentation.restorepassword.RestorePasswordViewModel
 import com.example.agrosupport.presentation.reviewlist.ReviewListScreen
 import com.example.agrosupport.presentation.reviewlist.ReviewListViewModel
+import com.example.agrosupport.presentation.signup.CreateAccountScreen
+import com.example.agrosupport.presentation.signup.CreateAccountViewModel
 import com.example.agrosupport.presentation.welcomesection.WelcomeScreen
 import com.example.agrosupport.presentation.welcomesection.WelcomeViewModel
 import com.example.agrosupport.ui.theme.AgroSupportTheme
@@ -58,7 +66,6 @@ class MainActivity : ComponentActivity() {
             .create(AuthenticationService::class.java)
 
 
-        val loginService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AuthenticationService::class.java)
         val profileService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(ProfileService::class.java)
         val advisorService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AdvisorService::class.java)
         val farmerService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(FarmerService::class.java)
@@ -74,7 +81,7 @@ class MainActivity : ComponentActivity() {
                 val welcomeViewModel = WelcomeViewModel(navController, AuthenticationRepository(authenticationService, userDao))
                 val loginViewModel = LoginViewModel(navController, AuthenticationRepository(authenticationService, userDao))
                 val forgotPasswordViewModel = ForgotPasswordViewModel(navController)
-                val farmerHomeViewModel = FarmerHomeViewModel(navController, ProfileRepository(profileService))
+                val farmerHomeViewModel = FarmerHomeViewModel(navController, ProfileRepository(profileService), AuthenticationRepository(authenticationService, userDao))
                 val restorePasswordViewModel = RestorePasswordViewModel(navController)
                 val advisorListViewModel = AdvisorListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
                 val advisorDetailViewModel = AdvisorDetailViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
@@ -83,6 +90,10 @@ class MainActivity : ComponentActivity() {
                 val farmerAppointmentListViewModel = FarmerAppointmentListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val farmerAppointmentHistoryListViewModel = FarmerAppointmentHistoryListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService))
+                val createAccountViewModel = CreateAccountViewModel(navController)
+                val createAccountFarmerPart1ViewModel = CreateAccountFarmerViewModel(navController, AuthenticationRepository(authenticationService, userDao))
+                val createProfileFarmerViewModel = CreateProfileFarmerViewModel(navController, ProfileRepository(profileService), createAccountFarmerPart1ViewModel)
+                val confirmCreationAccountFarmerViewModel = ConfirmCreationAccountFarmerViewModel(navController)
 
                 NavHost(navController = navController, startDestination = Routes.Welcome.route) {
                     composable(route = Routes.Welcome.route) {
@@ -135,6 +146,21 @@ class MainActivity : ComponentActivity() {
                         })
                     }
 
+                    composable(route = Routes.SignUp.route) {
+                        CreateAccountScreen(viewModel = createAccountViewModel)
+                    }
+
+                    composable(route = Routes.CreateAccountFarmer.route) {
+                        CreateAccountFarmerScreen(viewModel = createAccountFarmerPart1ViewModel)
+                    }
+
+                    composable(route = Routes.CreateProfileFarmer.route) {
+                        CreateProfileFarmerScreen(viewModel = createProfileFarmerViewModel)
+                    }
+
+                    composable(route = Routes.ConfirmCreationAccountFarmer.route) {
+                        ConfirmCreationAccountFarmerScreen(viewModel = confirmCreationAccountFarmerViewModel)
+                    }
                 }
             }
         }

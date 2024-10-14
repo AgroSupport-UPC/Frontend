@@ -81,6 +81,10 @@ class LoginViewModel(
         navController.navigate(Routes.FarmerHome.route)
     }
 
+    fun goToSignUpScreen() {
+        navController.navigate(Routes.SignUp.route)
+    }
+
     fun togglePasswordVisibility() {
         _isPasswordVisible.value = !_isPasswordVisible.value
     }
