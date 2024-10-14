@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.remote.ProfileDto
 import com.example.agrosupport.data.repository.AuthenticationRepository
 import com.example.agrosupport.domain.CreateProfile
 import kotlinx.coroutines.Dispatchers

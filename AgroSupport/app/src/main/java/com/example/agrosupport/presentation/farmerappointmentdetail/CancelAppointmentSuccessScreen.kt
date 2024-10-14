@@ -1,4 +1,4 @@
-package com.example.agrosupport.presentation.appointmentdetails
+package com.example.agrosupport.presentation.farmerappointmentdetail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

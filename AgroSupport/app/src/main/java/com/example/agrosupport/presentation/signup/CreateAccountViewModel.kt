@@ -17,8 +17,7 @@ class CreateAccountViewModel(private val navController: NavController
         navController.navigate(Routes.CreateAccountFarmer.route)
     }
 
-    // Sera implementado más adelante....
     fun goToFormsAdvisor() {
-
+        /* TODO: Implementar la navegación a la pantalla de registro de asesor */
     }
 }

@@ -1,4 +1,4 @@
-package com.example.agrosupport.presentation.appointmentdetails
+package com.example.agrosupport.presentation.farmerappointmentdetail
 
 import android.content.Context
 import android.widget.Toast
@@ -42,7 +42,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.ui.draw.clip
-import com.example.agrosupport.presentation.farmerappointmentdetail.CancelAppointmentDialog
 import com.example.agrosupport.presentation.farmerhistory.AppointmentCard
 
 @Composable

@@ -105,7 +105,8 @@ fun WelcomeScreen(viewModel: WelcomeViewModel) {
 
                     OutlinedButton(
                         onClick = { viewModel.goToSignUpScreen() },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(Color.White)
                     ) {
                         Text(text = "Crear cuenta", color = Color.Black)
                     }
