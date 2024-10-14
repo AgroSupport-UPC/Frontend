@@ -144,7 +144,6 @@ class FarmerReviewAppointmentViewModel(
                         if (updateResult is Resource.Success) {
                             _isSubmitting.value = false
                             _state.value = UIState(message = "Calificación actualizada exitosamente.")
-                            navController.popBackStack()
                         } else {
                             _isSubmitting.value = false
                             _state.value = UIState(message = "Error al actualizar la calificación. Por favor, intenta nuevamente.")
@@ -171,5 +170,9 @@ class FarmerReviewAppointmentViewModel(
 
     fun goBack() {
         navController.popBackStack()
+    }
+
+    fun clearState() {
+        _state.value = UIState()
     }
 }

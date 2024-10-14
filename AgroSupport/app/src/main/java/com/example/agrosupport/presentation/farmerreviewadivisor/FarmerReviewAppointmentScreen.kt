@@ -43,7 +43,7 @@ fun FarmerReviewAppointmentScreen(
     Scaffold { paddingValues ->
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(paddingValues)
         ) {
             Column(
@@ -64,8 +64,6 @@ fun FarmerReviewAppointmentScreen(
                             contentDescription = "Volver"
                         )
                     }
-
-
                 }
 
                 if (advisorImage.isNotEmpty()) {
@@ -146,13 +144,20 @@ fun FarmerReviewAppointmentScreen(
                     )
                     Text(text = if (hasReview) "Actualizar Reseña" else "Enviar Reseña")
                 }
+            }
 
-                state.message?.let { message ->
-                    Text(
-                        text = message,
-                        color = Color.Green,
-                        modifier = Modifier.padding(8.dp)
-                    )
+            state.message?.takeIf { it.isNotEmpty() }?.let { message ->
+                Snackbar(
+                    action = {
+                        TextButton(onClick = { viewModel.clearState() }) {
+                            Text("OK")
+                        }
+                    },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.BottomCenter)
+                ) {
+                    Text(text = message)
                 }
             }
 
@@ -163,7 +168,6 @@ fun FarmerReviewAppointmentScreen(
     }
 }
 
-
 @Composable
 fun RatingBar(currentRating: Int, onRatingChange: (Int) -> Unit) {
     Row(modifier = Modifier.padding(8.dp), horizontalArrangement = Arrangement.Center) {
@@ -172,7 +176,7 @@ fun RatingBar(currentRating: Int, onRatingChange: (Int) -> Unit) {
                 Icon(
                     imageVector = if (i <= currentRating) Icons.Default.Star else Icons.Default.StarOutline,
                     contentDescription = "Calificación $i",
-                    tint = if (i <= currentRating) Color.Yellow else Color.Gray
+                    tint = if (i <= currentRating) Color(0xFFE4A70A) else Color.Gray
                 )
             }
         }
