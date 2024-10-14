@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
@@ -33,11 +35,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.example.agrosupport.R
+import com.example.agrosupport.presentation.farmerhistory.AdvisorAppointmentCard
+import com.example.agrosupport.presentation.farmerhistory.AppointmentCard
 
 @Composable
 fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
     LaunchedEffect(Unit) {
         viewModel.getFarmerName()
+        viewModel.getAppointment()
     }
 
     val cardItems = listOf(
@@ -60,6 +65,7 @@ fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier.fillMaxWidth().padding(paddingValues).padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 16.dp),
@@ -77,7 +83,7 @@ fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
                     contentDescription = "Notifications",
                     modifier = Modifier.padding(horizontal = 8.dp).size(32.dp)
                 )
-                IconButton(onClick = { viewModel.setExpanded(true)  }) {
+                IconButton(onClick = { viewModel.setExpanded(true) }) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
                         contentDescription = "More",
@@ -100,41 +106,37 @@ fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
                 }
             }
 
-            Card(
-                modifier = Modifier.fillMaxWidth().padding(8.dp).padding(bottom = 16.dp),
-                colors = CardColors(
-                    contentColor = Color.White,
-                    containerColor = Color(0xFFFF7121),
-                    disabledContentColor = Color.White,
-                    disabledContainerColor = Color(0xFFFF7121),
-                )
+            Column(
+                modifier = Modifier.padding(12.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(12.dp)
-                ) {
+                Image(
+                    painter = painterResource(id = R.drawable.hero_image),
+                    contentDescription = "Hero Image",
+                    modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f).padding(bottom = 16.dp)
+                )
+                if (viewModel.appointmentCard.value.data == null) {
                     Text(
-                        text = "Asesoramiento Personalizado",
+                        text = "No hay citas próximas",
                         modifier = Modifier.padding(8.dp),
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Italic,
-                        style = MaterialTheme.typography.displayMedium
+                        style = MaterialTheme.typography.titleMedium
                     )
+                } else {
                     Text(
-                        text = "Gestiona tu granja con sabiduría: asesoría experta para cada desafío",
-                        modifier = Modifier.padding(8.dp).padding(bottom = 32.dp),
+                        text = "Tu próxima cita",
+                        modifier = Modifier.padding(8.dp).padding(bottom = 16.dp),
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic,
                         style = MaterialTheme.typography.titleLarge
                     )
-                    Image(
-                        painter = painterResource(id = R.drawable.hero_image),
-                        contentDescription = "Hero Image",
-                        modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f).padding(bottom = 16.dp)
-                    )
+                    AppointmentCard(
+                        appointment = viewModel.appointmentCard.value.data!!,
+                        onClick = {})
                 }
             }
+
             Text(
                 text = "Elige tu Próximo Paso",
                 modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),

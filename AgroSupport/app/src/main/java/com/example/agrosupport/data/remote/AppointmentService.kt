@@ -8,6 +8,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface AppointmentService {
     @GET("appointments/{id}")
@@ -16,11 +17,11 @@ interface AppointmentService {
     @GET("appointments")
     suspend fun getAllAppointments(@Header("Authorization") token: String): Response<List<AppointmentDto>>
 
-    @GET("appointments/{farmerId}/farmer")
-    suspend fun getAppointmentsByFarmer(@Path("farmerId") farmerId: Long, @Header("Authorization") token: String): Response<List<AppointmentDto>>
+    @GET("appointments")
+    suspend fun getAppointmentsByFarmer(@Query("farmerId") farmerId: Long, @Header("Authorization") token: String): Response<List<AppointmentDto>>
 
-    @GET("appointments/{advisorId}/advisor/{farmerId}/farmer")
-    suspend fun getAppointmentsByAdvisorAndFarmer(@Path("advisorId") advisorId: Long, @Path("farmerId") farmerId: Long, @Header("Authorization") token: String): Response<List<AppointmentDto>>
+    @GET("appointments")
+    suspend fun getAppointmentsByAdvisorAndFarmer(@Query("advisorId") advisorId: Long, @Query("farmerId") farmerId: Long, @Header("Authorization") token: String): Response<List<AppointmentDto>>
 
     @POST("appointments")
     suspend fun createAppointment(@Header("Authorization") token: String, @Body appointment: CreateAppointment): Response<AppointmentDto>
