@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
+import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
 import com.example.agrosupport.data.repository.AppointmentRepository
 import com.example.agrosupport.data.repository.AvailableDateRepository
@@ -69,15 +70,12 @@ class NewAppointmentViewModel(private val navController: NavController,
             viewModelScope.launch {
                 val result = appointmentRepository.createAppointment(GlobalVariables.TOKEN, appointment)
                 if (result is Resource.Success) {
-                    _state.value = UIState(data = emptyList())
+                    navController.navigate(Routes.NewAppointmentConfirmation.route)
                 } else {
                     _state.value = UIState(message = "Error al crear la cita")
                 }
             }
-            navController.popBackStack()
         }
-
-
 
     }
 

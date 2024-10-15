@@ -78,11 +78,13 @@ fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge
                 )
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = "Notifications",
-                    modifier = Modifier.padding(horizontal = 8.dp).size(32.dp)
-                )
+                IconButton(onClick = { viewModel.goToNotificationList() }) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "Notifications",
+                        modifier = Modifier.padding(horizontal = 8.dp).size(32.dp)
+                    )
+                }
                 IconButton(onClick = { viewModel.setExpanded(true) }) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,

@@ -6,6 +6,7 @@ sealed class Routes(val route: String) {
     data object AdvisorDetail : Routes("AdvisorDetail")
     data object ReviewList : Routes("ReviewList")
     data object NewAppointment : Routes("NewAppointment")
+    data object NewAppointmentConfirmation : Routes("NewAppointmentConfirmation")
     data object FarmerAppointmentList : Routes("FarmerAppointmentList")
     data object FarmerAppointmentHistory : Routes("FarmerAppointmentHistory")
     data object Welcome : Routes("Welcome")
@@ -19,4 +20,5 @@ sealed class Routes(val route: String) {
     data object CreateAccountFarmer : Routes("CreateAccountFarmer")
     data object CreateProfileFarmer : Routes("CreateProfileFarmer")
     data object ConfirmCreationAccountFarmer : Routes("ConfirmCreationAccountFarmer")
+    data object NotificationList : Routes("NotificationList")
 }

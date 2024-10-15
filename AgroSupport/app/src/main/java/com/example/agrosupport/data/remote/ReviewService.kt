@@ -35,10 +35,10 @@ interface ReviewService {
         @Body review: UpdateReview
     ): Response<ReviewDto>
 
-    @GET("reviews/{advisorId}/{farmerId}/review")
+    @GET("reviews")
     suspend fun getReviewByAdvisorIdAndFarmerId(
-        @Path("advisorId") advisorId: Long,
-        @Path("farmerId") farmerId: Long,
+        @Query("advisorId") advisorId: Long,
+        @Query("farmerId") farmerId: Long,
         @Header("Authorization") token: String
-    ): Response<ReviewDto>
+    ): Response<List<ReviewDto>>
 }

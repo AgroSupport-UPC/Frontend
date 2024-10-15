@@ -24,7 +24,17 @@ class AvailableDateRepository(private val availableDateService: AvailableDateSer
             return@withContext Resource.Error(message = "Error al obtener fechas disponibles")
         }
         return@withContext Resource.Error(response.message())
+    }
 
-
+    suspend fun deleteAvailableDate(availableDateId: Long, token: String): Resource<Unit> = withContext(Dispatchers.IO) {
+        if (token.isBlank()) {
+            return@withContext Resource.Error(message = "Un token es requerido")
+        }
+        val bearerToken = "Bearer $token"
+        val response = availableDateService.deleteAvailableDate(availableDateId, bearerToken)
+        if (response.isSuccessful) {
+            return@withContext Resource.Success(Unit)
+        }
+        return@withContext Resource.Error(response.message())
     }
 }
