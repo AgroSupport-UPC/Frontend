@@ -68,8 +68,8 @@ class ReviewRepository(private val reviewService: ReviewService) {
         val bearerToken = "Bearer $token"
         val response = reviewService.getReviewByAdvisorIdAndFarmerId(advisorId, farmerId, bearerToken)
         if (response.isSuccessful) {
-            response.body()?.let { reviewDto ->
-                val review = reviewDto.toReview()
+            response.body()?.let { reviewDtos ->
+                val review = reviewDtos[0].toReview()
                 return@withContext Resource.Success(data = review)
             }
             return@withContext Resource.Error(message = "Error al obtener la reseña")

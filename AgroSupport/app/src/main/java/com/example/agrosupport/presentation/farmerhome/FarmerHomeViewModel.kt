@@ -132,6 +132,10 @@ class FarmerHomeViewModel(
         navController.navigate(Routes.FarmerAppointmentList.route)
     }
 
+    fun goToNotificationList() {
+        navController.navigate(Routes.NotificationList.route)
+    }
+
     fun goToAppointmentDetail(appointmentId: Long) {
         navController.navigate(Routes.FarmerAppointmentDetail.route + "/$appointmentId")
     }

@@ -18,7 +18,7 @@ import com.example.agrosupport.presentation.advisordetail.AdvisorDetailScreen
 import com.example.agrosupport.presentation.advisordetail.AdvisorDetailViewModel
 import com.example.agrosupport.presentation.advisorlist.AdvisorListScreen
 import com.example.agrosupport.presentation.advisorlist.AdvisorListViewModel
-import com.example.agrosupport.presentation.appointmentdetails.CancelAppointmentSuccessScreen
+import com.example.agrosupport.presentation.farmerappointmentdetail.CancelAppointmentSuccessScreen
 import com.example.agrosupport.presentation.farmerappointmentdetail.FarmerAppointmentDetailScreen
 import com.example.agrosupport.presentation.farmerappointmentdetail.FarmerAppointmentDetailViewModel
 import com.example.agrosupport.presentation.confirmcreationaccountfarmer.ConfirmCreationAccountFarmerScreen
@@ -38,7 +38,10 @@ import com.example.agrosupport.presentation.forgotpassword.ForgotPasswordViewMod
 import com.example.agrosupport.presentation.login.LoginScreen
 import com.example.agrosupport.presentation.login.LoginViewModel
 import com.example.agrosupport.presentation.newappointment.NewAppointmentScreen
+import com.example.agrosupport.presentation.newappointment.NewAppointmentSuccessScreen
 import com.example.agrosupport.presentation.newappointment.NewAppointmentViewModel
+import com.example.agrosupport.presentation.notificationlist.NotificationListScreen
+import com.example.agrosupport.presentation.notificationlist.NotificationListViewModel
 import com.example.agrosupport.presentation.rating.FarmerReviewAppointmentScreen
 import com.example.agrosupport.presentation.rating.FarmerReviewAppointmentViewModel
 import com.example.agrosupport.presentation.restorepassword.RestorePasswordScreen
@@ -73,7 +76,7 @@ class MainActivity : ComponentActivity() {
         val reviewService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(ReviewService::class.java)
         val appointmentService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AppointmentService::class.java)
         val availableDateService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AvailableDateService::class.java)
-
+        val notificationService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(NotificationService::class.java)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -96,7 +99,7 @@ class MainActivity : ComponentActivity() {
                 val createAccountFarmerPart1ViewModel = CreateAccountFarmerViewModel(navController, AuthenticationRepository(authenticationService, userDao))
                 val createProfileFarmerViewModel = CreateProfileFarmerViewModel(navController, ProfileRepository(profileService), createAccountFarmerPart1ViewModel)
                 val confirmCreationAccountFarmerViewModel = ConfirmCreationAccountFarmerViewModel(navController)
-
+                val notificationListViewModel = NotificationListViewModel(navController, NotificationRepository(notificationService))
                 NavHost(navController = navController, startDestination = Routes.Welcome.route) {
                     composable(route = Routes.Welcome.route) {
                         WelcomeScreen(viewModel = welcomeViewModel)
@@ -128,6 +131,11 @@ class MainActivity : ComponentActivity() {
                         val advisorId = it.arguments?.getString("advisorId")?.toLong() ?: 0
                         NewAppointmentScreen(viewModel = newAppointmentViewModel, advisorId = advisorId)
                     }
+                    composable(route = Routes.NewAppointmentConfirmation.route) {
+                        NewAppointmentSuccessScreen {
+                            navController.navigate(Routes.FarmerAppointmentList.route)
+                        }
+                    }
                     composable(route = Routes.FarmerAppointmentList.route) {
                         FarmerAppointmentListScreen(viewModel = farmerAppointmentListViewModel)
                     }
@@ -158,6 +166,9 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(route = Routes.ConfirmCreationAccountFarmer.route) {
                         ConfirmCreationAccountFarmerScreen(viewModel = confirmCreationAccountFarmerViewModel)
+                    }
+                    composable(route = Routes.NotificationList.route) {
+                        NotificationListScreen(viewModel = notificationListViewModel)
                     }
                 }
             }
