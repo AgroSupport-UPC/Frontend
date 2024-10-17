@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.androidx.ui.test.android)
     implementation(libs.protolite.well.known.types)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.firebase.storage.ktx)
     annotationProcessor(libs.room.compiler)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
