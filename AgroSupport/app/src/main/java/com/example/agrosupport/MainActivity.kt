@@ -27,6 +27,8 @@ import com.example.agrosupport.presentation.createaccountfarmer.CreateAccountFar
 import com.example.agrosupport.presentation.createaccountfarmer.CreateAccountFarmerViewModel
 import com.example.agrosupport.presentation.createprofilefarmer.CreateProfileFarmerScreen
 import com.example.agrosupport.presentation.createprofilefarmer.CreateProfileFarmerViewModel
+import com.example.agrosupport.presentation.exploreposts.ExplorePostsScreen
+import com.example.agrosupport.presentation.exploreposts.ExplorePostsViewModel
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListScreen
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListViewModel
 import com.example.agrosupport.presentation.farmerhistory.FarmerAppointmentHistoryListScreen
@@ -77,6 +79,7 @@ class MainActivity : ComponentActivity() {
         val appointmentService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AppointmentService::class.java)
         val availableDateService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AvailableDateService::class.java)
         val notificationService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(NotificationService::class.java)
+        val postService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(PostService::class.java)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -100,6 +103,7 @@ class MainActivity : ComponentActivity() {
                 val createProfileFarmerViewModel = CreateProfileFarmerViewModel(navController, ProfileRepository(profileService), createAccountFarmerPart1ViewModel)
                 val confirmCreationAccountFarmerViewModel = ConfirmCreationAccountFarmerViewModel(navController)
                 val notificationListViewModel = NotificationListViewModel(navController, NotificationRepository(notificationService))
+                val explorePostsViewModel = ExplorePostsViewModel(navController, PostRepository(postService), ProfileRepository(profileService), AdvisorRepository(advisorService))
                 NavHost(navController = navController, startDestination = Routes.Welcome.route) {
                     composable(route = Routes.Welcome.route) {
                         WelcomeScreen(viewModel = welcomeViewModel)
@@ -169,6 +173,9 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(route = Routes.NotificationList.route) {
                         NotificationListScreen(viewModel = notificationListViewModel)
+                    }
+                    composable(route = Routes.ExplorePosts.route) {
+                        ExplorePostsScreen(viewModel = explorePostsViewModel)
                     }
                 }
             }
