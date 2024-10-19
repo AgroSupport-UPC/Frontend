@@ -12,6 +12,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.net.Uri
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun FarmerProfileScreen(viewModel: FarmerProfileViewModel) {
@@ -50,6 +52,15 @@ fun FarmerProfileScreen(viewModel: FarmerProfileViewModel) {
                 }
             }
 
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
             Box(
                 modifier = Modifier
                     .fillMaxSize(),
@@ -61,9 +72,9 @@ fun FarmerProfileScreen(viewModel: FarmerProfileViewModel) {
                     state.message?.let { errorMessage ->
                         if (errorMessage.isNotBlank()) {
                             AlertDialog(
-                                onDismissRequest = { viewModel.goToHome() },
+                                onDismissRequest = { viewModel.reloadPage() },
                                 confirmButton = {
-                                    TextButton(onClick = { viewModel.goToHome() }) {
+                                    TextButton(onClick = { viewModel.reloadPage() }) {
                                         Text("OK")
                                     }
                                 },

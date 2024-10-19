@@ -3,12 +3,16 @@ package com.example.agrosupport.presentation.farmerprofile
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
@@ -20,6 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.example.agrosupport.R
 import com.example.agrosupport.domain.Profile
 import com.skydoves.landscapist.ImageOptions
@@ -62,22 +67,48 @@ fun EditProfileContent(profile: Profile, viewModel: FarmerProfileViewModel) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            GlideImage(
-                imageModel = {
-                    if (photo.isBlank()) R.drawable.placeholder else photo
-                },
+            Box(
                 modifier = Modifier
                     .size(120.dp)
                     .clip(CircleShape)
-                    .border(2.dp, Color.Gray, CircleShape)
                     .clickable {
                         launcher.launch("image/*")
+                    }
+            ) {
+
+                GlideImage(
+                    imageModel = {
+                        if (photo.isBlank()) R.drawable.placeholder else photo
                     },
-                imageOptions = ImageOptions(
-                    contentScale = ContentScale.Crop,
-                    alignment = Alignment.Center
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                        .border(2.dp, Color.Gray, CircleShape),
+                    imageOptions = ImageOptions(
+                        contentScale = ContentScale.Crop,
+                        alignment = Alignment.Center
+                    )
                 )
-            )
+
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset((-8).dp, (-8).dp)
+                        .size(32.dp)
+                        .background(Color.Black.copy(alpha = 0.6f), CircleShape)
+                        .border(1.dp, Color.White, CircleShape)
+                        .padding(4.dp)
+                        .zIndex(2f)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Image",
+                        modifier = Modifier.size(24.dp),
+                        tint = Color.White
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -119,7 +150,7 @@ fun EditProfileContent(profile: Profile, viewModel: FarmerProfileViewModel) {
             )
         }
 
-        // Botón de guardar flotante
+
         Button(
             onClick = {
                 val updatedProfile = profile.copy(

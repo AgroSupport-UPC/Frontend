@@ -102,7 +102,7 @@ class MainActivity : ComponentActivity() {
                 val createProfileFarmerViewModel = CreateProfileFarmerViewModel(navController, ProfileRepository(profileService), createAccountFarmerPart1ViewModel)
                 val confirmCreationAccountFarmerViewModel = ConfirmCreationAccountFarmerViewModel(navController)
                 val notificationListViewModel = NotificationListViewModel(navController, NotificationRepository(notificationService))
-                val farmerProfileViewModel = FarmerProfileViewModel(navController,ProfileRepository(profileService))
+                val farmerProfileViewModel = FarmerProfileViewModel(navController,ProfileRepository(profileService), CloudStorageRepository())
 
                 NavHost(navController = navController, startDestination = Routes.Welcome.route) {
                     composable(route = Routes.Welcome.route) {

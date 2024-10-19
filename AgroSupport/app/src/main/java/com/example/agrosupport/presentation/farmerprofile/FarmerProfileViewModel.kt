@@ -1,7 +1,6 @@
 package com.example.agrosupport.presentation.farmerprofile
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -11,6 +10,7 @@ import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
+import com.example.agrosupport.data.repository.CloudStorageRepository
 import com.example.agrosupport.data.repository.ProfileRepository
 import com.example.agrosupport.domain.Profile
 import com.example.agrosupport.domain.UpdateProfile
@@ -19,7 +19,8 @@ import kotlinx.coroutines.launch
 
 class FarmerProfileViewModel(
     private val navController: NavController,
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val cloudStorageRepository: CloudStorageRepository
 ) : ViewModel() {
 
     private val _state = mutableStateOf(UIState<Profile>())
@@ -100,9 +101,28 @@ class FarmerProfileViewModel(
         return null
     }
 
-    fun updateProfileWithImage(imageUri: Uri, updatedProfile: Profile) {
+    fun updateProfileWithImage(imageUri: Uri, profile: Profile) {
 
+        _state.value = UIState(isLoading = true)
+
+        viewModelScope.launch {
+            try {
+                val filename = imageUri.lastPathSegment ?: "default_image_name"
+                val imageUrl = cloudStorageRepository.uploadFile(filename, imageUri)
+                val updatedProfile = profile.copy(photo = imageUrl)
+                updateFarmerProfile(updatedProfile)
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error uploading image: ${e.message}")
+            }
+        }
     }
+
+    fun reloadPage() {
+        _state.value = UIState(data = null)
+        getFarmerProfile()
+    }
+
+
 
 }
 
