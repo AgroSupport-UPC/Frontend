@@ -1,6 +1,5 @@
 package com.example.agrosupport.presentation.exploreposts
 
-import android.widget.ImageView
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -17,9 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,13 +27,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.example.agrosupport.R
-import com.squareup.picasso.Picasso
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun ExplorePostsScreen(viewModel: ExplorePostsViewModel) {
@@ -73,7 +69,7 @@ fun ExplorePostsScreen(viewModel: ExplorePostsViewModel) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Explorar publicaciones",
+                        text = "Explorar",
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic,
@@ -99,7 +95,7 @@ fun ExplorePostsScreen(viewModel: ExplorePostsViewModel) {
                 when {
                     state.data != null -> {
                         state.data.forEach { post ->
-                            PostCardItem(post) {
+                            PostCardItem(post = post) {
                                 viewModel.goToAdvisorDetail(post.advisorId)
                             }
                         }
@@ -124,89 +120,69 @@ fun ExplorePostsScreen(viewModel: ExplorePostsViewModel) {
 
 @Composable
 fun PostCardItem(post: PostCard, onClick : () -> Unit) {
-    Card(
-        modifier = Modifier.padding(8.dp).fillMaxWidth(),
-        colors = CardColors(
-            contentColor = Color.Black,
-            containerColor = Color(0xFFF9EAE1),
-            disabledContentColor = Color.White,
-            disabledContainerColor = Color(0xFFF4B696),
-        )
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.Start
     ) {
-        Column(
-            modifier = Modifier.padding(8.dp).fillMaxWidth(),
-            horizontalAlignment = Alignment.Start
-        ) {
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
-                    .clickable {
-                    onClick()
-                }
-            ) {
-                AndroidView(
-                    modifier = Modifier.size(50.dp).clip(CircleShape),
-                    factory = { context ->
-                        ImageView(context).apply {
-                            scaleType = ImageView.ScaleType.CENTER_CROP
-                        }
-                    },
-                    update = { view ->
-                        if (post.advisorPhoto.isEmpty()) {
-                            view.setImageResource(R.drawable.placeholder)
-                        } else {
-                            Picasso.get()
-                                .load(post.advisorPhoto)
-                                .error(R.drawable.placeholder)
-                                .into(view)
-                        }
-                    }
-                )
-                Text(
-                    text = post.advisorName,
-                    color = Color(0xFF222B45),
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Medium,
-                    fontStyle = FontStyle.Normal,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(start = 8.dp)
-                )
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .clickable {
+                onClick()
             }
-            AndroidView(
-                modifier = Modifier.fillMaxWidth(),
-                factory = { context ->
-                    ImageView(context).apply {
-                        scaleType = ImageView.ScaleType.FIT_CENTER
-                    }
+        ) {
+            GlideImage(
+                modifier = Modifier.size(45.dp).clip(CircleShape),
+                imageModel = {
+                    post.advisorPhoto.ifBlank { R.drawable.placeholder }
                 },
-                update = { view ->
-                    if (post.image.isEmpty()) {
-                        view.setImageResource(R.drawable.placeholder)
-                    } else {
-                        Picasso.get()
-                            .load(post.image)
-                            .error(R.drawable.placeholder)
-                            .into(view)
-                    }
-                }
+                imageOptions = ImageOptions(
+                    contentScale = ContentScale.Crop,
+                    alignment = Alignment.Center
+                )
             )
             Text(
-                text = post.title,
+                text = post.advisorName,
                 color = Color(0xFF222B45),
                 fontFamily = FontFamily.SansSerif,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Medium,
                 fontStyle = FontStyle.Normal,
-            )
-
-            Text(
-                text = post.description,
-                color = Color(0xFF222B45),
-                fontFamily = FontFamily.SansSerif,
-                fontWeight = FontWeight.Normal,
-                fontStyle = FontStyle.Normal,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(start = 8.dp)
             )
         }
+        GlideImage(
+            modifier = Modifier.fillMaxWidth(),
+            imageModel = {
+                post.image.ifBlank { R.drawable.placeholder }
+            },
+            imageOptions = ImageOptions(
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.Center
+            )
+        )
+
+        Text(
+            text = post.title,
+            color = Color(0xFF222B45),
+            fontSize = MaterialTheme.typography.titleLarge.fontSize,
+            fontFamily = FontFamily.SansSerif,
+            fontWeight = FontWeight.Bold,
+            fontStyle = FontStyle.Normal,
+            modifier = Modifier.padding(top = 4.dp)
+        )
+        Text(
+            text = post.description,
+            color = Color(0xFF222B45),
+            fontFamily = FontFamily.SansSerif,
+            fontWeight = FontWeight.Normal,
+            fontStyle = FontStyle.Normal,
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
     }
+
 }
