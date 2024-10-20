@@ -1,5 +1,6 @@
 package com.example.agrosupport.presentation.createprofilefarmer
 
+import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
+import com.example.agrosupport.data.repository.CloudStorageRepository
 import com.example.agrosupport.data.repository.ProfileRepository
  import com.example.agrosupport.domain.Profile
 import com.example.agrosupport.presentation.createaccountfarmer.CreateAccountFarmerViewModel
@@ -19,7 +21,8 @@ import kotlinx.coroutines.withContext
 class CreateProfileFarmerViewModel(
     private val navController: NavController,
     private val profileRepository: ProfileRepository,
-    private val createAccountFarmerViewModel: CreateAccountFarmerViewModel
+    private val createAccountFarmerViewModel: CreateAccountFarmerViewModel,
+    private val cloudStorageRepository: CloudStorageRepository
 ) : ViewModel() {
 
     // Variables de estado para los campos de texto
@@ -73,4 +76,21 @@ class CreateProfileFarmerViewModel(
             }
         }
     }
+
+    fun uploadImage(imageUri: Uri) {
+
+        _state.value = UIState(isLoading = true)
+
+        viewModelScope.launch {
+            try {
+                val filename = imageUri.lastPathSegment ?: "default_image_name"
+                val imageUrl = cloudStorageRepository.uploadFile(filename, imageUri)
+                photoUrl.value = imageUrl
+                _state.value = UIState(isLoading = false)
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error uploading image: ${e.message}")
+            }
+        }
+    }
+
 }

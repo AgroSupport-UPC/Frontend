@@ -1,10 +1,15 @@
 package com.example.agrosupport.presentation.createprofilefarmer
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,17 +19,29 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.example.agrosupport.R
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun CreateProfileFarmerScreen(viewModel: CreateProfileFarmerViewModel) {
     val state by viewModel.state
     val snackbarMessage by viewModel.snackbarMessage
     val snackbarHostState = remember { SnackbarHostState() }
+    val photoUrl by viewModel.photoUrl
+
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            viewModel.uploadImage(it)
+        }
+    }
 
     LaunchedEffect(snackbarMessage) {
         snackbarMessage?.let {
@@ -74,19 +91,26 @@ fun CreateProfileFarmerScreen(viewModel: CreateProfileFarmerViewModel) {
                 )
                 Spacer(modifier = Modifier.height(50.dp))
 
-                Image(
-                    bitmap = ImageBitmap.imageResource(id = R.drawable.profile_icon),
-                    contentDescription = "Profile Icon",
+                GlideImage(
+                    imageModel = { if (photoUrl.isBlank()) R.drawable.profile_icon else photoUrl },
                     modifier = Modifier
                         .size(100.dp) // Adjust size as necessary
-                        .padding(bottom = 8.dp),
-                    contentScale = ContentScale.Crop
+                        .padding(bottom = 8.dp)
+                        .clip(CircleShape)
+                        .border(2.dp, Color.Gray, CircleShape),
+                    imageOptions = ImageOptions(
+                        contentScale = ContentScale.Crop,
+                        alignment = Alignment.Center,
+                        contentDescription = "Profile Icon"
+                    )
                 )
 
                 Box(
                     modifier = Modifier
                         .width(200.dp)
-                        .clickable { /* Handle image not implemented yet */ }
+                        .clickable {
+                            launcher.launch("image/*")
+                        }
                         .background(Color(0xFF3E64FF), shape = MaterialTheme.shapes.medium)
                         .padding(10.dp),
                     contentAlignment = Alignment.Center
