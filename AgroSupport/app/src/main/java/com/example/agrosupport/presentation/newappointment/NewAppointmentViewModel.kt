@@ -12,6 +12,7 @@ import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
 import com.example.agrosupport.data.repository.AppointmentRepository
 import com.example.agrosupport.data.repository.AvailableDateRepository
+import com.example.agrosupport.data.repository.FarmerRepository
 import com.example.agrosupport.domain.Appointment
 import com.example.agrosupport.domain.AvailableDate
 import kotlinx.coroutines.launch
@@ -19,7 +20,9 @@ import kotlinx.coroutines.launch
 
 class NewAppointmentViewModel(private val navController: NavController,
                               private val availableDateRepository: AvailableDateRepository,
-                              private val appointmentRepository: AppointmentRepository
+                              private val appointmentRepository: AppointmentRepository,
+                              private val farmerRepository: FarmerRepository
+
 ): ViewModel() {
     private val _state = mutableStateOf(UIState<List<AvailableDate>>())
     val state: State<UIState<List<AvailableDate>>> get() = _state
@@ -53,27 +56,34 @@ class NewAppointmentViewModel(private val navController: NavController,
         }
     }
 
-    fun createAppointment(advisorId: Long, farmerId: Long) {
-        state.value.data?.get(selectedDate.value)?.let { availableDate ->
-            val appointment = Appointment(
-                id = 0,
-                advisorId = advisorId,
-                farmerId = farmerId,
-                message = comment.value,
-                status = "PENDING",
-                scheduledDate = availableDate.availableDate,
-                startTime = availableDate.startTime,
-                endTime = availableDate.endTime,
-                meetingUrl = ""
-            )
-            _state.value = UIState(isLoading = true)
-            viewModelScope.launch {
-                val result = appointmentRepository.createAppointment(GlobalVariables.TOKEN, appointment)
-                if (result is Resource.Success) {
-                    navController.navigate(Routes.NewAppointmentConfirmation.route)
-                } else {
-                    _state.value = UIState(message = "Error al crear la cita")
-                }
+    fun createAppointment(advisorId: Long) {
+        viewModelScope.launch {
+            val farmerResult = farmerRepository.searchFarmerByUserId(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
+            val farmerId = if (farmerResult is Resource.Success) {
+                farmerResult.data?.id ?: 0
+            } else {
+                0
+            }
+            state.value.data?.get(selectedDate.value)?.let { availableDate ->
+                val appointment = Appointment(
+                    id = 0,
+                    advisorId = advisorId,
+                    farmerId = farmerId,
+                    message = comment.value,
+                    status = "PENDING",
+                    scheduledDate = availableDate.availableDate,
+                    startTime = availableDate.startTime,
+                    endTime = availableDate.endTime,
+                    meetingUrl = ""
+                )
+                _state.value = UIState(isLoading = true)
+                    val result = appointmentRepository.createAppointment(GlobalVariables.TOKEN, appointment)
+                    if (result is Resource.Success) {
+                        availableDateRepository.deleteAvailableDate(availableDate.id, GlobalVariables.TOKEN)
+                        navController.navigate(Routes.NewAppointmentConfirmation.route)
+                    } else {
+                        _state.value = UIState(message = "Error al crear la cita")
+                    }
             }
         }
 

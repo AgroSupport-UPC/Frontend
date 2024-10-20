@@ -10,14 +10,23 @@ import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
 import com.example.agrosupport.data.repository.AdvisorRepository
+import com.example.agrosupport.data.repository.AvailableDateRepository
 import com.example.agrosupport.data.repository.ProfileRepository
 import kotlinx.coroutines.launch
 
 class AdvisorDetailViewModel(private val navController: NavController, private val profileRepository: ProfileRepository,
-                             private val advisorRepository: AdvisorRepository): ViewModel() {
+                             private val advisorRepository: AdvisorRepository, private val availableDateRepository: AvailableDateRepository): ViewModel() {
 
     private val _state = mutableStateOf(UIState<AdvisorDetail>())
     val state: State<UIState<AdvisorDetail>> get() = _state
+
+    // Variable de estado para el mensaje del Snackbar
+    private val _snackbarMessage = mutableStateOf<String?>(null)
+    val snackbarMessage: State<String?> get() = _snackbarMessage
+
+    fun clearSnackbarMessage() {
+        _snackbarMessage.value = null
+    }
 
     fun goBack() {
         navController.popBackStack()
@@ -63,6 +72,18 @@ class AdvisorDetailViewModel(private val navController: NavController, private v
     }
 
     fun goToNewAppointment(advisorId: Long) {
-        navController.navigate(Routes.NewAppointment.route + "/$advisorId")
+        viewModelScope.launch {
+            val result = availableDateRepository.getAvailableDatesByAdvisor(advisorId, GlobalVariables.TOKEN)
+            if (result is Resource.Success) {
+                val availableDates = result.data
+                if (availableDates.isNullOrEmpty()) {
+                    _snackbarMessage.value = "No hay fechas disponibles"
+                } else {
+                    navController.navigate(Routes.NewAppointment.route + "/$advisorId")
+                }
+            } else {
+                _state.value = UIState(message = "Error obteniendo fechas disponibles")
+            }
+        }
     }
 }

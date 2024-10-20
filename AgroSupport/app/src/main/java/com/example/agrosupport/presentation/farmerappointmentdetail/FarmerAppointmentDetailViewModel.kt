@@ -1,6 +1,5 @@
 package com.example.agrosupport.presentation.farmerappointmentdetail
 
-import androidx.compose.runtime.Recomposer
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,7 +16,9 @@ import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.domain.Appointment
 import androidx.compose.runtime.State
+import com.example.agrosupport.data.repository.AvailableDateRepository
 import com.example.agrosupport.data.repository.ReviewRepository
+import com.example.agrosupport.domain.AvailableDate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 
@@ -26,7 +27,8 @@ class FarmerAppointmentDetailViewModel(
     private val appointmentRepository: AppointmentRepository,
     private val advisorRepository: AdvisorRepository,
     private val profileRepository: ProfileRepository,
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    private val availableDateRepository: AvailableDateRepository
 ) : ViewModel() {
 
     private val _appointmentDetails = MutableLiveData<AdvisorAppointmentCard?>()
@@ -66,17 +68,11 @@ class FarmerAppointmentDetailViewModel(
                 _appointmentStatusState.value = appointment
 
                 if (appointment.status == "COMPLETED") {
-
                     val reviewResult = reviewRepository.getReviewByAdvisorIdAndFarmerId(appointment.advisorId, appointment.farmerId, GlobalVariables.TOKEN)
-
                     if (reviewResult is Resource.Success && reviewResult.data != null) {
-
                         navController.navigate(Routes.FarmerAppointmentList.route)
-
                     }
-
                     navController.navigate(Routes.FarmerReviewAppointment.route + "/$appointmentId")
-
                 }
             } else {
                 _errorStateMessage.value = "Error al cargar los detalles de la cita."
@@ -164,18 +160,27 @@ class FarmerAppointmentDetailViewModel(
     fun cancelAppointment(appointmentId: Long, cancelReason: String) {
         _isLoading.value = true
         viewModelScope.launch {
+            // crear nuevamente el available date
+            val appointmentResult = appointmentRepository.getAppointmentById(appointmentId, GlobalVariables.TOKEN)
+            val availableDate = appointmentResult.data?.let {
+                AvailableDate(
+                    id = 0,
+                    advisorId = it.advisorId,
+                    availableDate = it.scheduledDate,
+                    startTime = it.startTime,
+                    endTime = it.endTime
+                )
+            }
 
             val result = appointmentRepository.deleteAppointment(appointmentId, GlobalVariables.TOKEN)
 
             if (result is Resource.Success) {
-
-
                 _isCancelled.value = true
-
-                navController.navigate(Routes.CancelAppointmentConfirmation.route)
-
-
-                // Aumentar una notificacion luego de eliminar la cita
+                val availableDateResult = availableDateRepository.createAvailableDate(GlobalVariables.TOKEN, availableDate!!)
+                if (availableDateResult is Resource.Success) {
+                    // Aumentar una notificacion luego de eliminar la cita
+                    navController.navigate(Routes.CancelAppointmentConfirmation.route)
+                }
 
             } else if (result is Resource.Error) {
                 _errorMessage.value = "Error al cancelar la cita"

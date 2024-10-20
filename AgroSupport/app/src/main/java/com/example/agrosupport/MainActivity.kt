@@ -14,6 +14,7 @@ import com.example.agrosupport.common.Routes
 import com.example.agrosupport.data.local.AppDatabase
 import com.example.agrosupport.data.remote.*
 import com.example.agrosupport.data.repository.*
+import com.example.agrosupport.domain.Farmer
 import com.example.agrosupport.presentation.advisordetail.AdvisorDetailScreen
 import com.example.agrosupport.presentation.advisordetail.AdvisorDetailViewModel
 import com.example.agrosupport.presentation.advisorlist.AdvisorListScreen
@@ -91,12 +92,12 @@ class MainActivity : ComponentActivity() {
                 val farmerHomeViewModel = FarmerHomeViewModel(navController, ProfileRepository(profileService), AuthenticationRepository(authenticationService, userDao), AppointmentRepository(appointmentService), FarmerRepository(farmerService), AdvisorRepository(advisorService))
                 val restorePasswordViewModel = RestorePasswordViewModel(navController)
                 val advisorListViewModel = AdvisorListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
-                val advisorDetailViewModel = AdvisorDetailViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
-                val newAppointmentViewModel = NewAppointmentViewModel(navController, AvailableDateRepository(availableDateService), AppointmentRepository(appointmentService))
+                val advisorDetailViewModel = AdvisorDetailViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AvailableDateRepository(availableDateService))
+                val newAppointmentViewModel = NewAppointmentViewModel(navController, AvailableDateRepository(availableDateService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val reviewListViewModel = ReviewListViewModel(navController, ReviewRepository(reviewService), ProfileRepository(profileService), FarmerRepository(farmerService))
                 val farmerAppointmentListViewModel = FarmerAppointmentListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val farmerAppointmentHistoryListViewModel = FarmerAppointmentHistoryListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
-                val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService), ReviewRepository(reviewService))
+                val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService), ReviewRepository(reviewService), AvailableDateRepository(availableDateService))
                 val farmerReviewAdvisorViewModel = FarmerReviewAppointmentViewModel(navController, ReviewRepository(reviewService), AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService))
                 val createAccountViewModel = CreateAccountViewModel(navController)
                 val createAccountFarmerPart1ViewModel = CreateAccountFarmerViewModel(navController, AuthenticationRepository(authenticationService, userDao))

@@ -26,6 +26,22 @@ class AvailableDateRepository(private val availableDateService: AvailableDateSer
         return@withContext Resource.Error(response.message())
     }
 
+    suspend fun createAvailableDate(token: String, availableDate: AvailableDate): Resource<AvailableDate> = withContext(Dispatchers.IO) {
+        if (token.isBlank()) {
+            return@withContext Resource.Error(message = "Un token es requerido")
+        }
+        val bearerToken = "Bearer $token"
+        val response = availableDateService.createAvailableDate(bearerToken, availableDate)
+        if (response.isSuccessful) {
+            response.body()?.let { availableDateDto ->
+                val availableDateCreated = availableDateDto.toAvailableDate()
+                return@withContext Resource.Success(availableDateCreated)
+            }
+            return@withContext Resource.Error(message = "No se pudo crear la fecha disponible")
+        }
+        return@withContext Resource.Error(response.message())
+    }
+
     suspend fun deleteAvailableDate(availableDateId: Long, token: String): Resource<Unit> = withContext(Dispatchers.IO) {
         if (token.isBlank()) {
             return@withContext Resource.Error(message = "Un token es requerido")

@@ -153,7 +153,7 @@ fun NewAppointmentScreen(viewModel: NewAppointmentViewModel, advisorId: Long) {
                     Button(modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                        onClick = { viewModel.createAppointment(advisorId, 1) },
+                        onClick = { viewModel.createAppointment(advisorId) },
                         enabled = selectedDate != -1,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF3E64FF), // Color de fondo del botón
