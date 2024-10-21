@@ -18,6 +18,7 @@ picasso = "2.8"
 uiTestAndroid = "1.7.0"
 protoliteWellKnownTypes = "18.0.0"
 runtimeLivedata = "1.7.3"
+firebaseStorageKtx = "21.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +47,7 @@ picasso = { group = "com.squareup.picasso", name = "picasso", version.ref = "pic
 androidx-ui-test-android = { group = "androidx.compose.ui", name = "ui-test-android", version.ref = "uiTestAndroid" }
 protolite-well-known-types = { group = "com.google.firebase", name = "protolite-well-known-types", version.ref = "protoliteWellKnownTypes" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
+firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

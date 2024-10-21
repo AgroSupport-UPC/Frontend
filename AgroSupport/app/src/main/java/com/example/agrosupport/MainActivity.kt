@@ -33,6 +33,8 @@ import com.example.agrosupport.presentation.farmerhistory.FarmerAppointmentHisto
 import com.example.agrosupport.presentation.farmerhistory.FarmerAppointmentHistoryListViewModel
 import com.example.agrosupport.presentation.farmerhome.FarmerHomeScreen
 import com.example.agrosupport.presentation.farmerhome.FarmerHomeViewModel
+import com.example.agrosupport.presentation.farmerprofile.FarmerProfileScreen
+import com.example.agrosupport.presentation.farmerprofile.FarmerProfileViewModel
 import com.example.agrosupport.presentation.forgotpassword.ForgotPasswordScreen
 import com.example.agrosupport.presentation.forgotpassword.ForgotPasswordViewModel
 import com.example.agrosupport.presentation.login.LoginScreen
@@ -97,9 +99,11 @@ class MainActivity : ComponentActivity() {
                 val farmerReviewAdvisorViewModel = FarmerReviewAppointmentViewModel(navController, ReviewRepository(reviewService), AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService))
                 val createAccountViewModel = CreateAccountViewModel(navController)
                 val createAccountFarmerPart1ViewModel = CreateAccountFarmerViewModel(navController, AuthenticationRepository(authenticationService, userDao))
-                val createProfileFarmerViewModel = CreateProfileFarmerViewModel(navController, ProfileRepository(profileService), createAccountFarmerPart1ViewModel)
+                val createProfileFarmerViewModel = CreateProfileFarmerViewModel(navController, ProfileRepository(profileService), createAccountFarmerPart1ViewModel, CloudStorageRepository())
                 val confirmCreationAccountFarmerViewModel = ConfirmCreationAccountFarmerViewModel(navController)
                 val notificationListViewModel = NotificationListViewModel(navController, NotificationRepository(notificationService))
+                val farmerProfileViewModel = FarmerProfileViewModel(navController,ProfileRepository(profileService), CloudStorageRepository())
+
                 NavHost(navController = navController, startDestination = Routes.Welcome.route) {
                     composable(route = Routes.Welcome.route) {
                         WelcomeScreen(viewModel = welcomeViewModel)
@@ -170,6 +174,10 @@ class MainActivity : ComponentActivity() {
                     composable(route = Routes.NotificationList.route) {
                         NotificationListScreen(viewModel = notificationListViewModel)
                     }
+                    composable(route = Routes.FarmerProfile.route) {
+                        FarmerProfileScreen(viewModel = farmerProfileViewModel)
+                    }
+
                 }
             }
         }
