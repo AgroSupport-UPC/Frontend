@@ -7,6 +7,7 @@ import com.example.agrosupport.data.remote.ProfileService
 import com.example.agrosupport.data.remote.toProfile
 import com.example.agrosupport.domain.CreateProfile
 import com.example.agrosupport.domain.Profile
+import com.example.agrosupport.domain.UpdateProfile
 
 class ProfileRepository(private val profileService: ProfileService) {
     suspend fun createProfileFarmer(token: String, profile: CreateProfile): Resource<Profile> = withContext(Dispatchers.IO) {
@@ -70,4 +71,23 @@ class ProfileRepository(private val profileService: ProfileService) {
         }
         return@withContext Resource.Error(response.message())
     }
+
+    suspend fun updateProfile(userId: Long, token: String, profile: UpdateProfile): Resource<Profile> = withContext(Dispatchers.IO) {
+        if (token.isBlank()) {
+            return@withContext Resource.Error(message = "Un token es requerido")
+        }
+        val bearerToken = "Bearer $token"
+        val response = profileService.updateProfile(userId, bearerToken, profile)
+        if (response.isSuccessful) {
+            response.body()?.let { profileDto ->
+                val updatedProfile = profileDto.toProfile()
+                return@withContext Resource.Success(data = updatedProfile)
+            }
+            return@withContext Resource.Error(message = "No se pudo actualizar el perfil")
+        }
+        return@withContext Resource.Error(response.message())
+    }
+
+
+
 }

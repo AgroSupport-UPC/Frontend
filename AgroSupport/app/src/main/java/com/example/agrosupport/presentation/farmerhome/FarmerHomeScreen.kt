@@ -26,12 +26,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.agrosupport.R
 import com.example.agrosupport.presentation.farmerhistory.AppointmentCard
 
@@ -99,8 +102,37 @@ fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
                     onDismissRequest = { viewModel.setExpanded(false) },
                     offset = DpOffset(x = (2000).dp, y = 0.dp)
                 ) {
+
+
                     DropdownMenuItem(
-                        text = { Text("Cerrar Sesión") },
+                        text = {
+                            Text(
+                                text = "Perfil",
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        },
+                        onClick = {
+                            viewModel.goToProfile()
+                            viewModel.setExpanded(false)
+                        }
+                    )
+
+
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = "Salir",
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    color = Color.Red,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        },
                         onClick = {
                             viewModel.signOut()
                             viewModel.setExpanded(false)

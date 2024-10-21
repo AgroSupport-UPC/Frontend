@@ -120,6 +120,10 @@ class FarmerHomeViewModel(
         }
     }
 
+    fun goToProfile() {
+        navController.navigate(Routes.FarmerProfile.route)
+    }
+
     fun setExpanded(value: Boolean) {
         _expanded.value = value
     }

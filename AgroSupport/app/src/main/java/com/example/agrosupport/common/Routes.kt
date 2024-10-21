@@ -22,4 +22,5 @@ sealed class Routes(val route: String) {
     data object ConfirmCreationAccountFarmer : Routes("ConfirmCreationAccountFarmer")
     data object NotificationList : Routes("NotificationList")
     data object ExplorePosts : Routes("ExplorePosts")
+    data object FarmerProfile : Routes("FarmerProfile")
 }
