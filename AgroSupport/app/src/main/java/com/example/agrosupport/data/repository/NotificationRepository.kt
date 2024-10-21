@@ -27,6 +27,22 @@ class NotificationRepository(private val notificationService: NotificationServic
         }
     }
 
+    suspend fun createNotification(token: String, notification: Notification): Resource<Notification> = withContext(Dispatchers.IO) {
+        if (token.isBlank()) {
+            return@withContext Resource.Error(message = "Un token es requerido")
+        }
+        val bearerToken = "Bearer $token"
+        val response = notificationService.createNotification(bearerToken, notification)
+        if (response.isSuccessful) {
+            response.body()?.let { notificationDto ->
+                val notificationCreated = notificationDto.toNotification()
+                return@withContext Resource.Success(notificationCreated)
+            }
+            return@withContext Resource.Error(message = "No se pudo crear la notificación")
+        }
+        return@withContext Resource.Error(response.message())
+    }
+
     suspend fun deleteNotification(notificationId: Long, token: String): Resource<Unit> = withContext(Dispatchers.IO) {
         if (token.isBlank()) {
             return@withContext Resource.Error(message = "Un token es requerido")

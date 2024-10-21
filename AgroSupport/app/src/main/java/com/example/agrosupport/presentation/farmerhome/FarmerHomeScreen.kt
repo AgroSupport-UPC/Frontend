@@ -58,7 +58,8 @@ fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
         ),
         CardItem(
             image = painterResource(id = R.drawable.icon_publications),
-            text = "Publicaciones"
+            text = "Publicaciones",
+            onClick = { viewModel.goToExplorePosts() }
         ),
     )
     val farmer = viewModel.state.value

@@ -14,6 +14,7 @@ import com.example.agrosupport.common.Routes
 import com.example.agrosupport.data.local.AppDatabase
 import com.example.agrosupport.data.remote.*
 import com.example.agrosupport.data.repository.*
+import com.example.agrosupport.domain.Farmer
 import com.example.agrosupport.presentation.advisordetail.AdvisorDetailScreen
 import com.example.agrosupport.presentation.advisordetail.AdvisorDetailViewModel
 import com.example.agrosupport.presentation.advisorlist.AdvisorListScreen
@@ -27,6 +28,8 @@ import com.example.agrosupport.presentation.createaccountfarmer.CreateAccountFar
 import com.example.agrosupport.presentation.createaccountfarmer.CreateAccountFarmerViewModel
 import com.example.agrosupport.presentation.createprofilefarmer.CreateProfileFarmerScreen
 import com.example.agrosupport.presentation.createprofilefarmer.CreateProfileFarmerViewModel
+import com.example.agrosupport.presentation.exploreposts.ExplorePostsScreen
+import com.example.agrosupport.presentation.exploreposts.ExplorePostsViewModel
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListScreen
 import com.example.agrosupport.presentation.farmerappointments.FarmerAppointmentListViewModel
 import com.example.agrosupport.presentation.farmerhistory.FarmerAppointmentHistoryListScreen
@@ -79,6 +82,7 @@ class MainActivity : ComponentActivity() {
         val appointmentService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AppointmentService::class.java)
         val availableDateService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(AvailableDateService::class.java)
         val notificationService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(NotificationService::class.java)
+        val postService = Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(PostService::class.java)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -90,18 +94,19 @@ class MainActivity : ComponentActivity() {
                 val farmerHomeViewModel = FarmerHomeViewModel(navController, ProfileRepository(profileService), AuthenticationRepository(authenticationService, userDao), AppointmentRepository(appointmentService), FarmerRepository(farmerService), AdvisorRepository(advisorService))
                 val restorePasswordViewModel = RestorePasswordViewModel(navController)
                 val advisorListViewModel = AdvisorListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
-                val advisorDetailViewModel = AdvisorDetailViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService))
-                val newAppointmentViewModel = NewAppointmentViewModel(navController, AvailableDateRepository(availableDateService), AppointmentRepository(appointmentService))
+                val advisorDetailViewModel = AdvisorDetailViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AvailableDateRepository(availableDateService))
+                val newAppointmentViewModel = NewAppointmentViewModel(navController, AvailableDateRepository(availableDateService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val reviewListViewModel = ReviewListViewModel(navController, ReviewRepository(reviewService), ProfileRepository(profileService), FarmerRepository(farmerService))
                 val farmerAppointmentListViewModel = FarmerAppointmentListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
                 val farmerAppointmentHistoryListViewModel = FarmerAppointmentHistoryListViewModel(navController, ProfileRepository(profileService), AdvisorRepository(advisorService), AppointmentRepository(appointmentService), FarmerRepository(farmerService))
-                val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService), ReviewRepository(reviewService))
+                val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService), ReviewRepository(reviewService), AvailableDateRepository(availableDateService))
                 val farmerReviewAdvisorViewModel = FarmerReviewAppointmentViewModel(navController, ReviewRepository(reviewService), AppointmentRepository(appointmentService), AdvisorRepository(advisorService), ProfileRepository(profileService))
                 val createAccountViewModel = CreateAccountViewModel(navController)
                 val createAccountFarmerPart1ViewModel = CreateAccountFarmerViewModel(navController, AuthenticationRepository(authenticationService, userDao))
                 val createProfileFarmerViewModel = CreateProfileFarmerViewModel(navController, ProfileRepository(profileService), createAccountFarmerPart1ViewModel, CloudStorageRepository())
                 val confirmCreationAccountFarmerViewModel = ConfirmCreationAccountFarmerViewModel(navController)
                 val notificationListViewModel = NotificationListViewModel(navController, NotificationRepository(notificationService))
+                val explorePostsViewModel = ExplorePostsViewModel(navController, PostRepository(postService), ProfileRepository(profileService), AdvisorRepository(advisorService))
                 val farmerProfileViewModel = FarmerProfileViewModel(navController,ProfileRepository(profileService), CloudStorageRepository())
 
                 NavHost(navController = navController, startDestination = Routes.Welcome.route) {
@@ -173,6 +178,9 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(route = Routes.NotificationList.route) {
                         NotificationListScreen(viewModel = notificationListViewModel)
+                    }
+                    composable(route = Routes.ExplorePosts.route) {
+                        ExplorePostsScreen(viewModel = explorePostsViewModel)
                     }
                     composable(route = Routes.FarmerProfile.route) {
                         FarmerProfileScreen(viewModel = farmerProfileViewModel)
