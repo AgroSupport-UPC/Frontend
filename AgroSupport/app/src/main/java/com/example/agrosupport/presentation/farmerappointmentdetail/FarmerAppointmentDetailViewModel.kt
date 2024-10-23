@@ -6,19 +6,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.agrosupport.data.repository.AdvisorRepository
-import com.example.agrosupport.data.repository.AppointmentRepository
-import com.example.agrosupport.data.repository.ProfileRepository
-import com.example.agrosupport.presentation.farmerhistory.AdvisorAppointmentCard
+import com.example.agrosupport.data.repository.advisor.AdvisorRepository
+import com.example.agrosupport.data.repository.appointment.AppointmentRepository
+import com.example.agrosupport.data.repository.profile.ProfileRepository
+import com.example.agrosupport.presentation.farmerhistory.AppointmentCard
 import com.example.agrosupport.common.Resource
 import kotlinx.coroutines.launch
 import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Routes
-import com.example.agrosupport.domain.Appointment
+import com.example.agrosupport.domain.appointment.Appointment
 import androidx.compose.runtime.State
-import com.example.agrosupport.data.repository.AvailableDateRepository
-import com.example.agrosupport.data.repository.ReviewRepository
-import com.example.agrosupport.domain.AvailableDate
+import com.example.agrosupport.data.repository.appointment.AvailableDateRepository
+import com.example.agrosupport.data.repository.appointment.ReviewRepository
+import com.example.agrosupport.domain.appointment.AvailableDate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 
@@ -31,8 +31,8 @@ class FarmerAppointmentDetailViewModel(
     private val availableDateRepository: AvailableDateRepository
 ) : ViewModel() {
 
-    private val _appointmentDetails = MutableLiveData<AdvisorAppointmentCard?>()
-    val appointmentDetails: LiveData<AdvisorAppointmentCard?> get() = _appointmentDetails
+    private val _appointmentDetails = MutableLiveData<AppointmentCard?>()
+    val appointmentDetails: LiveData<AppointmentCard?> get() = _appointmentDetails
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
@@ -132,7 +132,7 @@ class FarmerAppointmentDetailViewModel(
                     "Asesor Desconocido"
                 }
 
-                _appointmentDetails.value = AdvisorAppointmentCard(
+                _appointmentDetails.value = AppointmentCard(
                     id = appointment.id,
                     advisorName = advisorName,
                     advisorPhoto = advisorPhoto,

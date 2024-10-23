@@ -5,17 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.agrosupport.common.Constants
 import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.repository.AdvisorRepository
-import com.example.agrosupport.data.repository.AppointmentRepository
-import com.example.agrosupport.data.repository.FarmerRepository
-import com.example.agrosupport.data.repository.ProfileRepository
-import com.example.agrosupport.domain.Appointment
-import com.example.agrosupport.presentation.farmerhistory.AdvisorAppointmentCard
+import com.example.agrosupport.data.repository.advisor.AdvisorRepository
+import com.example.agrosupport.data.repository.appointment.AppointmentRepository
+import com.example.agrosupport.data.repository.farmer.FarmerRepository
+import com.example.agrosupport.data.repository.profile.ProfileRepository
+import com.example.agrosupport.presentation.farmerhistory.AppointmentCard
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -29,8 +27,8 @@ class FarmerAppointmentListViewModel(
     private val farmerRepository: FarmerRepository
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(UIState<List<AdvisorAppointmentCard>>())
-    val state: State<UIState<List<AdvisorAppointmentCard>>> get() = _state
+    private val _state = mutableStateOf(UIState<List<AppointmentCard>>())
+    val state: State<UIState<List<AppointmentCard>>> get() = _state
 
 
     fun goBack() {
@@ -75,7 +73,7 @@ class FarmerAppointmentListViewModel(
 
 
                     if (appointments != null && appointments.isNotEmpty()) {
-                        val advisorAppointmentCards = mutableListOf<AdvisorAppointmentCard>()
+                        val appointmentCards = mutableListOf<AppointmentCard>()
                         for (appointment in appointments) {
                             val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, GlobalVariables.TOKEN)
                             val advisorName = if (advisorResult is Resource.Success) {
@@ -107,8 +105,8 @@ class FarmerAppointmentListViewModel(
                             } else {
                                 "Asesor Desconocido"
                             }
-                            advisorAppointmentCards.add(
-                                AdvisorAppointmentCard(
+                            appointmentCards.add(
+                                AppointmentCard(
                                     id = appointment.id,
                                     advisorName = advisorName,
                                     advisorPhoto = advisorPhoto,
@@ -121,7 +119,7 @@ class FarmerAppointmentListViewModel(
                                 )
                             )
                         }
-                        _state.value = UIState(data = advisorAppointmentCards)
+                        _state.value = UIState(data = appointmentCards)
                     } else {
                         _state.value = UIState(message = "No se encontraron citas para la fecha seleccionada")
                     }

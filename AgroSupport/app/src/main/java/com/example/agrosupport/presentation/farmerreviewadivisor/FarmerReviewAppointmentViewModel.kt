@@ -9,11 +9,11 @@ import androidx.navigation.NavController
 import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.repository.AdvisorRepository
-import com.example.agrosupport.data.repository.AppointmentRepository
-import com.example.agrosupport.data.repository.ProfileRepository
-import com.example.agrosupport.data.repository.ReviewRepository
-import com.example.agrosupport.domain.Review
+import com.example.agrosupport.data.repository.advisor.AdvisorRepository
+import com.example.agrosupport.data.repository.appointment.AppointmentRepository
+import com.example.agrosupport.data.repository.profile.ProfileRepository
+import com.example.agrosupport.data.repository.appointment.ReviewRepository
+import com.example.agrosupport.domain.appointment.Review
 import kotlinx.coroutines.launch
 
 class FarmerReviewAppointmentViewModel(

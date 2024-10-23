@@ -8,8 +8,8 @@ import androidx.navigation.NavController
 import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.repository.NotificationRepository
-import com.example.agrosupport.domain.Notification
+import com.example.agrosupport.data.repository.notification.NotificationRepository
+import com.example.agrosupport.domain.notification.Notification
 import kotlinx.coroutines.launch
 
 class NotificationListViewModel(private val navController: NavController, private val notificationRepository: NotificationRepository) : ViewModel() {

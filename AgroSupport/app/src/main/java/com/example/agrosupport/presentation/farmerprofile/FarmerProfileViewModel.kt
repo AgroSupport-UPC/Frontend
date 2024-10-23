@@ -10,10 +10,10 @@ import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.repository.CloudStorageRepository
-import com.example.agrosupport.data.repository.ProfileRepository
-import com.example.agrosupport.domain.Profile
-import com.example.agrosupport.domain.UpdateProfile
+import com.example.agrosupport.data.repository.profile.CloudStorageRepository
+import com.example.agrosupport.data.repository.profile.ProfileRepository
+import com.example.agrosupport.domain.profile.Profile
+import com.example.agrosupport.domain.profile.UpdateProfile
 import kotlinx.coroutines.launch
 
 

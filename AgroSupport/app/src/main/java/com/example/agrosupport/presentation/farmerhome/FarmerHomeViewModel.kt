@@ -10,15 +10,15 @@ import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.repository.AdvisorRepository
-import com.example.agrosupport.data.repository.AppointmentRepository
-import com.example.agrosupport.data.repository.AuthenticationRepository
-import com.example.agrosupport.data.repository.FarmerRepository
-import com.example.agrosupport.data.repository.ProfileRepository
-import com.example.agrosupport.domain.Appointment
-import com.example.agrosupport.domain.Profile
-import com.example.agrosupport.domain.AuthenticationResponse
-import com.example.agrosupport.presentation.farmerhistory.AdvisorAppointmentCard
+import com.example.agrosupport.data.repository.advisor.AdvisorRepository
+import com.example.agrosupport.data.repository.appointment.AppointmentRepository
+import com.example.agrosupport.data.repository.authentication.AuthenticationRepository
+import com.example.agrosupport.data.repository.farmer.FarmerRepository
+import com.example.agrosupport.data.repository.profile.ProfileRepository
+import com.example.agrosupport.domain.appointment.Appointment
+import com.example.agrosupport.domain.profile.Profile
+import com.example.agrosupport.domain.authentication.AuthenticationResponse
+import com.example.agrosupport.presentation.farmerhistory.AppointmentCard
 
 class FarmerHomeViewModel(
     private val navController: NavController,
@@ -34,8 +34,8 @@ class FarmerHomeViewModel(
     private val _expanded = mutableStateOf(false)
     val expanded: State<Boolean> get() = _expanded
 
-    private val _appointmentCard = mutableStateOf(UIState<AdvisorAppointmentCard>())
-    val appointmentCard: State<UIState<AdvisorAppointmentCard>> get() = _appointmentCard
+    private val _appointmentCard = mutableStateOf(UIState<AppointmentCard>())
+    val appointmentCard: State<UIState<AppointmentCard>> get() = _appointmentCard
 
     fun getFarmerName() {
         _state.value = UIState(isLoading = true)
@@ -67,7 +67,7 @@ class FarmerHomeViewModel(
                 return@launch
             }
 
-            val appointmentCard = AdvisorAppointmentCard(
+            val appointmentCard = AppointmentCard(
                 id = appointment.id,
                 advisorName = "${advisorProfile.firstName} ${advisorProfile.lastName}",
                 advisorPhoto = advisorProfile.photo,

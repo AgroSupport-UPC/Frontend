@@ -8,17 +8,18 @@ import androidx.navigation.NavController
 import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.repository.AdvisorRepository
-import com.example.agrosupport.data.repository.FarmerRepository
-import com.example.agrosupport.data.repository.ProfileRepository
-import com.example.agrosupport.data.repository.ReviewRepository
+import com.example.agrosupport.data.repository.advisor.AdvisorRepository
+import com.example.agrosupport.data.repository.farmer.FarmerRepository
+import com.example.agrosupport.data.repository.profile.ProfileRepository
+import com.example.agrosupport.data.repository.appointment.ReviewRepository
 import com.example.agrosupport.presentation.advisorlist.AdvisorCard
 import kotlinx.coroutines.launch
 
 class ReviewListViewModel(private val navController: NavController, private val reviewRepository: ReviewRepository,
                           private val profileRepository: ProfileRepository,
                           private val farmerRepository: FarmerRepository,
-                          private val advisorRepository: AdvisorRepository): ViewModel() {
+                          private val advisorRepository: AdvisorRepository
+): ViewModel() {
     private val _state = mutableStateOf(UIState<List<ReviewCard>>())
     val state: State<UIState<List<ReviewCard>>> get() = _state
 

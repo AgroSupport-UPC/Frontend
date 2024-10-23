@@ -40,7 +40,7 @@ import java.util.Date
 
 @Composable
 fun FarmerAppointmentHistoryListScreen(
-    viewModel: FarmerAppointmentHistoryListViewModel
+    viewModel: FarmerHistoryViewModel
 ) {
     val state = viewModel.state.value
     val context = LocalContext.current
@@ -53,7 +53,7 @@ fun FarmerAppointmentHistoryListScreen(
         { _, year, month, dayOfMonth ->
             calendar.set(year, month, dayOfMonth)
             selectedDate.value = calendar.time
-            viewModel.getAdvisorAppointmentHistoryListByFarmer(selectedDate.value)
+            viewModel.getFarmerHistory(selectedDate.value)
         },
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
@@ -62,7 +62,7 @@ fun FarmerAppointmentHistoryListScreen(
 
     // Cargar todas las citas al inicio
     LaunchedEffect(Unit) {
-        viewModel.getAdvisorAppointmentHistoryListByFarmer(null)
+        viewModel.getFarmerHistory(null)
     }
 
     Scaffold { paddingValues ->
@@ -159,7 +159,7 @@ fun FarmerAppointmentHistoryListScreen(
                 FloatingActionButton(
                     onClick = {
                         selectedDate.value = null // Establecer selectedDate en null para mostrar todas las citas
-                        viewModel.getAdvisorAppointmentHistoryListByFarmer(null)
+                        viewModel.getFarmerHistory(null)
                     }
                 ) {
                     Icon(

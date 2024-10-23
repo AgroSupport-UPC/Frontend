@@ -9,8 +9,8 @@ import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.repository.AuthenticationRepository
-import com.example.agrosupport.domain.AuthenticationResponse
+import com.example.agrosupport.data.repository.authentication.AuthenticationRepository
+import com.example.agrosupport.domain.authentication.AuthenticationResponse
 import kotlinx.coroutines.launch
 
 class LoginViewModel(

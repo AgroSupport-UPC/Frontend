@@ -9,13 +9,14 @@ import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.repository.AdvisorRepository
-import com.example.agrosupport.data.repository.AvailableDateRepository
-import com.example.agrosupport.data.repository.ProfileRepository
+import com.example.agrosupport.data.repository.advisor.AdvisorRepository
+import com.example.agrosupport.data.repository.appointment.AvailableDateRepository
+import com.example.agrosupport.data.repository.profile.ProfileRepository
 import kotlinx.coroutines.launch
 
 class AdvisorDetailViewModel(private val navController: NavController, private val profileRepository: ProfileRepository,
-                             private val advisorRepository: AdvisorRepository, private val availableDateRepository: AvailableDateRepository): ViewModel() {
+                             private val advisorRepository: AdvisorRepository, private val availableDateRepository: AvailableDateRepository
+): ViewModel() {
 
     private val _state = mutableStateOf(UIState<AdvisorDetail>())
     val state: State<UIState<AdvisorDetail>> get() = _state

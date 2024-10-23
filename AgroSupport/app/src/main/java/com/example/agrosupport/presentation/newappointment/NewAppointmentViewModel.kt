@@ -10,11 +10,11 @@ import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.repository.AppointmentRepository
-import com.example.agrosupport.data.repository.AvailableDateRepository
-import com.example.agrosupport.data.repository.FarmerRepository
-import com.example.agrosupport.domain.Appointment
-import com.example.agrosupport.domain.AvailableDate
+import com.example.agrosupport.data.repository.appointment.AppointmentRepository
+import com.example.agrosupport.data.repository.appointment.AvailableDateRepository
+import com.example.agrosupport.data.repository.farmer.FarmerRepository
+import com.example.agrosupport.domain.appointment.Appointment
+import com.example.agrosupport.domain.appointment.AvailableDate
 import kotlinx.coroutines.launch
 
 

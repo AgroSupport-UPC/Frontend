@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.agrosupport.domain.Notification
+import com.example.agrosupport.domain.notification.Notification
 
 fun toFormattedDate(date: String): String {
     val datePart = date.substring(0, 10) // YYYY-MM-DD

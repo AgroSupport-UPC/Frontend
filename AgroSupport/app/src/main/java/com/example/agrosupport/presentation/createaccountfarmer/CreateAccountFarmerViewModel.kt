@@ -9,8 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.repository.AuthenticationRepository
-import com.example.agrosupport.domain.CreateProfile
+import com.example.agrosupport.data.repository.authentication.AuthenticationRepository
+import com.example.agrosupport.domain.profile.CreateProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

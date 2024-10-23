@@ -9,15 +9,16 @@ import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.repository.AdvisorRepository
-import com.example.agrosupport.data.repository.PostRepository
-import com.example.agrosupport.data.repository.ProfileRepository
+import com.example.agrosupport.data.repository.advisor.AdvisorRepository
+import com.example.agrosupport.data.repository.post.PostRepository
+import com.example.agrosupport.data.repository.profile.ProfileRepository
 import kotlinx.coroutines.launch
 
 class ExplorePostsViewModel(private val navController: NavController,
                             private val postRepository: PostRepository,
                             private val profileRepository: ProfileRepository,
-                            private val advisorRepository: AdvisorRepository) : ViewModel() {
+                            private val advisorRepository: AdvisorRepository
+) : ViewModel() {
     private val _state = mutableStateOf(UIState<List<PostCard>>())
     val state: State<UIState<List<PostCard>>> get() = _state
 
