@@ -6,15 +6,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
-import com.example.agrosupport.common.Constants
+import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.repository.AdvisorRepository
-import com.example.agrosupport.data.repository.ProfileRepository
+import com.example.agrosupport.data.repository.advisor.AdvisorRepository
+import com.example.agrosupport.data.repository.profile.ProfileRepository
 
 class AdvisorListViewModel(private val navController: NavController, private val profileRepository: ProfileRepository,
-                           private val advisorRepository: AdvisorRepository): ViewModel() {
+                           private val advisorRepository: AdvisorRepository
+): ViewModel() {
 
     private val _state = mutableStateOf(UIState<List<AdvisorCard>>())
     val state: State<UIState<List<AdvisorCard>>> get() = _state
@@ -35,14 +36,14 @@ class AdvisorListViewModel(private val navController: NavController, private val
     fun getAdvisorList() {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            when (val result = profileRepository.getAdvisorList(Constants.EXAMPLE_TOKEN)) {
+            when (val result = profileRepository.getAdvisorList(GlobalVariables.TOKEN)) {
                 is Resource.Success -> {
                     val profiles = result.data ?: run {
                         _state.value = UIState(message = "No se encontraron asesores")
                         return@launch
                     }
                     val advisorCards = profiles.map { profile ->
-                        val advisorResult = advisorRepository.searchAdvisorByUserId(profile.userId, Constants.EXAMPLE_TOKEN)
+                        val advisorResult = advisorRepository.searchAdvisorByUserId(profile.userId, GlobalVariables.TOKEN)
                         val advisorId = (advisorResult as? Resource.Success)?.data?.id ?: 0
                         val rating = (advisorResult as? Resource.Success)?.data?.rating ?: 0.0
 
@@ -93,6 +94,7 @@ class AdvisorListViewModel(private val navController: NavController, private val
     private fun List<AdvisorCard>.filterByName(): List<AdvisorCard> {
         return filter { it.name.contains(search.value, ignoreCase = true) }
     }
+
 
     private fun List<AdvisorCard>.filterByOccupation(): List<AdvisorCard> {
         return filter { it.occupation.contains(search.value, ignoreCase = true) }

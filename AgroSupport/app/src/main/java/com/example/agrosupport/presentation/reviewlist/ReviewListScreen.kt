@@ -1,6 +1,7 @@
 package com.example.agrosupport.presentation.reviewlist
 
 import android.widget.ImageView
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,13 +15,14 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,14 +39,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.agrosupport.R
+import com.skydoves.landscapist.glide.GlideImage
 import com.squareup.picasso.Picasso
 
 @Composable
 fun ReviewListScreen(viewModel: ReviewListViewModel, advisorId: Long) {
     val state = viewModel.state.value
+    val advisor = viewModel.advisorCard.value
 
     LaunchedEffect(Unit) {
         viewModel.getAdvisorReviewList(advisorId)
+        viewModel.getAdvisorDetail(advisorId)
     }
 
     Scaffold { paddingValues ->
@@ -76,8 +81,16 @@ fun ReviewListScreen(viewModel: ReviewListViewModel, advisorId: Long) {
                         style = MaterialTheme.typography.titleLarge
                     )
                 }
+                IconButton(
+                    onClick = { /* Acción de más opciones */ }
+                    ) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Más opciones"
+                    )
+                }
             }
-            if (state.isLoading) {
+            if (state.isLoading || advisor.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -85,6 +98,53 @@ fun ReviewListScreen(viewModel: ReviewListViewModel, advisorId: Long) {
                     CircularProgressIndicator()
                 }
             } else {
+                Card(modifier = Modifier.fillMaxWidth(),
+                    colors = CardColors(
+                        contentColor = Color.White,
+                        containerColor = Color.Transparent,
+                        disabledContentColor = Color.White,
+                        disabledContainerColor = Color(0xFFBAC2CB)
+                    )) {
+                    Column (
+                        modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        GlideImage(
+                            modifier = Modifier
+                                .size(128.dp)
+                                .clip(CircleShape)
+                                .border(3.dp, Color(0xFFF4B696), CircleShape),
+                            imageModel = {
+                                advisor.data?.link?.ifBlank { R.drawable.placeholder }
+                            }
+                        )
+                        advisor.data?.let {
+                            Text(
+                                text = it.name,
+                                color = Color(0xFF222B45),
+                                fontFamily = FontFamily.SansSerif,
+                                fontWeight = FontWeight.Bold,
+                                fontStyle = FontStyle.Italic
+                            )
+                        }
+                        Card(modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally),
+                            colors = CardColors(
+                                contentColor = Color.White,
+                                containerColor = Color(0xFFFFFFFF),
+                                disabledContentColor = Color.White,
+                                disabledContainerColor = Color(0xFFBAC2CB)
+                            )) {
+                            Text(
+                                modifier = Modifier.padding(16.dp),
+                                text = "⭐ ${advisor.data?.rating}",
+                                color = Color(0xFFF7C480),
+                                fontFamily = FontFamily.SansSerif,
+                                fontWeight = FontWeight.Bold,
+                                fontStyle = FontStyle.Italic
+                            )
+                        }
+                    }
+                }
                 if (state.data.isNullOrEmpty()) {
                     Text(
                         text = state.message.ifEmpty { "No hay reseñas sobre este asesor" },
@@ -96,7 +156,7 @@ fun ReviewListScreen(viewModel: ReviewListViewModel, advisorId: Long) {
                 } else {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(1),
-                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+                        modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
                     ) {
                         state.data.let {
                             items(count = it.size, itemContent = { index ->
@@ -112,7 +172,7 @@ fun ReviewListScreen(viewModel: ReviewListViewModel, advisorId: Long) {
 
 @Composable
 fun ReviewCard(review: ReviewCard) {
-    val rating = review.rating.toInt()
+    val rating = review.rating
     Card(
         modifier = Modifier.padding(8.dp).fillMaxWidth(),
         colors = CardColors(

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -51,7 +52,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -67,6 +67,12 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.ui.test.android)
+    implementation(libs.protolite.well.known.types)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.firebase.storage.ktx)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.common.ktx)
     annotationProcessor(libs.room.compiler)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)

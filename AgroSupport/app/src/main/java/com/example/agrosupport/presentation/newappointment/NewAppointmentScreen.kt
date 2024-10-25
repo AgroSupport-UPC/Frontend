@@ -35,8 +35,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.example.agrosupport.common.Constants
-import com.example.agrosupport.domain.AvailableDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -155,7 +153,7 @@ fun NewAppointmentScreen(viewModel: NewAppointmentViewModel, advisorId: Long) {
                     Button(modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                        onClick = { viewModel.createAppointment(advisorId, 1) },
+                        onClick = { viewModel.createAppointment(advisorId) },
                         enabled = selectedDate != -1,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF3E64FF), // Color de fondo del botón

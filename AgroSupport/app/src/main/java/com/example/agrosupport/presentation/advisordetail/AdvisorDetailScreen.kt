@@ -1,6 +1,5 @@
 package com.example.agrosupport.presentation.advisordetail
 
-import android.widget.ImageView
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -19,14 +20,15 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,22 +38,29 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.example.agrosupport.R
 import com.skydoves.landscapist.glide.GlideImage
-import com.squareup.picasso.Picasso
 
 @Composable
 fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, advisorId: Long) {
     val state = viewModel.state.value
+    val snackbarMessage by viewModel.snackbarMessage
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(snackbarMessage) {
         viewModel.getAdvisorDetail(advisorId)
+        snackbarMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearSnackbarMessage()
+        }
     }
 
-    Scaffold { paddingValues ->
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
         Column(
             modifier = Modifier.fillMaxWidth().padding(paddingValues).padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

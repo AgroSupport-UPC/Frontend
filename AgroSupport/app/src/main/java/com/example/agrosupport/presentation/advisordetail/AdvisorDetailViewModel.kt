@@ -5,19 +5,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.agrosupport.common.Constants
+import com.example.agrosupport.common.GlobalVariables
 import com.example.agrosupport.common.Resource
 import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
-import com.example.agrosupport.data.repository.AdvisorRepository
-import com.example.agrosupport.data.repository.ProfileRepository
+import com.example.agrosupport.data.repository.advisor.AdvisorRepository
+import com.example.agrosupport.data.repository.appointment.AvailableDateRepository
+import com.example.agrosupport.data.repository.profile.ProfileRepository
 import kotlinx.coroutines.launch
 
 class AdvisorDetailViewModel(private val navController: NavController, private val profileRepository: ProfileRepository,
-                             private val advisorRepository: AdvisorRepository): ViewModel() {
+                             private val advisorRepository: AdvisorRepository, private val availableDateRepository: AvailableDateRepository
+): ViewModel() {
 
     private val _state = mutableStateOf(UIState<AdvisorDetail>())
     val state: State<UIState<AdvisorDetail>> get() = _state
+
+    // Variable de estado para el mensaje del Snackbar
+    private val _snackbarMessage = mutableStateOf<String?>(null)
+    val snackbarMessage: State<String?> get() = _snackbarMessage
+
+    fun clearSnackbarMessage() {
+        _snackbarMessage.value = null
+    }
 
     fun goBack() {
         navController.popBackStack()
@@ -27,11 +37,11 @@ class AdvisorDetailViewModel(private val navController: NavController, private v
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
             // obtener advisor user_id a partir de la ruta "AdvisorDetail/{userId}"
-            val result = advisorRepository.searchAdvisorByAdvisorId(advisorId, Constants.EXAMPLE_TOKEN)
+            val result = advisorRepository.searchAdvisorByAdvisorId(advisorId, GlobalVariables.TOKEN)
             if (result is Resource.Success) {
                 val advisor = result.data
                 if (advisor != null) {
-                    val profileResult = profileRepository.searchProfile(advisor.userId, Constants.EXAMPLE_TOKEN)
+                    val profileResult = profileRepository.searchProfile(advisor.userId, GlobalVariables.TOKEN)
                     if (profileResult is Resource.Success) {
                         val profile = profileResult.data
                         if (profile != null) {
@@ -63,6 +73,18 @@ class AdvisorDetailViewModel(private val navController: NavController, private v
     }
 
     fun goToNewAppointment(advisorId: Long) {
-        navController.navigate(Routes.NewAppointment.route + "/$advisorId")
+        viewModelScope.launch {
+            val result = availableDateRepository.getAvailableDatesByAdvisor(advisorId, GlobalVariables.TOKEN)
+            if (result is Resource.Success) {
+                val availableDates = result.data
+                if (availableDates.isNullOrEmpty()) {
+                    _snackbarMessage.value = "No hay fechas disponibles"
+                } else {
+                    navController.navigate(Routes.NewAppointment.route + "/$advisorId")
+                }
+            } else {
+                _state.value = UIState(message = "Error obteniendo fechas disponibles")
+            }
+        }
     }
 }
