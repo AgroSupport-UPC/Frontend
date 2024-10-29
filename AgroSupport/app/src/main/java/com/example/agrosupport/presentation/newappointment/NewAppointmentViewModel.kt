@@ -80,6 +80,9 @@ class NewAppointmentViewModel(private val navController: NavController,
                     val result = appointmentRepository.createAppointment(GlobalVariables.TOKEN, appointment)
                     if (result is Resource.Success) {
                         availableDateRepository.deleteAvailableDate(availableDate.id, GlobalVariables.TOKEN)
+                        _comment.value = ""
+                        _selectedDate.intValue = -1
+                        _isExpanded.value = false
                         navController.navigate(Routes.NewAppointmentConfirmation.route)
                     } else {
                         _state.value = UIState(message = "Error al crear la cita")

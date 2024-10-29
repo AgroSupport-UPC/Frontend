@@ -145,6 +145,7 @@ fun NewAppointmentScreen(viewModel: NewAppointmentViewModel, advisorId: Long) {
                     maxLines = 5
                 )
                 Spacer(modifier = Modifier.weight(1f))
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,

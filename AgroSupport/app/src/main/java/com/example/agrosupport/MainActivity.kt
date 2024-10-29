@@ -130,7 +130,7 @@ class MainActivity : ComponentActivity() {
                 val newAppointmentViewModel = NewAppointmentViewModel(navController, availableDateRepository, appointmentRepository, farmerRepository)
                 val farmerAppointmentListViewModel = FarmerAppointmentListViewModel(navController, profileRepository, advisorRepository, appointmentRepository, farmerRepository)
                 val farmerHistoryViewModel = FarmerHistoryViewModel(navController, profileRepository, advisorRepository, appointmentRepository, farmerRepository)
-                val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, appointmentRepository, advisorRepository, profileRepository, reviewRepository, availableDateRepository)
+                val farmerAppointmentDetailViewModel = FarmerAppointmentDetailViewModel(navController, appointmentRepository, advisorRepository, profileRepository, reviewRepository, availableDateRepository, notificationRepository)
                 val farmerReviewAdvisorViewModel = FarmerReviewAppointmentViewModel(navController, reviewRepository, appointmentRepository, advisorRepository, profileRepository)
                 val createAccountViewModel = CreateAccountViewModel(navController)
                 val createAccountFarmerViewModel = CreateAccountFarmerViewModel(navController, authenticationRepository)

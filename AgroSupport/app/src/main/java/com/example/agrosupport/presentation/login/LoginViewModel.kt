@@ -49,6 +49,8 @@ class LoginViewModel(
                                 token = GlobalVariables.TOKEN
                             )
                         )
+                        _email.value = ""
+                        _password.value = ""
                         goToFarmerScreen()
                     } else {
                         _state.value = UIState(message = "Error al iniciar sesión")

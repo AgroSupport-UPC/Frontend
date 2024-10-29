@@ -59,7 +59,7 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, advisorId: Long) {
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxWidth().padding(paddingValues).padding(16.dp)
+            modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             Row(
@@ -216,7 +216,7 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, advisorId: Long) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     Button(modifier = Modifier
                         .fillMaxWidth()

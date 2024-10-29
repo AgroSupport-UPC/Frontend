@@ -87,6 +87,7 @@ fun CancelAppointmentDialog(
             Button(
                 onClick = { onConfirm(cancelReason) },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                enabled = cancelReason.isNotBlank(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))

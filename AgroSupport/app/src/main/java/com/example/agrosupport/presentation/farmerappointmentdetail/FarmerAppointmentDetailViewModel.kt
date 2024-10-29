@@ -18,9 +18,15 @@ import com.example.agrosupport.domain.appointment.Appointment
 import androidx.compose.runtime.State
 import com.example.agrosupport.data.repository.appointment.AvailableDateRepository
 import com.example.agrosupport.data.repository.appointment.ReviewRepository
+import com.example.agrosupport.data.repository.notification.NotificationRepository
 import com.example.agrosupport.domain.appointment.AvailableDate
+import com.example.agrosupport.domain.notification.Notification
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import java.util.Date
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 class FarmerAppointmentDetailViewModel(
     private val navController: NavController,
@@ -28,7 +34,8 @@ class FarmerAppointmentDetailViewModel(
     private val advisorRepository: AdvisorRepository,
     private val profileRepository: ProfileRepository,
     private val reviewRepository: ReviewRepository,
-    private val availableDateRepository: AvailableDateRepository
+    private val availableDateRepository: AvailableDateRepository,
+    private val notificationRepository: NotificationRepository
 ) : ViewModel() {
 
     private val _appointmentDetails = MutableLiveData<AppointmentCard?>()
@@ -178,7 +185,48 @@ class FarmerAppointmentDetailViewModel(
                 _isCancelled.value = true
                 val availableDateResult = availableDateRepository.createAvailableDate(GlobalVariables.TOKEN, availableDate!!)
                 if (availableDateResult is Resource.Success) {
-                    // Aumentar una notificacion luego de eliminar la cita
+
+
+                    //
+
+                    val currentDateTime = Date()
+                    val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
+                    formatter.timeZone = TimeZone.getTimeZone("America/Lima")
+                    val formattedDateTime = formatter.format(currentDateTime)
+
+                    val notification = appointmentResult.data?.let {
+                        Notification(
+                            id = 0,
+                            userId = GlobalVariables.USER_ID,
+                            title = "Cita cancelada",
+                            message = "La cita programada para el ${it.scheduledDate} a las ${it.startTime} ha sido cancelada por el agricultor. Motivo: $cancelReason",
+                            sendAt = formattedDateTime
+                        )
+                    }
+
+
+
+                    notificationRepository.createNotification(notification!!, GlobalVariables.TOKEN)
+
+                    /*
+
+                    val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointmentResult.data?.advisorId!!, GlobalVariables.TOKEN)
+
+                    val notificationAdvisor = appointmentResult.data?.let {
+                        Notification(
+                            id = 0,
+                            userId = advisorResult.data?.userId!!,
+                            title = "Cita cancelada",
+                            message = "La cita programada para el ${it.scheduledDate} a las ${it.startTime} ha sido cancelada por el agricultor. Motivo: $cancelReason",
+                            sendAt = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()).toString()
+                        )
+                    }
+
+                    notificationRepository.createNotification(notificationAdvisor!!, GlobalVariables.TOKEN)
+
+                    * */
+
+
                     navController.navigate(Routes.CancelAppointmentConfirmation.route)
                 }
 
@@ -187,11 +235,15 @@ class FarmerAppointmentDetailViewModel(
             }
 
         }
+
+        onDismissCancelDialog()
     }
 
     fun onDismissCancelDialog() {
         _showCancelDialog.value = false
     }
+
+
 
 
 }

@@ -47,7 +47,6 @@ import com.example.agrosupport.presentation.farmerappointmentdetail.CancelAppoin
 import com.example.agrosupport.presentation.farmerappointmentdetail.FarmerAppointmentDetailViewModel
 import com.example.agrosupport.presentation.farmerhistory.AppointmentCard
 
-
 @Composable
 fun FarmerAppointmentDetailScreen(
     viewModel: FarmerAppointmentDetailViewModel,
@@ -61,10 +60,8 @@ fun FarmerAppointmentDetailScreen(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-
         viewModel.startPollingAppointmentStatus(appointmentId)
         viewModel.loadAppointmentDetails(appointmentId)
-
     }
 
     DisposableEffect(Unit) {
@@ -200,7 +197,7 @@ fun FarmerAppointmentDetailScreen(
                                     readOnly = true
                                 )
 
-                                Spacer(modifier = Modifier.height(16.dp))
+                                Spacer(modifier = Modifier.weight(1f))
 
                                 // Botón para cancelar la cita
                                 Button(
