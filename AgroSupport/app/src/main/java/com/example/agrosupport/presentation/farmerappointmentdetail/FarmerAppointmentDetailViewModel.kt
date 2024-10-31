@@ -199,7 +199,7 @@ class FarmerAppointmentDetailViewModel(
                             id = 0,
                             userId = GlobalVariables.USER_ID,
                             title = "Cita cancelada",
-                            message = "La cita programada para el ${it.scheduledDate} a las ${it.startTime} ha sido cancelada por el agricultor. Motivo: $cancelReason",
+                            message = "La cita programada para el ${it.scheduledDate} a las ${it.startTime} ha sido cancelada. Motivo: $cancelReason",
                             sendAt = formattedDateTime
                         )
                     }
