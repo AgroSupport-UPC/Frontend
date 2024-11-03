@@ -87,7 +87,7 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, advisorId: Long) {
                 Card(modifier = Modifier.fillMaxWidth(),
                     colors = CardColors(
                         contentColor = Color.White,
-                        containerColor = Color(0xFFBAC2CB),
+                        containerColor = Color(0xFFFAB573),
                         disabledContentColor = Color.White,
                         disabledContainerColor = Color(0xFFBAC2CB)
                     )) {
