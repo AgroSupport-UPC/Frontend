@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 fun FarmerProfileScreen(viewModel: FarmerProfileViewModel) {
@@ -43,7 +44,7 @@ fun FarmerProfileScreen(viewModel: FarmerProfileViewModel) {
                         contentDescription = "Go back"
                     )
                 }
-                Text(text = "Editar Perfil", style = TextStyle(fontSize = 18.sp))
+                Text(text = "Editar Perfil", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
                 IconButton(onClick = { /* Opción de menú adicional */ }) {
                     Icon(
                         imageVector = Icons.Filled.MoreVert,

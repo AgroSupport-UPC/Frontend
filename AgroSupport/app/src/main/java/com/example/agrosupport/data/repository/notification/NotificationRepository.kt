@@ -1,8 +1,10 @@
 package com.example.agrosupport.data.repository.notification
 
 import com.example.agrosupport.common.Resource
+import com.example.agrosupport.data.remote.notification.NotificationDto
 import com.example.agrosupport.data.remote.notification.NotificationService
 import com.example.agrosupport.data.remote.notification.toNotification
+import com.example.agrosupport.domain.notification.CreateNotification
 import com.example.agrosupport.domain.notification.Notification
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -27,20 +29,21 @@ class NotificationRepository(private val notificationService: NotificationServic
         }
     }
 
-    suspend fun createNotification(token: String, notification: Notification): Resource<Notification> = withContext(Dispatchers.IO) {
+    suspend fun createNotification(notification: Notification, token: String): Resource<Notification> = withContext(Dispatchers.IO) {
         if (token.isBlank()) {
             return@withContext Resource.Error(message = "Un token es requerido")
         }
         val bearerToken = "Bearer $token"
-        val response = notificationService.createNotification(bearerToken, notification)
+        val response = notificationService.createNotification(bearerToken, CreateNotification(notification.userId, notification.title, notification.message, notification.sendAt))
         if (response.isSuccessful) {
-            response.body()?.let { notificationDto ->
+            response.body()?.let { notificationDto: NotificationDto ->
                 val notificationCreated = notificationDto.toNotification()
                 return@withContext Resource.Success(notificationCreated)
             }
-            return@withContext Resource.Error(message = "No se pudo crear la notificación")
+            return@withContext Resource.Error(message = "Error al crear notificación")
+        } else {
+            return@withContext Resource.Error(response.message())
         }
-        return@withContext Resource.Error(response.message())
     }
 
     suspend fun deleteNotification(notificationId: Long, token: String): Resource<Unit> = withContext(Dispatchers.IO) {
@@ -56,5 +59,8 @@ class NotificationRepository(private val notificationService: NotificationServic
             return@withContext Resource.Error(response.message())
         }
     }
+
+
+
 
 }

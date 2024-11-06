@@ -14,6 +14,7 @@ import com.example.agrosupport.data.repository.advisor.AdvisorRepository
 import com.example.agrosupport.data.repository.appointment.AppointmentRepository
 import com.example.agrosupport.data.repository.authentication.AuthenticationRepository
 import com.example.agrosupport.data.repository.farmer.FarmerRepository
+import com.example.agrosupport.data.repository.notification.NotificationRepository
 import com.example.agrosupport.data.repository.profile.ProfileRepository
 import com.example.agrosupport.domain.appointment.Appointment
 import com.example.agrosupport.domain.profile.Profile
@@ -26,7 +27,8 @@ class FarmerHomeViewModel(
     private val authenticationRepository: AuthenticationRepository,
     private val appointmentRepository: AppointmentRepository,
     private val farmerRepository: FarmerRepository,
-    private val advisorRepository: AdvisorRepository
+    private val advisorRepository: AdvisorRepository,
+    private val notificationRepository: NotificationRepository
 ) : ViewModel() {
     private val _state = mutableStateOf(UIState<Profile>())
     val state: State<UIState<Profile>> get() = _state
@@ -36,6 +38,18 @@ class FarmerHomeViewModel(
 
     private val _appointmentCard = mutableStateOf(UIState<AppointmentCard>())
     val appointmentCard: State<UIState<AppointmentCard>> get() = _appointmentCard
+
+    private val _notificationCount = mutableStateOf(0)
+    val notificationCount: State<Int> get() = _notificationCount
+
+    fun getNotificationCount() {
+        viewModelScope.launch {
+            val result = notificationRepository.getNotifications(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
+            if (result is Resource.Success) {
+                _notificationCount.value = result.data?.size ?: 0
+            }
+        }
+    }
 
     fun getFarmerName() {
         _state.value = UIState(isLoading = true)

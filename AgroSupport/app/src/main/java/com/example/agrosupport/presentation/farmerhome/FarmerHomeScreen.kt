@@ -1,19 +1,26 @@
 package com.example.agrosupport.presentation.farmerhome
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -38,11 +45,14 @@ import androidx.compose.ui.unit.sp
 import com.example.agrosupport.R
 import com.example.agrosupport.presentation.farmerhistory.AppointmentCard
 
+
+
 @Composable
 fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
     LaunchedEffect(Unit) {
         viewModel.getFarmerName()
         viewModel.getAppointment()
+        viewModel.getNotificationCount()
     }
 
     val cardItems = listOf(
@@ -82,13 +92,36 @@ fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge
                 )
+
                 IconButton(onClick = { viewModel.goToNotificationList() }) {
-                    Icon(
-                        imageVector = Icons.Default.Notifications,
-                        contentDescription = "Notifications",
-                        modifier = Modifier.padding(horizontal = 8.dp).size(32.dp)
-                    )
+                    BadgedBox(
+                        badge = {
+                            if (viewModel.notificationCount.value > 0) {
+                                Badge(
+                                    contentColor = Color.White,
+                                    containerColor = Color.Red,
+                                    modifier = Modifier.offset(x = (-8).dp, y = (0).dp)
+                                ) {
+                                    Text(
+                                        text = viewModel.notificationCount.value.toString(),
+                                        color = Color.White,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "Notifications",
+                            modifier = Modifier.padding(horizontal = 8.dp).size(32.dp)
+                        )
+                    }
                 }
+
+
+
                 IconButton(onClick = { viewModel.setExpanded(true) }) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
@@ -201,3 +234,5 @@ fun FarmerHomeScreen(viewModel: FarmerHomeViewModel) {
         }
     }
 }
+
+

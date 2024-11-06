@@ -17,7 +17,8 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,8 +38,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.agrosupport.presentation.farmerhistory.AppointmentCard
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 @Composable
 fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
@@ -61,6 +64,9 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
         calendar.get(Calendar.DAY_OF_MONTH)
     )
 
+    // Formatear la fecha seleccionada
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val selectedDateText = selectedDate.value?.let { dateFormat.format(it) } ?: "Seleccionar fecha"
 
     LaunchedEffect(Unit) {
         viewModel.getAdvisorAppointmentListByFarmer(null)
@@ -110,6 +116,46 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
                         }
                     }
                 }
+
+                // Filter Chips for date filtering
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // FilterChip to select a specific date
+                    FilterChip(
+                        selected = selectedDate.value != null,
+                        onClick = { datePickerDialog.show() },
+                        label = { Text(selectedDateText) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.CalendarToday,
+                                contentDescription = "Seleccionar fecha"
+                            )
+                        },
+
+                    )
+
+                    // FilterChip to show all appointments
+                    FilterChip(
+                        selected = selectedDate.value == null,
+                        onClick = {
+                            selectedDate.value = null
+                            viewModel.getAdvisorAppointmentListByFarmer(null)
+                        },
+                        label = { Text("Mostrar todas") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.List,
+                                contentDescription = "Mostrar todas las citas"
+                            )
+                        },
+
+                    )
+                }
+
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -119,7 +165,7 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
                         items(appointments) { appointment ->
                             AppointmentCard(
                                 appointment = appointment,
-                                onClick = { viewModel.goAppointmentDetail(appointment.id) } // Hacer clic en la tarjeta para navegar al detalle
+                                onClick = { viewModel.goAppointmentDetail(appointment.id) }
                             )
                         }
                     }
@@ -145,36 +191,6 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
                             )
                         }
                     }
-                }
-            }
-
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // Botón flotante para seleccionar la fecha
-                FloatingActionButton(
-                    onClick = { datePickerDialog.show() }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CalendarToday,
-                        contentDescription = "Seleccionar fecha"
-                    )
-                }
-
-                // Botón flotante para mostrar todas las citas
-                FloatingActionButton(
-                    onClick = {
-                        selectedDate.value = null // Establecer selectedDate en null para mostrar todas las citas
-                        viewModel.getAdvisorAppointmentListByFarmer(null) // Llamar a la función con null para cargar todas las citas
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.List,
-                        contentDescription = "Mostrar todas las citas"
-                    )
                 }
             }
         }
