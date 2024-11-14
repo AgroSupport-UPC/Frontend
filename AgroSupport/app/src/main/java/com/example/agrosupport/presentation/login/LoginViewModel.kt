@@ -33,32 +33,40 @@ class LoginViewModel(
     fun signIn() {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            when (val result = authenticationRepository.signIn(_email.value, _password.value)) {
-                is Resource.Success -> {
-                    GlobalVariables.TOKEN = result.data?.token ?: ""
-                    GlobalVariables.USER_ID = result.data?.id ?: 0
+            try {
+                when (val result = authenticationRepository.signIn(_email.value, _password.value)) {
+                    is Resource.Success -> {
+                        GlobalVariables.TOKEN = result.data?.token ?: ""
+                        GlobalVariables.USER_ID = result.data?.id ?: 0
 
-                    _state.value = UIState(isLoading = false)
+                        _state.value = UIState(isLoading = false)
 
-                    if (GlobalVariables.TOKEN.isNotBlank() && GlobalVariables.USER_ID != 0L) {
-                        //Se guarda el usuario en la base de datos local para loguearlo automaticamente
-                        authenticationRepository.insertUser(
-                            AuthenticationResponse(
-                                id = GlobalVariables.USER_ID,
-                                username = _email.value,
-                                token = GlobalVariables.TOKEN
+                        if (GlobalVariables.TOKEN.isNotBlank() && GlobalVariables.USER_ID != 0L) {
+                            // Guarda el usuario en la base de datos local para loguearlo automáticamente
+                            authenticationRepository.insertUser(
+                                AuthenticationResponse(
+                                    id = GlobalVariables.USER_ID,
+                                    username = _email.value,
+                                    token = GlobalVariables.TOKEN
+                                )
                             )
-                        )
-                        _email.value = ""
-                        _password.value = ""
-                        goToFarmerScreen()
-                    } else {
-                        _state.value = UIState(message = "Error al iniciar sesión")
+                            _email.value = ""
+                            _password.value = ""
+                            goToFarmerScreen()
+                        } else {
+                            _state.value = UIState(message = "Error al iniciar sesión")
+                        }
+                    }
+                    is Resource.Error -> {
+                        _state.value = UIState(message = result.message.toString())
                     }
                 }
-                is Resource.Error -> {
-                    _state.value = UIState(message = result.message.toString())
-                }
+            } catch (e: Exception) {
+                // Maneja cualquier excepción que ocurra durante el proceso de inicio de sesión
+                _state.value = UIState(
+                    isLoading = false,
+                    message = "Error de conexión. Por favor, intenta de nuevo."
+                )
             }
         }
     }
@@ -81,6 +89,10 @@ class LoginViewModel(
 
     private fun goToFarmerScreen() {
         navController.navigate(Routes.FarmerHome.route)
+    }
+
+    fun goToWelcomeScreen() {
+        navController.navigate(Routes.Welcome.route)
     }
 
     fun goToSignUpScreen() {
