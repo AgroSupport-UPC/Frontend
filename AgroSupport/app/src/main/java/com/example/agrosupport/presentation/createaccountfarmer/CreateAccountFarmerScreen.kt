@@ -6,6 +6,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -50,18 +53,26 @@ fun CreateAccountFarmerScreen(viewModel: CreateAccountFarmerViewModel) {
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                Box(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.15f)
+                        .fillMaxHeight(0.15f).padding(bottom = 16.dp)
                 ) {
+                    IconButton(onClick = { viewModel.goBack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = Color.Black
+                        )
+                    }
+
                     Image(
                         bitmap = ImageBitmap.imageResource(id = R.drawable.starheader),
                         contentDescription = "Header star Image",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(),
-                        contentScale = ContentScale.FillBounds
+                            .height(50.dp),
+                        contentScale = ContentScale.FillWidth
                     )
                 }
 
@@ -87,7 +98,7 @@ fun CreateAccountFarmerScreen(viewModel: CreateAccountFarmerViewModel) {
                         TextField(
                             value = viewModel.firstName.value,
                             onValueChange = { viewModel.firstName.value = it },
-                            placeholder = { Text("Ingrese nombre") },
+                            placeholder = { Text("") },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -96,7 +107,7 @@ fun CreateAccountFarmerScreen(viewModel: CreateAccountFarmerViewModel) {
                         TextField(
                             value = viewModel.lastName.value,
                             onValueChange = { viewModel.lastName.value = it },
-                            placeholder = { Text("Ingrese apellido") },
+                            placeholder = { Text("") },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -121,7 +132,7 @@ fun CreateAccountFarmerScreen(viewModel: CreateAccountFarmerViewModel) {
                     TextField(
                         value = viewModel.birthDate.value,
                         onValueChange = { viewModel.birthDate.value = it },
-                        placeholder = { Text("Ingrese su fecha de nacimiento") },
+                        placeholder = { Text("YYYY-MM-DD (Ej. 1995-12-25)") },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -133,7 +144,7 @@ fun CreateAccountFarmerScreen(viewModel: CreateAccountFarmerViewModel) {
                     TextField(
                         value = viewModel.password.value,
                         onValueChange = { viewModel.password.value = it },
-                        placeholder = { Text("Ingrese su contraseña") },
+                        placeholder = { Text("") },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -149,7 +160,7 @@ fun CreateAccountFarmerScreen(viewModel: CreateAccountFarmerViewModel) {
                         TextField(
                             value = viewModel.city.value,
                             onValueChange = { viewModel.city.value = it },
-                            placeholder = { Text("Ingrese su ciudad") },
+                            placeholder = { Text("") },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }

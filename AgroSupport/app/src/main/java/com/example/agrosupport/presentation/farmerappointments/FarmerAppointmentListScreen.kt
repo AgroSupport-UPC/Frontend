@@ -101,19 +101,12 @@ fun FarmerAppointmentListScreen(viewModel: FarmerAppointmentListViewModel) {
                         fontStyle = FontStyle.Italic,
                         style = MaterialTheme.typography.titleLarge
                     )
-                    Row {
-                        IconButton(onClick = { viewModel.goHistory() }) {
-                            Icon(
-                                imageVector = Icons.Outlined.History,
-                                contentDescription = "Historial"
-                            )
-                        }
-                        IconButton(onClick = { }) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "Más opciones"
-                            )
-                        }
+
+                    IconButton(onClick = { viewModel.goHistory() }) {
+                        Icon(
+                            imageVector = Icons.Outlined.History,
+                            contentDescription = "Historial"
+                        )
                     }
                 }
 

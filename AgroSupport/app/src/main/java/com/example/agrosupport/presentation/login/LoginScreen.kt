@@ -16,6 +16,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.sharp.Email
@@ -48,113 +50,128 @@ fun LoginScreen(viewModel: LoginViewModel) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            Column(
+        if (state.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 64.dp)
+                    .padding(paddingValues)
             ) {
-                Image(
-                    bitmap = ImageBitmap.imageResource(id = R.drawable.starheader),
-                    contentDescription = "Header star Image",
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.15f),
-                    contentScale = ContentScale.FillBounds
-                )
+                        .fillMaxSize()
+                        .padding(bottom = 64.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.15f)
+                            .padding(16.dp),
+                    ) {
+                        IconButton(onClick = { viewModel.goToWelcomeScreen() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Volver",
+                                tint = Color.Black
+                            )
+                        }
 
-                Text(
-                    text = "Iniciar sesión",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 30.sp
-                    ),
-                    textAlign = TextAlign.Left
-                )
-
-                TextField(
-                    value = email,
-                    onValueChange = { viewModel.setEmail(it) },
-                    label = { Text("Correo electrónico") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .background(Color.White, shape = RoundedCornerShape(10.dp)),
-                    singleLine = true,
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Sharp.Email,
-                            contentDescription = "Email"
+                        Image(
+                            bitmap = ImageBitmap.imageResource(id = R.drawable.starheader),
+                            contentDescription = "Header star Image",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            contentScale = ContentScale.FillWidth
                         )
                     }
-                )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                PasswordTextField(password, viewModel)
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
                     Text(
-                        text = "¿Olvidaste tu contraseña?",
+                        text = "Iniciar sesión",
                         modifier = Modifier
-                            .padding(end = 16.dp)
-                            .clickable { viewModel.goToForgotPasswordScreen() },
-                        color = Color.Black,
-                        fontSize = 14.sp
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 30.sp
+                        ),
+                        textAlign = TextAlign.Left
                     )
-                }
 
-                Button(
-                    onClick = { viewModel.signIn() },
-                    enabled = email.isNotEmpty() && password.isNotEmpty(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF092C4C))
-                ) {
-                    Text(text = "Iniciar sesión", color = Color.White)
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Text(
-                    text = buildAnnotatedString {
-                        append("¿No tienes cuenta? ")
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append("Crea tu cuenta")
+                    TextField(
+                        value = email,
+                        onValueChange = { viewModel.setEmail(it) },
+                        label = { Text("Correo electrónico") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .background(Color.White, shape = RoundedCornerShape(10.dp)),
+                        singleLine = true,
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Sharp.Email,
+                                contentDescription = "Email"
+                            )
                         }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .clickable {
-                            viewModel.goToSignUpScreen()
-                        },
-                    color = Color.Black,
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.Center
-                )
+                    )
 
-            }
-            if (state.isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    PasswordTextField(password, viewModel)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Text(
+                            text = "¿Olvidaste tu contraseña?",
+                            modifier = Modifier
+                                .padding(end = 16.dp)
+                                .clickable { viewModel.goToForgotPasswordScreen() },
+                            color = Color.Black,
+                            fontSize = 14.sp
+                        )
+                    }
+
+                    Button(
+                        onClick = { viewModel.signIn() },
+                        enabled = email.isNotEmpty() && password.isNotEmpty(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        colors = ButtonDefaults.buttonColors(Color(0xFF092C4C))
+                    ) {
+                        Text(text = "Iniciar sesión", color = Color.White)
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Text(
+                        text = buildAnnotatedString {
+                            append("¿No tienes cuenta? ")
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append("Crea tu cuenta")
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .clickable {
+                                viewModel.goToSignUpScreen()
+                            },
+                        color = Color.Black,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center
+                    )
+
                 }
             }
-
         }
     }
 }

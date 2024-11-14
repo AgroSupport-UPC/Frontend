@@ -111,4 +111,8 @@ class CreateAccountFarmerViewModel(
             }
         }
     }
+
+    fun goBack() {
+        navController.popBackStack()
+    }
 }

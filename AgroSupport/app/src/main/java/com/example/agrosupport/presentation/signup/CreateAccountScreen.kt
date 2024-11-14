@@ -6,12 +6,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -41,31 +46,40 @@ fun CreateAccountScreen(viewModel: CreateAccountViewModel) {
                     .padding(paddingValues),
                 horizontalAlignment = Alignment.CenterHorizontally // Centra horizontalmente
             ) {
-                Box(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(0.15f)
+                        .padding(16.dp),
                 ) {
+                    IconButton(onClick = { viewModel.goToWelcomeScreen() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = Color.Black
+                        )
+                    }
+
                     Image(
                         bitmap = ImageBitmap.imageResource(id = R.drawable.starheader),
                         contentDescription = "Header star Image",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(),
-                        contentScale = ContentScale.FillBounds
+                            .height(50.dp),
+                        contentScale = ContentScale.FillWidth
                     )
                 }
                 Text(
                     text = "Crear Cuenta",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     fontSize = 34.sp,
                     textAlign = TextAlign.Left
                 )
-                Spacer(modifier = Modifier.height(10.dp))
+
                 Text(
                     text = "Para empezar debe elegir un rol",
                     modifier = Modifier
@@ -115,7 +129,7 @@ fun CreateAccountScreen(viewModel: CreateAccountViewModel) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { viewModel.goToFormsAdvisor() }
-                                .background(Color(0xFF27AE60), shape = MaterialTheme.shapes.medium)
+                                .background(Color.Gray, shape = MaterialTheme.shapes.medium)
                                 .padding(16.dp),
                             contentAlignment = Alignment.Center
                         ) {

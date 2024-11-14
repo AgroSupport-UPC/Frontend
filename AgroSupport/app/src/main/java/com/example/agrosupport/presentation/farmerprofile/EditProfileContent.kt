@@ -78,7 +78,7 @@ fun EditProfileContent(profile: Profile, viewModel: FarmerProfileViewModel) {
 
                 GlideImage(
                     imageModel = {
-                        if (photo.isBlank()) R.drawable.placeholder else photo
+                        photo.ifBlank { R.drawable.placeholder }
                     },
                     modifier = Modifier
                         .fillMaxSize()
@@ -136,7 +136,7 @@ fun EditProfileContent(profile: Profile, viewModel: FarmerProfileViewModel) {
             TextField(
                 value = birthDate,
                 onValueChange = { birthDate = it },
-                label = { Text("Fecha de nacimiento") },
+                label = { Text("") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -145,7 +145,7 @@ fun EditProfileContent(profile: Profile, viewModel: FarmerProfileViewModel) {
             TextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Descripción") },
+                label = { Text("YYYY-MM-DD (Ej. 1995-12-25") },
                 modifier = Modifier.fillMaxWidth()
             )
         }

@@ -20,4 +20,8 @@ class CreateAccountViewModel(private val navController: NavController
     fun goToFormsAdvisor() {
         /* TODO: Implementar la navegación a la pantalla de registro de asesor */
     }
+
+    fun goToWelcomeScreen() {
+        navController.navigate(Routes.Welcome.route)
+    }
 }

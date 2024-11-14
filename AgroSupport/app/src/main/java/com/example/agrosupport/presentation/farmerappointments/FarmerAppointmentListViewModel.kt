@@ -72,7 +72,7 @@ class FarmerAppointmentListViewModel(
 
 
 
-                    if (appointments != null && appointments.isNotEmpty()) {
+                    if (!appointments.isNullOrEmpty()) {
                         val appointmentCards = mutableListOf<AppointmentCard>()
                         for (appointment in appointments) {
                             val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, GlobalVariables.TOKEN)
