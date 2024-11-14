@@ -70,7 +70,7 @@ fun NewAppointmentScreen(viewModel: NewAppointmentViewModel, advisorId: Long) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Nueva Cita",
+                        text = "Nueva cita",
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic,
@@ -87,14 +87,14 @@ fun NewAppointmentScreen(viewModel: NewAppointmentViewModel, advisorId: Long) {
                 }
             } else {
                 Text(
-                    modifier = Modifier.padding(16.dp),
-                    text = "Seleccione el horario y la fecha",
+                    modifier = Modifier.padding(16.dp, bottom = 8.dp),
+                    text = "Seleccione el horario",
                     color = Color(0xFF222B45),
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold
                 )
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     ExposedDropdownMenuBox(
@@ -104,7 +104,7 @@ fun NewAppointmentScreen(viewModel: NewAppointmentViewModel, advisorId: Long) {
                             TextField(
                                 modifier = Modifier.menuAnchor(),
                                 value = if (selectedDate == -1) {
-                                    "Seleccione una fecha"
+                                    "Seleccione un horario"
                                 } else {
                                     state.data?.let { "${it[selectedDate].availableDate} - ${it[selectedDate].startTime} a ${it[selectedDate].endTime}" }?: "Fecha no disponible"
                                 },
@@ -131,7 +131,7 @@ fun NewAppointmentScreen(viewModel: NewAppointmentViewModel, advisorId: Long) {
                 }
                 Text(
                     modifier = Modifier.padding(16.dp),
-                    text = "Coméntame tu problema",
+                    text = "Describe tu problema o situación",
                     color = Color(0xFF222B45),
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold
@@ -164,7 +164,7 @@ fun NewAppointmentScreen(viewModel: NewAppointmentViewModel, advisorId: Long) {
                         ),
                         ) {
                         Text(
-                            text = "Confirmar Cita",
+                            text = "Confirmar cita",
                             color = Color(0xFFFFFFFF),
                             fontFamily = FontFamily.SansSerif,
                             fontWeight = FontWeight.Bold,

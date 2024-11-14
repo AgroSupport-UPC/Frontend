@@ -86,7 +86,8 @@ fun ReviewListScreen(viewModel: ReviewListViewModel, advisorId: Long) {
                     ) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Más opciones"
+                        contentDescription = "Más opciones",
+                        tint = Color.Transparent
                     )
                 }
             }

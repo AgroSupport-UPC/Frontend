@@ -70,7 +70,7 @@ fun CreateAccountScreen(viewModel: CreateAccountViewModel) {
                     )
                 }
                 Text(
-                    text = "Crear Cuenta",
+                    text = "Crear cuenta",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 16.dp),

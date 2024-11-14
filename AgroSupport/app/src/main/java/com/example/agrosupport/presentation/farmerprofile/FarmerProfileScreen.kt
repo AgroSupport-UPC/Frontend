@@ -44,11 +44,12 @@ fun FarmerProfileScreen(viewModel: FarmerProfileViewModel) {
                         contentDescription = "Go back"
                     )
                 }
-                Text(text = "Editar Perfil", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
+                Text(text = "Editar perfil", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
                 IconButton(onClick = { /* Opción de menú adicional */ }) {
                     Icon(
                         imageVector = Icons.Filled.MoreVert,
-                        contentDescription = "More"
+                        contentDescription = "More",
+                        tint = Color.Transparent
                     )
                 }
             }
@@ -70,7 +71,7 @@ fun FarmerProfileScreen(viewModel: FarmerProfileViewModel) {
                 state.data?.let { profile ->
                     EditProfileContent(profile = profile, viewModel = viewModel)
                 } ?: run {
-                    state.message?.let { errorMessage ->
+                    state.message.let { errorMessage ->
                         if (errorMessage.isNotBlank()) {
                             AlertDialog(
                                 onDismissRequest = { viewModel.reloadPage() },

@@ -140,7 +140,7 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, advisorId: Long) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Sobre el Asesor",
+                        text = "Sobre el asesor",
                         color = Color(0xFF222B45),
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Bold,
@@ -226,7 +226,7 @@ fun AdvisorDetailScreen(viewModel: AdvisorDetailViewModel, advisorId: Long) {
                             containerColor = Color(0xFF3E64FF), // Color de fondo del botón
                             contentColor = Color.White)) {
                         Text(
-                            text = "Agendar Cita",
+                            text = "Agendar cita",
                             color = Color(0xFFFFFFFF),
                             fontFamily = FontFamily.SansSerif,
                             fontWeight = FontWeight.Bold,

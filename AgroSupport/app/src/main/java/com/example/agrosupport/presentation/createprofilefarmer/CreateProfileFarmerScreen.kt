@@ -80,7 +80,7 @@ fun CreateProfileFarmerScreen(viewModel: CreateProfileFarmerViewModel) {
                 }
 
                 Text(
-                    text = "Crear Perfil",
+                    text = "Crear perfil",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
@@ -92,7 +92,7 @@ fun CreateProfileFarmerScreen(viewModel: CreateProfileFarmerViewModel) {
                 Spacer(modifier = Modifier.height(50.dp))
 
                 GlideImage(
-                    imageModel = { if (photoUrl.isBlank()) R.drawable.profile_icon else photoUrl },
+                    imageModel = { photoUrl.ifBlank { R.drawable.profile_icon } },
                     modifier = Modifier
                         .size(100.dp) // Adjust size as necessary
                         .padding(bottom = 8.dp)

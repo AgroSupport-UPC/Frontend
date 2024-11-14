@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -80,7 +81,8 @@ fun ExplorePostsScreen(viewModel: ExplorePostsViewModel) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
                         contentDescription = "More",
-                        modifier = Modifier.padding(horizontal = 8.dp).size(32.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp).size(32.dp),
+                        tint = Color.Transparent
                     )
                 }
             }
@@ -100,7 +102,7 @@ fun ExplorePostsScreen(viewModel: ExplorePostsViewModel) {
                             }
                         }
                     }
-                    state.message != null -> {
+                    else -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
@@ -120,11 +122,10 @@ fun ExplorePostsScreen(viewModel: ExplorePostsViewModel) {
 
 @Composable
 fun PostCardItem(post: PostCard, onClick : () -> Unit) {
-    Column(
+    Card(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.Start
+            .fillMaxWidth()
     ) {
         Row (
             modifier = Modifier
@@ -173,7 +174,7 @@ fun PostCardItem(post: PostCard, onClick : () -> Unit) {
             fontFamily = FontFamily.SansSerif,
             fontWeight = FontWeight.Bold,
             fontStyle = FontStyle.Normal,
-            modifier = Modifier.padding(top = 4.dp)
+            modifier = Modifier.padding(8.dp)
         )
         Text(
             text = post.description,
@@ -181,7 +182,7 @@ fun PostCardItem(post: PostCard, onClick : () -> Unit) {
             fontFamily = FontFamily.SansSerif,
             fontWeight = FontWeight.Normal,
             fontStyle = FontStyle.Normal,
-            modifier = Modifier.padding(bottom = 10.dp)
+            modifier = Modifier.padding(8.dp)
         )
     }
 

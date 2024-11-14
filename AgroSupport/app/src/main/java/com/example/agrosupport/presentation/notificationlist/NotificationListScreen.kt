@@ -72,7 +72,8 @@ fun NotificationListScreen(viewModel: NotificationListViewModel) {
                     IconButton(onClick = {}) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = "More"
+                            contentDescription = "More",
+                            tint = Color.Transparent
                         )
                     }
                 }

@@ -96,7 +96,7 @@ fun FarmerAppointmentHistoryListScreen(
                         )
                     }
                     Text(
-                        text = "Historial de Citas",
+                        text = "Historial de citas",
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic,
@@ -105,7 +105,8 @@ fun FarmerAppointmentHistoryListScreen(
                     IconButton(onClick = { /* Acción de más opciones */ }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Más opciones"
+                            contentDescription = "Más opciones",
+                            tint = Color.Transparent
                         )
                     }
                 }

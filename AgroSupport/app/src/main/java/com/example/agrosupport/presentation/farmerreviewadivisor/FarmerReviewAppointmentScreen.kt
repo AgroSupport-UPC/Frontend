@@ -138,15 +138,11 @@ fun FarmerReviewAppointmentScreen(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !isSubmitting
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Send,
-                        contentDescription = if (hasReview) "Actualizar reseña" else "Enviar reseña"
-                    )
-                    Text(text = if (hasReview) "Actualizar Reseña" else "Enviar Reseña")
+                    Text(text = if (hasReview) "Actualizar reseña" else "Enviar reseña")
                 }
             }
 
-            state.message?.takeIf { it.isNotEmpty() }?.let { message ->
+            state.message.takeIf { it.isNotEmpty() }?.let { message ->
                 Snackbar(
                     action = {
                         TextButton(onClick = { viewModel.clearState() }) {

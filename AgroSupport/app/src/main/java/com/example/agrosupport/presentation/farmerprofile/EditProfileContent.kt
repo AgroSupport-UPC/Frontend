@@ -136,7 +136,7 @@ fun EditProfileContent(profile: Profile, viewModel: FarmerProfileViewModel) {
             TextField(
                 value = birthDate,
                 onValueChange = { birthDate = it },
-                label = { Text("") },
+                label = { Text("Fecha de nacimiento") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -145,7 +145,7 @@ fun EditProfileContent(profile: Profile, viewModel: FarmerProfileViewModel) {
             TextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("YYYY-MM-DD (Ej. 1995-12-25") },
+                label = { Text("Descripción") },
                 modifier = Modifier.fillMaxWidth()
             )
         }
