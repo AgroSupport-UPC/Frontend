@@ -13,9 +13,11 @@ import com.example.agrosupport.common.UIState
 import com.example.agrosupport.data.repository.advisor.AdvisorRepository
 import com.example.agrosupport.data.repository.profile.ProfileRepository
 
-class AdvisorListViewModel(private val navController: NavController, private val profileRepository: ProfileRepository,
-                           private val advisorRepository: AdvisorRepository
-): ViewModel() {
+class AdvisorListViewModel(
+    private val navController: NavController,
+    private val profileRepository: ProfileRepository,
+    private val advisorRepository: AdvisorRepository
+) : ViewModel() {
 
     private val _state = mutableStateOf(UIState<List<AdvisorCard>>())
     val state: State<UIState<List<AdvisorCard>>> get() = _state
@@ -36,31 +38,35 @@ class AdvisorListViewModel(private val navController: NavController, private val
     fun getAdvisorList() {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            when (val result = profileRepository.getAdvisorList(GlobalVariables.TOKEN)) {
-                is Resource.Success -> {
-                    val profiles = result.data ?: run {
-                        _state.value = UIState(message = "No se encontraron asesores")
-                        return@launch
-                    }
-                    val advisorCards = profiles.map { profile ->
-                        val advisorResult = advisorRepository.searchAdvisorByUserId(profile.userId, GlobalVariables.TOKEN)
-                        val advisorId = (advisorResult as? Resource.Success)?.data?.id ?: 0
-                        val rating = (advisorResult as? Resource.Success)?.data?.rating ?: 0.0
+            try {
+                when (val result = profileRepository.getAdvisorList(GlobalVariables.TOKEN)) {
+                    is Resource.Success -> {
+                        val profiles = result.data ?: run {
+                            _state.value = UIState(message = "No se encontraron asesores")
+                            return@launch
+                        }
+                        val advisorCards = profiles.map { profile ->
+                            val advisorResult = advisorRepository.searchAdvisorByUserId(profile.userId, GlobalVariables.TOKEN)
+                            val advisorId = (advisorResult as? Resource.Success)?.data?.id ?: 0
+                            val rating = (advisorResult as? Resource.Success)?.data?.rating ?: 0.0
 
-                        AdvisorCard(
-                            id = advisorId,
-                            name = "${profile.firstName} ${profile.lastName}",
-                            occupation = profile.occupation,
-                            rating = rating,
-                            link = profile.photo
-                        )
+                            AdvisorCard(
+                                id = advisorId,
+                                name = "${profile.firstName} ${profile.lastName}",
+                                occupation = profile.occupation,
+                                rating = rating,
+                                link = profile.photo
+                            )
+                        }
+                        _state.value = UIState(data = advisorCards)
+                        _list.value = advisorCards
                     }
-                    _state.value = UIState(data = advisorCards)
-                    _list.value = advisorCards
+                    is Resource.Error -> {
+                        _state.value = UIState(message = "Hubo un error recuperando la lista de asesores")
+                    }
                 }
-                is Resource.Error -> {
-                    _state.value = UIState(message = "Hubo un error recuperando la lista de asesores")
-                }
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error recuperando la lista de asesores: ${e.message}")
             }
         }
     }
@@ -95,7 +101,6 @@ class AdvisorListViewModel(private val navController: NavController, private val
         return filter { it.name.contains(search.value, ignoreCase = true) }
     }
 
-
     private fun List<AdvisorCard>.filterByOccupation(): List<AdvisorCard> {
         return filter { it.occupation.contains(search.value, ignoreCase = true) }
     }
@@ -103,6 +108,4 @@ class AdvisorListViewModel(private val navController: NavController, private val
     private fun List<AdvisorCard>.filterByRating(): List<AdvisorCard> {
         return filter { it.rating >= (search.value.toDoubleOrNull() ?: 0.0) }
     }
-
-
 }

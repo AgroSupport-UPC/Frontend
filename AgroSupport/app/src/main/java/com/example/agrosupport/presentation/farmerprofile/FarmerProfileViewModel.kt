@@ -16,7 +16,6 @@ import com.example.agrosupport.domain.profile.Profile
 import com.example.agrosupport.domain.profile.UpdateProfile
 import kotlinx.coroutines.launch
 
-
 class FarmerProfileViewModel(
     private val navController: NavController,
     private val profileRepository: ProfileRepository,
@@ -28,33 +27,29 @@ class FarmerProfileViewModel(
 
     fun goToHome() {
         _state.value = UIState(data = null)
-
         navController.navigate(Routes.FarmerHome.route)
     }
 
-
     fun getFarmerProfile() {
         _state.value = UIState(isLoading = true)
-
         viewModelScope.launch {
-
-            val result = profileRepository.searchProfile(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
-            if (result is Resource.Success) {
-                _state.value = UIState(data = result.data)
-
-            } else {
-                _state.value = UIState(message = result.message ?: "Error obteniendo el perfil")
+            try {
+                val result = profileRepository.searchProfile(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
+                if (result is Resource.Success) {
+                    _state.value = UIState(data = result.data)
+                } else {
+                    _state.value = UIState(message = result.message ?: "Error obteniendo el perfil")
+                }
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error obteniendo el perfil: ${e.message}")
             }
-
         }
     }
 
     fun updateFarmerProfile(updatedProfile: Profile) {
-
         _state.value = UIState(isLoading = true)
-
         viewModelScope.launch {
-
+            try {
                 val validationError = validateProfileData(updatedProfile)
                 if (validationError != null) {
                     _state.value = UIState(message = validationError)
@@ -74,14 +69,14 @@ class FarmerProfileViewModel(
                 )
 
                 val result = profileRepository.updateProfile(updatedProfile.id, GlobalVariables.TOKEN, updateProfile)
-
                 if (result is Resource.Success) {
-                    _state.value = UIState(data = result.data) // Estado de éxito tras la actualización
+                    _state.value = UIState(data = result.data)
                 } else {
                     _state.value = UIState(message = result.message ?: "Error actualizando el perfil")
                 }
-
-
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error actualizando el perfil: ${e.message}")
+            }
         }
     }
 
@@ -92,7 +87,6 @@ class FarmerProfileViewModel(
         if (profile.country.isBlank()) return "El país no puede estar vacío"
         if (profile.birthDate.isBlank()) return "La fecha de nacimiento no puede estar vacía"
 
-        // Validate date format (yyyy-MM-dd)
         val datePattern = Regex("""\d{4}-\d{2}-\d{2}""")
         if (!datePattern.matches(profile.birthDate)) return "La fecha de nacimiento debe estar en el formato yyyy-MM-dd"
 
@@ -102,9 +96,7 @@ class FarmerProfileViewModel(
     }
 
     fun updateProfileWithImage(imageUri: Uri, profile: Profile) {
-
         _state.value = UIState(isLoading = true)
-
         viewModelScope.launch {
             try {
                 val filename = imageUri.lastPathSegment ?: "default_image_name"
@@ -121,9 +113,4 @@ class FarmerProfileViewModel(
         _state.value = UIState(data = null)
         getFarmerProfile()
     }
-
-
-
 }
-
-

@@ -68,21 +68,25 @@ class FarmerAppointmentDetailViewModel(
 
     fun getStatusAppointment(appointmentId: Long) {
         viewModelScope.launch {
-            val appointmentResult = appointmentRepository.getAppointmentById(appointmentId, GlobalVariables.TOKEN)
+            try {
+                val appointmentResult = appointmentRepository.getAppointmentById(appointmentId, GlobalVariables.TOKEN)
 
-            if (appointmentResult is Resource.Success && appointmentResult.data != null) {
-                val appointment = appointmentResult.data
-                _appointmentStatusState.value = appointment
+                if (appointmentResult is Resource.Success && appointmentResult.data != null) {
+                    val appointment = appointmentResult.data
+                    _appointmentStatusState.value = appointment
 
-                if (appointment.status == "COMPLETED") {
-                    val reviewResult = reviewRepository.getReviewByAdvisorIdAndFarmerId(appointment.advisorId, appointment.farmerId, GlobalVariables.TOKEN)
-                    if (reviewResult is Resource.Success && reviewResult.data != null) {
-                        navController.navigate(Routes.FarmerAppointmentList.route)
+                    if (appointment.status == "COMPLETED") {
+                        val reviewResult = reviewRepository.getReviewByAdvisorIdAndFarmerId(appointment.advisorId, appointment.farmerId, GlobalVariables.TOKEN)
+                        if (reviewResult is Resource.Success && reviewResult.data != null) {
+                            navController.navigate(Routes.FarmerAppointmentList.route)
+                        }
+                        navController.navigate(Routes.FarmerReviewAppointment.route + "/$appointmentId")
                     }
-                    navController.navigate(Routes.FarmerReviewAppointment.route + "/$appointmentId")
+                } else {
+                    _errorStateMessage.value = "Error al cargar los detalles de la cita."
                 }
-            } else {
-                _errorStateMessage.value = "Error al cargar los detalles de la cita."
+            } catch (e: Exception) {
+                _errorStateMessage.value = "Se produjo un error: ${e.message}"
             }
         }
     }
@@ -103,59 +107,64 @@ class FarmerAppointmentDetailViewModel(
     fun loadAppointmentDetails(appointmentId: Long) {
         _isLoading.value = true
         viewModelScope.launch {
-            val appointmentResult = appointmentRepository.getAppointmentById(appointmentId, GlobalVariables.TOKEN)
+            try {
+                val appointmentResult = appointmentRepository.getAppointmentById(appointmentId, GlobalVariables.TOKEN)
 
-            if (appointmentResult is Resource.Success && appointmentResult.data != null) {
-                val appointment = appointmentResult.data
+                if (appointmentResult is Resource.Success && appointmentResult.data != null) {
+                    val appointment = appointmentResult.data
 
-                val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, GlobalVariables.TOKEN)
-                val advisorName = if (advisorResult is Resource.Success) {
-                    val advisor = advisorResult.data
-                    val profileResult = advisor?.userId?.let { userId ->
-                        profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
-                    }
-                    if (profileResult is Resource.Success) {
-                        val profile = profileResult.data
-                        "${profile?.firstName ?: "Asesor"} ${profile?.lastName ?: "Desconocido"}"
+                    val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, GlobalVariables.TOKEN)
+                    val advisorName = if (advisorResult is Resource.Success) {
+                        val advisor = advisorResult.data
+                        val profileResult = advisor?.userId?.let { userId ->
+                            profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
+                        }
+                        if (profileResult is Resource.Success) {
+                            val profile = profileResult.data
+                            "${profile?.firstName ?: "Asesor"} ${profile?.lastName ?: "Desconocido"}"
+                        } else {
+                            "Asesor Desconocido"
+                        }
                     } else {
                         "Asesor Desconocido"
                     }
-                } else {
-                    "Asesor Desconocido"
-                }
 
-                val advisorPhoto = if (advisorResult is Resource.Success) {
-                    val advisor = advisorResult.data
-                    val profileResult = advisor?.userId?.let { userId ->
-                        profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
-                    }
-                    if (profileResult is Resource.Success) {
-                        val profile = profileResult.data
-                        profile?.photo ?: "Asesor Desconocido"
+                    val advisorPhoto = if (advisorResult is Resource.Success) {
+                        val advisor = advisorResult.data
+                        val profileResult = advisor?.userId?.let { userId ->
+                            profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
+                        }
+                        if (profileResult is Resource.Success) {
+                            val profile = profileResult.data
+                            profile?.photo ?: "Asesor Desconocido"
+                        } else {
+                            "Asesor Desconocido"
+                        }
                     } else {
                         "Asesor Desconocido"
                     }
-                } else {
-                    "Asesor Desconocido"
+
+                    _appointmentDetails.value = AppointmentCard(
+                        id = appointment.id,
+                        advisorName = advisorName,
+                        advisorPhoto = advisorPhoto,
+                        message = appointment.message,
+                        status = appointment.status,
+                        scheduledDate = appointment.scheduledDate,
+                        startTime = appointment.startTime,
+                        endTime = appointment.endTime,
+                        meetingUrl = appointment.meetingUrl
+                    )
+
+                    _isLoading.value = false
+
+                } else if (appointmentResult is Resource.Error) {
+                    _isLoading.value = false
+                    _errorMessage.value = "Error al obtener los detalles de la cita"
                 }
-
-                _appointmentDetails.value = AppointmentCard(
-                    id = appointment.id,
-                    advisorName = advisorName,
-                    advisorPhoto = advisorPhoto,
-                    message = appointment.message,
-                    status = appointment.status,
-                    scheduledDate = appointment.scheduledDate,
-                    startTime = appointment.startTime,
-                    endTime = appointment.endTime,
-                    meetingUrl = appointment.meetingUrl
-                )
-
+            } catch (e: Exception) {
                 _isLoading.value = false
-
-            } else if (appointmentResult is Resource.Error) {
-                _isLoading.value = false
-                _errorMessage.value = "Error al obtener los detalles de la cita"
+                _errorMessage.value = "Se produjo un error: ${e.message}"
             }
         }
     }
@@ -167,73 +176,53 @@ class FarmerAppointmentDetailViewModel(
     fun cancelAppointment(appointmentId: Long, cancelReason: String) {
         _isLoading.value = true
         viewModelScope.launch {
-            // crear nuevamente el available date
-            val appointmentResult = appointmentRepository.getAppointmentById(appointmentId, GlobalVariables.TOKEN)
-            val availableDate = appointmentResult.data?.let {
-                AvailableDate(
-                    id = 0,
-                    advisorId = it.advisorId,
-                    availableDate = it.scheduledDate,
-                    startTime = it.startTime,
-                    endTime = it.endTime
-                )
-            }
-
-            val result = appointmentRepository.deleteAppointment(appointmentId, GlobalVariables.TOKEN)
-
-            if (result is Resource.Success) {
-                _isCancelled.value = true
-                val availableDateResult = availableDateRepository.createAvailableDate(GlobalVariables.TOKEN, availableDate!!)
-                if (availableDateResult is Resource.Success) {
-
-
-                    //
-
-                    val currentDateTime = Date()
-                    val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
-                    formatter.timeZone = TimeZone.getTimeZone("America/Lima")
-                    val formattedDateTime = formatter.format(currentDateTime)
-
-                    val notification = appointmentResult.data?.let {
-                        Notification(
-                            id = 0,
-                            userId = GlobalVariables.USER_ID,
-                            title = "Cita cancelada",
-                            message = "La cita programada para el ${it.scheduledDate} a las ${it.startTime} ha sido cancelada. Motivo: $cancelReason",
-                            sendAt = formattedDateTime
-                        )
-                    }
-
-
-
-                    notificationRepository.createNotification(notification!!, GlobalVariables.TOKEN)
-
-                    /*
-
-                    val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointmentResult.data?.advisorId!!, GlobalVariables.TOKEN)
-
-                    val notificationAdvisor = appointmentResult.data?.let {
-                        Notification(
-                            id = 0,
-                            userId = advisorResult.data?.userId!!,
-                            title = "Cita cancelada",
-                            message = "La cita programada para el ${it.scheduledDate} a las ${it.startTime} ha sido cancelada por el agricultor. Motivo: $cancelReason",
-                            sendAt = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()).toString()
-                        )
-                    }
-
-                    notificationRepository.createNotification(notificationAdvisor!!, GlobalVariables.TOKEN)
-
-                    * */
-
-
-                    navController.navigate(Routes.CancelAppointmentConfirmation.route)
+            try {
+                // crear nuevamente el available date
+                val appointmentResult = appointmentRepository.getAppointmentById(appointmentId, GlobalVariables.TOKEN)
+                val availableDate = appointmentResult.data?.let {
+                    AvailableDate(
+                        id = 0,
+                        advisorId = it.advisorId,
+                        availableDate = it.scheduledDate,
+                        startTime = it.startTime,
+                        endTime = it.endTime
+                    )
                 }
 
-            } else if (result is Resource.Error) {
-                _errorMessage.value = "Error al cancelar la cita"
-            }
+                val result = appointmentRepository.deleteAppointment(appointmentId, GlobalVariables.TOKEN)
 
+                if (result is Resource.Success) {
+                    _isCancelled.value = true
+                    val availableDateResult = availableDateRepository.createAvailableDate(GlobalVariables.TOKEN, availableDate!!)
+                    if (availableDateResult is Resource.Success) {
+
+                        val currentDateTime = Date()
+                        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
+                        formatter.timeZone = TimeZone.getTimeZone("America/Lima")
+                        val formattedDateTime = formatter.format(currentDateTime)
+
+                        val notification = appointmentResult.data?.let {
+                            Notification(
+                                id = 0,
+                                userId = GlobalVariables.USER_ID,
+                                title = "Cita cancelada",
+                                message = "La cita programada para el ${it.scheduledDate} a las ${it.startTime} ha sido cancelada. Motivo: $cancelReason",
+                                sendAt = formattedDateTime
+                            )
+                        }
+
+                        notificationRepository.createNotification(notification!!, GlobalVariables.TOKEN)
+
+                        navController.navigate(Routes.CancelAppointmentConfirmation.route)
+                    }
+
+                } else if (result is Resource.Error) {
+                    _errorMessage.value = "Error al cancelar la cita"
+                }
+            } catch (e: Exception) {
+                _isLoading.value = false
+                _errorMessage.value = "Se produjo un error: ${e.message}"
+            }
         }
 
         onDismissCancelDialog()
@@ -242,8 +231,4 @@ class FarmerAppointmentDetailViewModel(
     fun onDismissCancelDialog() {
         _showCancelDialog.value = false
     }
-
-
-
-
 }

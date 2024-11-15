@@ -22,7 +22,11 @@ class ForgotPasswordViewModel(
             _state.value = UIState(message = "Correo electrónico no válido")
         } else {
             _state.value = UIState(isLoading = true)
-            goToRestorePasswordScreen()
+            try {
+                goToRestorePasswordScreen()
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error al navegar: ${e.message}")
+            }
         }
     }
 
@@ -40,10 +44,18 @@ class ForgotPasswordViewModel(
     }
 
     fun goToLoginScreen() {
-        navController.navigate(Routes.SignIn.route)
+        try {
+            navController.navigate(Routes.SignIn.route)
+        } catch (e: Exception) {
+            _state.value = UIState(message = "Error al navegar: ${e.message}")
+        }
     }
 
     fun goBack() {
-        navController.popBackStack()
+        try {
+            navController.popBackStack()
+        } catch (e: Exception) {
+            _state.value = UIState(message = "Error al navegar: ${e.message}")
+        }
     }
 }

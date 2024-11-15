@@ -44,9 +44,13 @@ class FarmerHomeViewModel(
 
     fun getNotificationCount() {
         viewModelScope.launch {
-            val result = notificationRepository.getNotifications(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
-            if (result is Resource.Success) {
-                _notificationCount.value = result.data?.size ?: 0
+            try {
+                val result = notificationRepository.getNotifications(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
+                if (result is Resource.Success) {
+                    _notificationCount.value = result.data?.size ?: 0
+                }
+            } catch (e: Exception) {
+                _notificationCount.value = 0
             }
         }
     }
@@ -54,11 +58,15 @@ class FarmerHomeViewModel(
     fun getFarmerName() {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val result = profileRepository.searchProfile(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
-            if (result is Resource.Success) {
-                _state.value = UIState(data = result.data)
-            } else {
-                _state.value = UIState(message = "Error getting profile")
+            try {
+                val result = profileRepository.searchProfile(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
+                if (result is Resource.Success) {
+                    _state.value = UIState(data = result.data)
+                } else {
+                    _state.value = UIState(message = "Error getting profile")
+                }
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error getting profile: ${e.message}")
             }
         }
     }
@@ -66,71 +74,90 @@ class FarmerHomeViewModel(
     fun getAppointment() {
         _appointmentCard.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val farmerId = fetchFarmerId() ?: run {
-                _appointmentCard.value = UIState(message = "Error farmer not found")
-                return@launch
+            try {
+                val farmerId = fetchFarmerId() ?: run {
+                    _appointmentCard.value = UIState(message = "Error farmer not found")
+                    return@launch
+                }
+
+                val appointment = fetchPendingAppointment(farmerId) ?: run {
+                    _appointmentCard.value = UIState(message = "No pending appointments")
+                    return@launch
+                }
+
+                val advisorProfile = fetchAdvisorProfile(appointment.advisorId) ?: run {
+                    _appointmentCard.value = UIState(message = "Error advisor profile not found")
+                    return@launch
+                }
+
+                val appointmentCard = AppointmentCard(
+                    id = appointment.id,
+                    advisorName = "${advisorProfile.firstName} ${advisorProfile.lastName}",
+                    advisorPhoto = advisorProfile.photo,
+                    message = appointment.message,
+                    status = appointment.status,
+                    scheduledDate = appointment.scheduledDate,
+                    startTime = appointment.startTime,
+                    endTime = appointment.endTime,
+                    meetingUrl = appointment.meetingUrl
+                )
+
+                _appointmentCard.value = UIState(data = appointmentCard)
+            } catch (e: Exception) {
+                _appointmentCard.value = UIState(message = "Error getting appointment: ${e.message}")
             }
-
-            val appointment = fetchPendingAppointment(farmerId) ?: run {
-                _appointmentCard.value = UIState(message = "No pending appointments")
-                return@launch
-            }
-
-            val advisorProfile = fetchAdvisorProfile(appointment.advisorId) ?: run {
-                _appointmentCard.value = UIState(message = "Error advisor profile not found")
-                return@launch
-            }
-
-            val appointmentCard = AppointmentCard(
-                id = appointment.id,
-                advisorName = "${advisorProfile.firstName} ${advisorProfile.lastName}",
-                advisorPhoto = advisorProfile.photo,
-                message = appointment.message,
-                status = appointment.status,
-                scheduledDate = appointment.scheduledDate,
-                startTime = appointment.startTime,
-                endTime = appointment.endTime,
-                meetingUrl = appointment.meetingUrl
-            )
-
-            _appointmentCard.value = UIState(data = appointmentCard)
         }
     }
 
     private suspend fun fetchFarmerId(): Long? {
-        val farmerResult = farmerRepository.searchFarmerByUserId(
-            GlobalVariables.USER_ID,
-            GlobalVariables.TOKEN
-        )
-        return (farmerResult as? Resource.Success)?.data?.id
+        return try {
+            val farmerResult = farmerRepository.searchFarmerByUserId(
+                GlobalVariables.USER_ID,
+                GlobalVariables.TOKEN
+            )
+            (farmerResult as? Resource.Success)?.data?.id
+        } catch (e: Exception) {
+            null
+        }
     }
 
     private suspend fun fetchPendingAppointment(farmerId: Long): Appointment? {
-        val appointmentResult = appointmentRepository.getAppointmentsByFarmer(farmerId, GlobalVariables.TOKEN)
-        val appointments = (appointmentResult as? Resource.Success)?.data
-        return appointments?.filter { it.status == "PENDING" }
-            ?.minByOrNull { it.scheduledDate }
+        return try {
+            val appointmentResult = appointmentRepository.getAppointmentsByFarmer(farmerId, GlobalVariables.TOKEN)
+            val appointments = (appointmentResult as? Resource.Success)?.data
+            appointments?.filter { it.status == "PENDING" }
+                ?.minByOrNull { it.scheduledDate }
+        } catch (e: Exception) {
+            null
+        }
     }
 
     private suspend fun fetchAdvisorProfile(advisorId: Long): Profile? {
-        val advisorResult = advisorRepository.searchAdvisorByAdvisorId(advisorId, GlobalVariables.TOKEN)
-        val advisor = (advisorResult as? Resource.Success)?.data ?: return null
+        return try {
+            val advisorResult = advisorRepository.searchAdvisorByAdvisorId(advisorId, GlobalVariables.TOKEN)
+            val advisor = (advisorResult as? Resource.Success)?.data ?: return null
 
-        val advisorProfileResult = profileRepository.searchProfile(advisor.userId, GlobalVariables.TOKEN)
-        return (advisorProfileResult as? Resource.Success)?.data
+            val advisorProfileResult = profileRepository.searchProfile(advisor.userId, GlobalVariables.TOKEN)
+            (advisorProfileResult as? Resource.Success)?.data
+        } catch (e: Exception) {
+            null
+        }
     }
-
 
     fun signOut() {
         GlobalVariables.ROLES = emptyList()
         viewModelScope.launch {
-            val authResponse = AuthenticationResponse(
-                id = GlobalVariables.USER_ID,
-                username = "",
-                token = GlobalVariables.TOKEN
-            )
-            authenticationRepository.deleteUser(authResponse)
-            goToWelcomeSection()
+            try {
+                val authResponse = AuthenticationResponse(
+                    id = GlobalVariables.USER_ID,
+                    username = "",
+                    token = GlobalVariables.TOKEN
+                )
+                authenticationRepository.deleteUser(authResponse)
+                goToWelcomeSection()
+            } catch (e: Exception) {
+                // Handle sign out error if needed
+            }
         }
     }
 
@@ -165,5 +192,4 @@ class FarmerHomeViewModel(
     private fun goToWelcomeSection() {
         navController.navigate(Routes.Welcome.route)
     }
-
 }

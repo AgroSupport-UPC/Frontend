@@ -14,14 +14,16 @@ import com.example.agrosupport.data.repository.appointment.AvailableDateReposito
 import com.example.agrosupport.data.repository.profile.ProfileRepository
 import kotlinx.coroutines.launch
 
-class AdvisorDetailViewModel(private val navController: NavController, private val profileRepository: ProfileRepository,
-                             private val advisorRepository: AdvisorRepository, private val availableDateRepository: AvailableDateRepository
-): ViewModel() {
+class AdvisorDetailViewModel(
+    private val navController: NavController,
+    private val profileRepository: ProfileRepository,
+    private val advisorRepository: AdvisorRepository,
+    private val availableDateRepository: AvailableDateRepository
+) : ViewModel() {
 
     private val _state = mutableStateOf(UIState<AdvisorDetail>())
     val state: State<UIState<AdvisorDetail>> get() = _state
 
-    // Variable de estado para el mensaje del Snackbar
     private val _snackbarMessage = mutableStateOf<String?>(null)
     val snackbarMessage: State<String?> get() = _snackbarMessage
 
@@ -36,34 +38,37 @@ class AdvisorDetailViewModel(private val navController: NavController, private v
     fun getAdvisorDetail(advisorId: Long) {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            // obtener advisor user_id a partir de la ruta "AdvisorDetail/{userId}"
-            val result = advisorRepository.searchAdvisorByAdvisorId(advisorId, GlobalVariables.TOKEN)
-            if (result is Resource.Success) {
-                val advisor = result.data
-                if (advisor != null) {
-                    val profileResult = profileRepository.searchProfile(advisor.userId, GlobalVariables.TOKEN)
-                    if (profileResult is Resource.Success) {
-                        val profile = profileResult.data
-                        if (profile != null) {
-                            val advisorDetail = AdvisorDetail(
-                                id = advisor.id,
-                                name = profile.firstName + " " + profile.lastName,
-                                description = profile.description,
-                                occupation = profile.occupation,
-                                experience = profile.experience,
-                                rating = advisor.rating,
-                                link = profile.photo
-                            )
-                            _state.value = UIState(data = advisorDetail)
+            try {
+                val result = advisorRepository.searchAdvisorByAdvisorId(advisorId, GlobalVariables.TOKEN)
+                if (result is Resource.Success) {
+                    val advisor = result.data
+                    if (advisor != null) {
+                        val profileResult = profileRepository.searchProfile(advisor.userId, GlobalVariables.TOKEN)
+                        if (profileResult is Resource.Success) {
+                            val profile = profileResult.data
+                            if (profile != null) {
+                                val advisorDetail = AdvisorDetail(
+                                    id = advisor.id,
+                                    name = profile.firstName + " " + profile.lastName,
+                                    description = profile.description,
+                                    occupation = profile.occupation,
+                                    experience = profile.experience,
+                                    rating = advisor.rating,
+                                    link = profile.photo
+                                )
+                                _state.value = UIState(data = advisorDetail)
+                            }
+                        } else {
+                            _state.value = UIState(message = "Error cargando la información del asesor")
                         }
                     } else {
-                        _state.value = UIState(message = "Error cargando la información del asesor")
+                        _state.value = UIState(message = "Asesor no encontrado")
                     }
                 } else {
-                    _state.value = UIState(message = "Asesor no encontrado")
+                    _state.value = UIState(message = "Error obteniendo información del asesor")
                 }
-            } else {
-                _state.value = UIState(message = "Error obteniendo información del asesor")
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error obteniendo información del asesor: ${e.message}")
             }
         }
     }
@@ -74,16 +79,20 @@ class AdvisorDetailViewModel(private val navController: NavController, private v
 
     fun goToNewAppointment(advisorId: Long) {
         viewModelScope.launch {
-            val result = availableDateRepository.getAvailableDatesByAdvisor(advisorId, GlobalVariables.TOKEN)
-            if (result is Resource.Success) {
-                val availableDates = result.data
-                if (availableDates.isNullOrEmpty()) {
-                    _snackbarMessage.value = "No hay fechas disponibles"
+            try {
+                val result = availableDateRepository.getAvailableDatesByAdvisor(advisorId, GlobalVariables.TOKEN)
+                if (result is Resource.Success) {
+                    val availableDates = result.data
+                    if (availableDates.isNullOrEmpty()) {
+                        _snackbarMessage.value = "No hay fechas disponibles"
+                    } else {
+                        navController.navigate(Routes.NewAppointment.route + "/$advisorId")
+                    }
                 } else {
-                    navController.navigate(Routes.NewAppointment.route + "/$advisorId")
+                    _state.value = UIState(message = "Error obteniendo fechas disponibles")
                 }
-            } else {
-                _state.value = UIState(message = "Error obteniendo fechas disponibles")
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error obteniendo fechas disponibles: ${e.message}")
             }
         }
     }

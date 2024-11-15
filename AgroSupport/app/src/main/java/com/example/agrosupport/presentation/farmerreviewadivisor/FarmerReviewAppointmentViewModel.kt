@@ -54,59 +54,57 @@ class FarmerReviewAppointmentViewModel(
     }
 
     fun loadAdvisorDetails(appointmentId: Long) {
-
         _comment.value = ""
         _rating.value = 0
         _hasReview.value = false
 
         viewModelScope.launch {
+            try {
+                val appointmentResult = appointmentRepository.getAppointmentById(appointmentId, GlobalVariables.TOKEN)
+                if (appointmentResult is Resource.Success && appointmentResult.data != null) {
+                    val appointment = appointmentResult.data
+                    val advisorId = appointment.advisorId
 
-            val appointmentResult = appointmentRepository.getAppointmentById(appointmentId, GlobalVariables.TOKEN)
+                    Log.d("FarmerReviewAppointmentViewModel", "AdvisorId: $advisorId, farmerId: ${appointment.farmerId}")
 
-            if (appointmentResult is Resource.Success && appointmentResult.data != null) {
+                    val reviewResult = reviewRepository.getReviewByAdvisorIdAndFarmerId(advisorId, appointment.farmerId, GlobalVariables.TOKEN)
+                    if (reviewResult is Resource.Success && reviewResult.data != null) {
+                        val review = reviewResult.data
+                        _hasReview.value = true
+                        _comment.value = review.comment ?: ""
+                        _rating.value = review.rating ?: 0
 
-                val appointment = appointmentResult.data
-                val advisorId = appointment.advisorId
-
-                Log.d("FarmerReviewAppointmentViewModel", "AdvisorId: $advisorId, farmerId: ${appointment.farmerId}")
-
-                val reviewResult = reviewRepository.getReviewByAdvisorIdAndFarmerId(advisorId, appointment.farmerId, GlobalVariables.TOKEN)
-
-                if (reviewResult is Resource.Success && reviewResult.data != null) {
-                    val review = reviewResult.data
-                    _hasReview.value = true
-                    _comment.value = review.comment ?: "" // Manejar comentario nulo
-                    _rating.value = review.rating ?: 0 // Manejar rating nulo
-
-                    Log.d("FarmerReview", "Reseña encontrada: ${review.comment}, Rating: ${review.rating}")
-                } else {
-                    _comment.value = ""
-                    _rating.value = 0
-                    _hasReview.value = false
-
-                    Log.d("FarmerReview", "No se encontró información de la reseña para el asesor $advisorId y agricultor ${appointment.farmerId}")
-                }
-
-
-                val advisorResult = advisorRepository.searchAdvisorByAdvisorId(advisorId, GlobalVariables.TOKEN)
-                if (advisorResult is Resource.Success && advisorResult.data != null) {
-                    val advisor = advisorResult.data
-                    val profileResult = advisor.userId?.let { userId ->
-                        profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
-                    }
-
-                    if (profileResult is Resource.Success && profileResult.data != null) {
-                        val profile = profileResult.data
-                        _advisorName.value = "${profile.firstName} ${profile.lastName}"
-                        _advisorImage.value = profile.photo ?: ""
+                        Log.d("FarmerReview", "Reseña encontrada: ${review.comment}, Rating: ${review.rating}")
                     } else {
-                        _state.value = UIState(message = "Error al cargar los detalles del perfil del asesor.")
+                        _comment.value = ""
+                        _rating.value = 0
+                        _hasReview.value = false
+
+                        Log.d("FarmerReview", "No se encontró información de la reseña para el asesor $advisorId y agricultor ${appointment.farmerId}")
+                    }
+
+                    val advisorResult = advisorRepository.searchAdvisorByAdvisorId(advisorId, GlobalVariables.TOKEN)
+                    if (advisorResult is Resource.Success && advisorResult.data != null) {
+                        val advisor = advisorResult.data
+                        val profileResult = advisor.userId?.let { userId ->
+                            profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
+                        }
+
+                        if (profileResult is Resource.Success && profileResult.data != null) {
+                            val profile = profileResult.data
+                            _advisorName.value = "${profile.firstName} ${profile.lastName}"
+                            _advisorImage.value = profile.photo ?: ""
+                        } else {
+                            _state.value = UIState(message = "Error al cargar los detalles del perfil del asesor.")
+                        }
+                    } else {
+                        _state.value = UIState(message = "Error al cargar los detalles del asesor.")
                     }
                 } else {
-                    _state.value = UIState(message = "Error al cargar los detalles del asesor.")
+                    _state.value = UIState(message = "Error al cargar los detalles de la cita.")
                 }
-            } else {
-                _state.value = UIState(message = "Error al cargar los detalles de la cita.")
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error al cargar los detalles: ${e.message}")
             }
         }
     }
@@ -120,50 +118,54 @@ class FarmerReviewAppointmentViewModel(
         _isSubmitting.value = true
 
         viewModelScope.launch {
-            val appointmentResult = appointmentRepository.getAppointmentById(appointmentId, GlobalVariables.TOKEN)
+            try {
+                val appointmentResult = appointmentRepository.getAppointmentById(appointmentId, GlobalVariables.TOKEN)
+                if (appointmentResult is Resource.Success) {
+                    val appointment = appointmentResult.data
+                    val advisorId = appointment?.advisorId ?: 0L
+                    val farmerId = appointment?.farmerId ?: 0L
 
-            if (appointmentResult is Resource.Success) {
-                val appointment = appointmentResult.data
-                val advisorId = appointment?.advisorId ?: 0L
-                val farmerId = appointment?.farmerId ?: 0L
+                    val review = Review(
+                        id = 0,
+                        advisorId = advisorId,
+                        farmerId = farmerId,
+                        comment = _comment.value ?: "",
+                        rating = _rating.value ?: 0
+                    )
 
-                val review = Review(
-                    id = 0,
-                    advisorId = advisorId,
-                    farmerId = farmerId,
-                    comment = _comment.value ?: "",
-                    rating = _rating.value ?: 0
-                )
-
-                if (_hasReview.value) {
-                    val reviewResult = reviewRepository.getReviewByAdvisorIdAndFarmerId(advisorId, farmerId, GlobalVariables.TOKEN)
-                    if (reviewResult is Resource.Success && reviewResult.data != null) {
-                        val existingReview = reviewResult.data
-                        val updatedReview = review.copy(id = existingReview.id)
-                        val updateResult = reviewRepository.updateReview(GlobalVariables.TOKEN, updatedReview.id, updatedReview)
-                        if (updateResult is Resource.Success) {
-                            _isSubmitting.value = false
-                            _state.value = UIState(message = "Calificación actualizada exitosamente.")
-                        } else {
-                            _isSubmitting.value = false
-                            _state.value = UIState(message = "Error al actualizar la calificación. Por favor, intenta nuevamente.")
+                    if (_hasReview.value) {
+                        val reviewResult = reviewRepository.getReviewByAdvisorIdAndFarmerId(advisorId, farmerId, GlobalVariables.TOKEN)
+                        if (reviewResult is Resource.Success && reviewResult.data != null) {
+                            val existingReview = reviewResult.data
+                            val updatedReview = review.copy(id = existingReview.id)
+                            val updateResult = reviewRepository.updateReview(GlobalVariables.TOKEN, updatedReview.id, updatedReview)
+                            if (updateResult is Resource.Success) {
+                                _isSubmitting.value = false
+                                _state.value = UIState(message = "Calificación actualizada exitosamente.")
+                            } else {
+                                _isSubmitting.value = false
+                                _state.value = UIState(message = "Error al actualizar la calificación. Por favor, intenta nuevamente.")
+                            }
+                            return@launch
                         }
-                        return@launch
                     }
-                }
 
-                val result = reviewRepository.createReview(GlobalVariables.TOKEN, review)
-                _isSubmitting.value = false // Cambiar el estado para indicar que el envío ha finalizado
+                    val result = reviewRepository.createReview(GlobalVariables.TOKEN, review)
+                    _isSubmitting.value = false
 
-                if (result is Resource.Success) {
-                    _state.value = UIState(message = "Calificación enviada exitosamente.")
-                    navController.popBackStack() // Regresar una vez que se envíe la reseña exitosamente
+                    if (result is Resource.Success) {
+                        _state.value = UIState(message = "Calificación enviada exitosamente.")
+                        navController.popBackStack()
+                    } else {
+                        _state.value = UIState(message = "Error al enviar la calificación. Por favor, intenta nuevamente.")
+                    }
                 } else {
-                    _state.value = UIState(message = "Error al enviar la calificación. Por favor, intenta nuevamente.")
+                    _isSubmitting.value = false
+                    _state.value = UIState(message = "Error al obtener la cita. Por favor, intenta nuevamente.")
                 }
-            } else {
+            } catch (e: Exception) {
                 _isSubmitting.value = false
-                _state.value = UIState(message = "Error al obtener la cita. Por favor, intenta nuevamente.")
+                _state.value = UIState(message = "Error al enviar la calificación: ${e.message}")
             }
         }
     }

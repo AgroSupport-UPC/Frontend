@@ -12,7 +12,7 @@ import com.example.agrosupport.common.Routes
 import com.example.agrosupport.common.UIState
 import com.example.agrosupport.data.repository.profile.CloudStorageRepository
 import com.example.agrosupport.data.repository.profile.ProfileRepository
- import com.example.agrosupport.domain.profile.Profile
+import com.example.agrosupport.domain.profile.Profile
 import com.example.agrosupport.presentation.createaccountfarmer.CreateAccountFarmerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,15 +64,20 @@ class CreateProfileFarmerViewModel(
                 description = description.value,
                 photo = photoUrl.value
             )
-            val result = profileRepository.createProfileFarmer(token, profile)
-            withContext(Dispatchers.Main) {
-                if (result is Resource.Success) {
-                    _state.value = UIState(data = result.data)
-                    goToConfirmationAccountFarmerScreen()
-                } else {
-                    _state.value = UIState(message = result.message ?: "Error al crear perfil")
-                    _snackbarMessage.value = result.message ?: "Error al crear perfil"
+            try {
+                val result = profileRepository.createProfileFarmer(token, profile)
+                withContext(Dispatchers.Main) {
+                    if (result is Resource.Success) {
+                        _state.value = UIState(data = result.data)
+                        goToConfirmationAccountFarmerScreen()
+                    } else {
+                        _state.value = UIState(message = result.message ?: "Error al crear perfil")
+                        _snackbarMessage.value = result.message ?: "Error al crear perfil"
+                    }
                 }
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error al crear perfil: ${e.message}")
+                _snackbarMessage.value = "Error al crear perfil: ${e.message}"
             }
         }
     }
@@ -90,5 +95,4 @@ class CreateProfileFarmerViewModel(
             }
         }
     }
-
 }

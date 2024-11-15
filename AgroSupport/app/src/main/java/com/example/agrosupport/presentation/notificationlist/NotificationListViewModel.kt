@@ -12,7 +12,10 @@ import com.example.agrosupport.data.repository.notification.NotificationReposito
 import com.example.agrosupport.domain.notification.Notification
 import kotlinx.coroutines.launch
 
-class NotificationListViewModel(private val navController: NavController, private val notificationRepository: NotificationRepository) : ViewModel() {
+class NotificationListViewModel(
+    private val navController: NavController,
+    private val notificationRepository: NotificationRepository
+) : ViewModel() {
 
     private val _state = mutableStateOf(UIState<List<Notification>>())
     val state: State<UIState<List<Notification>>> get() = _state
@@ -24,28 +27,36 @@ class NotificationListViewModel(private val navController: NavController, privat
     fun getNotificationList() {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val result = notificationRepository.getNotifications(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
-            if (result is Resource.Success) {
-                val notifications = result.data?.sortedByDescending { it.sendAt } ?: run {
-                    _state.value = UIState(message = "No se encontraron notificaciones")
-                    return@launch
+            try {
+                val result = notificationRepository.getNotifications(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
+                if (result is Resource.Success) {
+                    val notifications = result.data?.sortedByDescending { it.sendAt } ?: run {
+                        _state.value = UIState(message = "No se encontraron notificaciones")
+                        return@launch
+                    }
+                    _state.value = UIState(data = notifications)
+                } else {
+                    _state.value = UIState(message = "Error al intentar obtener las notificaciones")
                 }
-                _state.value = UIState(data = notifications)
-            } else {
-                _state.value = UIState(message = "Error al intentar obtener las notificaciones")
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error al intentar obtener las notificaciones: ${e.message}")
             }
         }
     }
 
     fun deleteNotification(notificationId: Long) {
         viewModelScope.launch {
-            val result = notificationRepository.deleteNotification(notificationId, GlobalVariables.TOKEN)
-            if (result is Resource.Success) {
-                val notifications = _state.value.data?.toMutableList() ?: return@launch
-                notifications.removeIf { it.id == notificationId }
-                _state.value = UIState(data = notifications)
-            } else {
-                _state.value = UIState(message = "Error al intentar eliminar la notificación")
+            try {
+                val result = notificationRepository.deleteNotification(notificationId, GlobalVariables.TOKEN)
+                if (result is Resource.Success) {
+                    val notifications = _state.value.data?.toMutableList() ?: return@launch
+                    notifications.removeIf { it.id == notificationId }
+                    _state.value = UIState(data = notifications)
+                } else {
+                    _state.value = UIState(message = "Error al intentar eliminar la notificación")
+                }
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error al intentar eliminar la notificación: ${e.message}")
             }
         }
     }

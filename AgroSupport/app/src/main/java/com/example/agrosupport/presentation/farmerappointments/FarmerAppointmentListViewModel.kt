@@ -30,7 +30,6 @@ class FarmerAppointmentListViewModel(
     private val _state = mutableStateOf(UIState<List<AppointmentCard>>())
     val state: State<UIState<List<AppointmentCard>>> get() = _state
 
-
     fun goBack() {
         navController.navigate(Routes.FarmerHome.route)
     }
@@ -46,90 +45,94 @@ class FarmerAppointmentListViewModel(
     fun getAdvisorAppointmentListByFarmer(selectedDate: Date? = null) {
         _state.value = UIState(isLoading = true)
         viewModelScope.launch {
-            val farmerResult = farmerRepository.searchFarmerByUserId(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
+            try {
+                val farmerResult = farmerRepository.searchFarmerByUserId(GlobalVariables.USER_ID, GlobalVariables.TOKEN)
 
-            if (farmerResult is Resource.Success && farmerResult.data != null) {
-                val farmerId = farmerResult.data.id // Si la búsqueda del granjero fue exitosa
-                val result = appointmentRepository.getAppointmentsByFarmer(farmerId, GlobalVariables.TOKEN)
-                if (result is Resource.Success) {
-                    var appointments = result.data?.filter { it.status == "PENDING" || it.status == "ONGOING" }
+                if (farmerResult is Resource.Success && farmerResult.data != null) {
+                    val farmerId = farmerResult.data.id
+                    val result = appointmentRepository.getAppointmentsByFarmer(farmerId, GlobalVariables.TOKEN)
+                    if (result is Resource.Success) {
+                        var appointments = result.data?.filter { it.status == "PENDING" || it.status == "ONGOING" }
 
-                    // Aplicar filtro de fecha si se ha proporcionado una fecha seleccionada
-                    if (selectedDate != null) {
-                        val formattedSelectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate)
-                        appointments = appointments?.filter {
-                            it.scheduledDate.startsWith(formattedSelectedDate)
+                        if (selectedDate != null) {
+                            val formattedSelectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate)
+                            appointments = appointments?.filter {
+                                it.scheduledDate.startsWith(formattedSelectedDate)
+                            }
                         }
-                    }
 
-                    // Ordenar las citas por fecha (scheduledDate) y luego por hora de inicio (startTime)
-                    appointments = appointments?.sortedWith(
-                        compareBy(
-                            { SimpleDateFormat("yyyy-MM-dd").parse(it.scheduledDate) },
-                            { SimpleDateFormat("HH:mm").parse(it.startTime) }
-                        )
-                    )
-
-
-
-                    if (!appointments.isNullOrEmpty()) {
-                        val appointmentCards = mutableListOf<AppointmentCard>()
-                        for (appointment in appointments) {
-                            val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, GlobalVariables.TOKEN)
-                            val advisorName = if (advisorResult is Resource.Success) {
-                                val advisor = advisorResult.data
-                                val profileResult = advisor?.userId?.let { userId ->
-                                    profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
-                                }
-                                if (profileResult is Resource.Success) {
-                                    val profile = profileResult.data
-                                    "${profile?.firstName ?: "Asesor"} ${profile?.lastName ?: "Desconocido"}"
-                                } else {
-                                    "Asesor Desconocido"
-                                }
-                            } else {
-                                "Asesor Desconocido"
-                            }
-
-                            val advisorPhoto = if (advisorResult is Resource.Success) {
-                                val advisor = advisorResult.data
-                                val profileResult = advisor?.userId?.let { userId ->
-                                    profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
-                                }
-                                if (profileResult is Resource.Success) {
-                                    val profile = profileResult.data
-                                    profile?.photo ?: "Asesor Desconocido"
-                                } else {
-                                    "Asesor Desconocido"
-                                }
-                            } else {
-                                "Asesor Desconocido"
-                            }
-                            appointmentCards.add(
-                                AppointmentCard(
-                                    id = appointment.id,
-                                    advisorName = advisorName,
-                                    advisorPhoto = advisorPhoto,
-                                    message = appointment.message,
-                                    status = appointment.status,
-                                    scheduledDate = appointment.scheduledDate,
-                                    startTime = appointment.startTime,
-                                    endTime = appointment.endTime,
-                                    meetingUrl = appointment.meetingUrl
-                                )
+                        appointments = appointments?.sortedWith(
+                            compareBy(
+                                { SimpleDateFormat("yyyy-MM-dd").parse(it.scheduledDate) },
+                                { SimpleDateFormat("HH:mm").parse(it.startTime) }
                             )
+                        )
+
+                        if (!appointments.isNullOrEmpty()) {
+                            val appointmentCards = mutableListOf<AppointmentCard>()
+                            for (appointment in appointments) {
+                                try {
+                                    val advisorResult = advisorRepository.searchAdvisorByAdvisorId(appointment.advisorId, GlobalVariables.TOKEN)
+                                    val advisorName = if (advisorResult is Resource.Success) {
+                                        val advisor = advisorResult.data
+                                        val profileResult = advisor?.userId?.let { userId ->
+                                            profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
+                                        }
+                                        if (profileResult is Resource.Success) {
+                                            val profile = profileResult.data
+                                            "${profile?.firstName ?: "Asesor"} ${profile?.lastName ?: "Desconocido"}"
+                                        } else {
+                                            "Asesor Desconocido"
+                                        }
+                                    } else {
+                                        "Asesor Desconocido"
+                                    }
+
+                                    val advisorPhoto = if (advisorResult is Resource.Success) {
+                                        val advisor = advisorResult.data
+                                        val profileResult = advisor?.userId?.let { userId ->
+                                            profileRepository.searchProfile(userId, GlobalVariables.TOKEN)
+                                        }
+                                        if (profileResult is Resource.Success) {
+                                            val profile = profileResult.data
+                                            profile?.photo ?: "Asesor Desconocido"
+                                        } else {
+                                            "Asesor Desconocido"
+                                        }
+                                    } else {
+                                        "Asesor Desconocido"
+                                    }
+
+                                    appointmentCards.add(
+                                        AppointmentCard(
+                                            id = appointment.id,
+                                            advisorName = advisorName,
+                                            advisorPhoto = advisorPhoto,
+                                            message = appointment.message,
+                                            status = appointment.status,
+                                            scheduledDate = appointment.scheduledDate,
+                                            startTime = appointment.startTime,
+                                            endTime = appointment.endTime,
+                                            meetingUrl = appointment.meetingUrl
+                                        )
+                                    )
+                                } catch (e: Exception) {
+                                    _state.value = UIState(message = "Error al obtener detalles del asesor: ${e.message}")
+                                }
+                            }
+                            _state.value = UIState(data = appointmentCards)
+                        } else {
+                            _state.value = UIState(message = "No se encontraron citas para la fecha seleccionada")
                         }
-                        _state.value = UIState(data = appointmentCards)
-                    } else {
-                        _state.value = UIState(message = "No se encontraron citas para la fecha seleccionada")
+                    } else if (result is Resource.Error) {
+                        _state.value = UIState(message = "Error al intentar obtener las citas")
                     }
-                } else if (result is Resource.Error) {
-                    _state.value = UIState(message = "Error al intentar obtener las citas")
+                } else {
+                    _state.value = UIState(message = "Error al intentar obtener información del usuario")
                 }
-            } else {
-                _state.value = UIState(message = "Error al intentar obtener información del usuario")
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Se produjo un error: ${e.message}")
             }
         }
     }
-
 }

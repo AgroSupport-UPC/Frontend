@@ -77,37 +77,47 @@ class CreateAccountFarmerViewModel(
             val emailValue = email.value
             val passwordValue = password.value
             val roles = GlobalVariables.ROLES
-            val result = authenticationRepository.signUp(emailValue, passwordValue, roles)
-            if (result is Resource.Success) {
-                _state.value = UIState(data = Unit)
+            try {
+                val result = authenticationRepository.signUp(emailValue, passwordValue, roles)
+                if (result is Resource.Success) {
+                    _state.value = UIState(data = Unit)
 
-                // Sign in the user to obtain the token
-                signIn(emailValue, passwordValue)
-            } else {
-                _state.value = UIState(message = result.message ?: "Error al registrarse")
-                _snackbarMessage.value = result.message ?: "Error al registrarse"
+                    // Sign in the user to obtain the token
+                    signIn(emailValue, passwordValue)
+                } else {
+                    _state.value = UIState(message = result.message ?: "Error al registrarse")
+                    _snackbarMessage.value = result.message ?: "Error al registrarse"
+                }
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error al registrarse: ${e.message}")
+                _snackbarMessage.value = "Error al registrarse: ${e.message}"
             }
         }
     }
 
     private fun signIn(email: String, password: String) {
         viewModelScope.launch {
-            val result = authenticationRepository.signIn(email, password)
-            if (result is Resource.Success) {
-                val token = result.data?.token
-                if (token != null) {
-                    GlobalVariables.USER_ID = result.data.id
-                    GlobalVariables.TOKEN = token
-                    withContext(Dispatchers.Main) {
-                        goToCreateProfileFarmerScreen()
+            try {
+                val result = authenticationRepository.signIn(email, password)
+                if (result is Resource.Success) {
+                    val token = result.data?.token
+                    if (token != null) {
+                        GlobalVariables.USER_ID = result.data.id
+                        GlobalVariables.TOKEN = token
+                        withContext(Dispatchers.Main) {
+                            goToCreateProfileFarmerScreen()
+                        }
+                    } else {
+                        _state.value = UIState(message = "Error al obtener el token")
+                        _snackbarMessage.value = "Error al obtener el token"
                     }
                 } else {
-                    _state.value = UIState(message = "Error al obtener el token")
-                    _snackbarMessage.value = "Error al obtener el token"
+                    _state.value = UIState(message = result.message ?: "Error al iniciar sesión")
+                    _snackbarMessage.value = result.message ?: "Error al iniciar sesión"
                 }
-            } else {
-                _state.value = UIState(message = result.message ?: "Error al iniciar sesión")
-                _snackbarMessage.value = result.message ?: "Error al iniciar sesión"
+            } catch (e: Exception) {
+                _state.value = UIState(message = "Error al iniciar sesión: ${e.message}")
+                _snackbarMessage.value = "Error al iniciar sesión: ${e.message}"
             }
         }
     }
