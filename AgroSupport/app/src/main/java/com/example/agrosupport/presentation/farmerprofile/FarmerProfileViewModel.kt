@@ -38,7 +38,11 @@ class FarmerProfileViewModel(
                 if (result is Resource.Success) {
                     _state.value = UIState(data = result.data)
                 } else {
-                    _state.value = UIState(message = result.message ?: "Error obteniendo el perfil")
+                    if (!result.message.isNullOrEmpty()){
+                        _state.value = UIState(message = result.message)
+                    } else {
+                        _state.value = UIState(message = "Error obteniendo información del perfil")
+                    }
                 }
             } catch (e: Exception) {
                 _state.value = UIState(message = "Error obteniendo el perfil: ${e.message}")
@@ -104,7 +108,7 @@ class FarmerProfileViewModel(
                 val updatedProfile = profile.copy(photo = imageUrl)
                 updateFarmerProfile(updatedProfile)
             } catch (e: Exception) {
-                _state.value = UIState(message = "Error uploading image: ${e.message}")
+                _state.value = UIState(message = "Error subiendo la imagen: ${e.message}")
             }
         }
     }

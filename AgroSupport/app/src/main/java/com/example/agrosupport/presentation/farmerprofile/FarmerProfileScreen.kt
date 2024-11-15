@@ -11,8 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import android.net.Uri
-import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 
@@ -71,20 +69,7 @@ fun FarmerProfileScreen(viewModel: FarmerProfileViewModel) {
                 state.data?.let { profile ->
                     EditProfileContent(profile = profile, viewModel = viewModel)
                 } ?: run {
-                    state.message.let { errorMessage ->
-                        if (errorMessage.isNotBlank()) {
-                            AlertDialog(
-                                onDismissRequest = { viewModel.reloadPage() },
-                                confirmButton = {
-                                    TextButton(onClick = { viewModel.reloadPage() }) {
-                                        Text("OK")
-                                    }
-                                },
-                                title = { Text("Error") },
-                                text = { Text(errorMessage) }
-                            )
-                        }
-                    }
+                    Text(text = state.message)
                 }
             }
         }

@@ -65,22 +65,16 @@ class FarmerReviewAppointmentViewModel(
                     val appointment = appointmentResult.data
                     val advisorId = appointment.advisorId
 
-                    Log.d("FarmerReviewAppointmentViewModel", "AdvisorId: $advisorId, farmerId: ${appointment.farmerId}")
-
                     val reviewResult = reviewRepository.getReviewByAdvisorIdAndFarmerId(advisorId, appointment.farmerId, GlobalVariables.TOKEN)
                     if (reviewResult is Resource.Success && reviewResult.data != null) {
                         val review = reviewResult.data
                         _hasReview.value = true
                         _comment.value = review.comment ?: ""
                         _rating.value = review.rating ?: 0
-
-                        Log.d("FarmerReview", "Reseña encontrada: ${review.comment}, Rating: ${review.rating}")
                     } else {
                         _comment.value = ""
                         _rating.value = 0
                         _hasReview.value = false
-
-                        Log.d("FarmerReview", "No se encontró información de la reseña para el asesor $advisorId y agricultor ${appointment.farmerId}")
                     }
 
                     val advisorResult = advisorRepository.searchAdvisorByAdvisorId(advisorId, GlobalVariables.TOKEN)

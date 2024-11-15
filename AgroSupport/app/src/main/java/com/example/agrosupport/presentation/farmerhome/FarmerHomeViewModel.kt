@@ -63,10 +63,10 @@ class FarmerHomeViewModel(
                 if (result is Resource.Success) {
                     _state.value = UIState(data = result.data)
                 } else {
-                    _state.value = UIState(message = "Error getting profile")
+                    _state.value = UIState(message = "Error al obtener información del perfil")
                 }
             } catch (e: Exception) {
-                _state.value = UIState(message = "Error getting profile: ${e.message}")
+                _state.value = UIState(message = "Error al obtener información del perfil: ${e.message}")
             }
         }
     }
@@ -76,17 +76,17 @@ class FarmerHomeViewModel(
         viewModelScope.launch {
             try {
                 val farmerId = fetchFarmerId() ?: run {
-                    _appointmentCard.value = UIState(message = "Error farmer not found")
+                    _appointmentCard.value = UIState(message = "Error al recuperar información del granjero")
                     return@launch
                 }
 
                 val appointment = fetchPendingAppointment(farmerId) ?: run {
-                    _appointmentCard.value = UIState(message = "No pending appointments")
+                    _appointmentCard.value = UIState(message = "No tienes citas pendientes")
                     return@launch
                 }
 
                 val advisorProfile = fetchAdvisorProfile(appointment.advisorId) ?: run {
-                    _appointmentCard.value = UIState(message = "Error advisor profile not found")
+                    _appointmentCard.value = UIState(message = "Error al obtener información del asesor")
                     return@launch
                 }
 
@@ -104,7 +104,7 @@ class FarmerHomeViewModel(
 
                 _appointmentCard.value = UIState(data = appointmentCard)
             } catch (e: Exception) {
-                _appointmentCard.value = UIState(message = "Error getting appointment: ${e.message}")
+                _appointmentCard.value = UIState(message = "Error al obtener información de la cita: ${e.message}")
             }
         }
     }

@@ -44,18 +44,10 @@ class ForgotPasswordViewModel(
     }
 
     fun goToLoginScreen() {
-        try {
-            navController.navigate(Routes.SignIn.route)
-        } catch (e: Exception) {
-            _state.value = UIState(message = "Error al navegar: ${e.message}")
-        }
+        navController.navigate(Routes.SignIn.route)
     }
 
     fun goBack() {
-        try {
-            navController.popBackStack()
-        } catch (e: Exception) {
-            _state.value = UIState(message = "Error al navegar: ${e.message}")
-        }
+        navController.popBackStack()
     }
 }
